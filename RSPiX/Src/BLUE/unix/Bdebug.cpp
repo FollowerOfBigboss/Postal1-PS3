@@ -130,8 +130,11 @@ void rspTrace(char *frmt, ... )
 		vsnprintf (errortext, 512, frmt, varp);
 		va_end (varp);
 		LOGI("%s",errortext);
+
+#elif defined(__PSL1GHT__) || defined(PLATFORM_PLAYSTATION3) 
+	vprintf(frmt, varp);
 #else
-		vfprintf(stderr, frmt, varp);
+	vfprintf(stderr, frmt, varp);
 #endif
 
 #if defined(RSP_DEBUG_OUT_FILE)

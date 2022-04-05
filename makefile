@@ -36,7 +36,8 @@ else ifeq ($(macosx_x86),1)
   CLIENTEXE := $(BINDIR)/postal1-x86
 else ifeq ($(PLAYSTATION3),1)
   target := PLAYSTATION3
-  CLIENTEXE := $(BINDIR)/postal-PS3
+  CLIENTEXE := $(BINDIR)/postal-PS3.elf
+  CFLAGS += -D__PSL1GHT__
 else
   target := linux_x86_64
   CLIENTEXE := $(BINDIR)/postal1-x86_64
@@ -47,9 +48,14 @@ endif
 ifeq ($(strip $(target)), PLAYSTATION3)
   macosx := false
   CPUARCH := CELL
-  CC := ppu-lv2-gcc
-  CXX := ppu-lv2-g++
-  LINKER := ppu-lv2-g++
+  # CC := ppu-lv2-gcc
+  # CXX := ppu-lv2-g++
+  # LINKER := ppu-lv2-g++
+
+  # PSL1GHT TOOLCHAIN
+  CC := ppu-gcc
+  CXX := ppu-g++
+  LINKER := ppu-g++
 endif
 ifeq ($(strip $(target)),linux_x86)
   macosx := false
@@ -285,15 +291,22 @@ ifeq ($(strip $(macosx)),true)
 endif
 ifeq ($(strip $(PLAYSTATION3)), 1)
   CFLAGS += -DPLATFORM_PLAYSTATION3
-  CFLAGS += -std=c++98
-  $(info PLAYSTATION3 defined)
+  CFLAGS += -D_DEBUG
+#  CFLAGS += -std=c++98
+#  $(info PLAYSTATION3 defined)
 endif
 # defines the game needs...
 CFLAGS += -DLOCALE=US -DTARGET=POSTAL_2015
 
 # includes ...
+
+# PSL1GHT includes
+#CFLAGS += -I$(PS3DEV)/ppu/powerpc64-ps3-elf/include/c++/7.2.0
+CFLAGS += -I$(PS3DEV)/ppu/include
+CFLAGS += -I$(PS3DEV)/portlibs/ppu/include/SDL2
+
 CFLAGS += -I$(SRCDIR)
-CFLAGS += -I$(SRCDIR)/SDL2/include
+# CFLAGS += -I$(SRCDIR)/SDL2/include
 CFLAGS += -I$(SRCDIR)/RSPiX
 CFLAGS += -I$(SRCDIR)/RSPiX/Inc
 CFLAGS += -I$(SRCDIR)/RSPiX/Src
@@ -324,16 +337,18 @@ else
   ifeq ($(CPUARCH),arm)
     LIBS += -lSDL2
   else
-	ifeq ($(CPUARCH),x86_64)
+    ifeq ($(CPUARCH),x86_64)
 	  LIBS += -lSDL2
     else ifeq ($(CPUARCH), CELL)
-      LIBS += 
-	else
+	# PSL1GHT LINKINGS ...
+	LDFLAGS += -L$(PS3DEV)/portlibs/ppu/lib -L$(PS3DEV)/ppu/lib
+	LIBS += -lSDL2 -lio -laudio -lrsx -lgcm_sys -lsysutil -lrt -llv2 
+    else
 	  LIBS += SDL2/libs/linux-x86/libSDL2-2.0.so.0
 	  LDFLAGS += -Wl,-rpath,\$$ORIGIN
 	  STEAMLDFLAGS += steamworks/sdk/redistributable_bin/linux32/libsteam_api.so
-	endif
- endif
+    endif
+  endif
 endif
 
 ifeq ($(strip $(steamworks)),true)
@@ -371,9 +386,11 @@ $(BINDIR)/%.a: $(SRCDIR)/%.a
 	cp $< $@
 	ranlib $@
 
-$(CLIENTEXE): $(BINDIR) $(OBJS) $(LIBS)
-	$(LINKER) -o $(CLIENTEXE) $(OBJS) $(LDFLAGS) $(LIBS)
 
+# $(CLIENTEXE): $(BINDIR) $(OBJS) $(LIBS)
+$(CLIENTEXE): $(BINDIR) $(OBJS)
+	$(LINKER) -o $(CLIENTEXE) $(OBJS) $(LDFLAGS) $(LIBS)
+	sprxlinker $(CLIENTEXE)
 $(BINDIR) :
 	$(MAKE) bindir
 

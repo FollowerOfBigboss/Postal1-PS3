@@ -709,6 +709,7 @@
 
 #include <ctype.h>
 #include <set>
+#include <climits>
 
 // This is used to get rid of all trace of the editor code when it's disabled
 #if !defined(EDITOR_DISABLED)

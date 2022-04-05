@@ -398,11 +398,13 @@ static void assert_types_are_sane(void)
     ASSERT(sizeof (U64) == 8);
 
     U32 val = 0x02000001;
+
 #if SYS_ENDIAN_BIG
     ASSERT(*((U8*) &val) == 0x02);
 #else
     ASSERT(*((U8*) &val) == 0x01);
 #endif
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -751,8 +753,9 @@ void RunSteamworksUpkeep()
 
 
 int main(int argc, char **argv)
-	{
-	int16_t sResult = 0;
+{
+
+    int16_t sResult = 0;
 
     _argc = argc;
     _argv = argv;
@@ -776,6 +779,7 @@ int main(int argc, char **argv)
 	// directory is the current directory.  This will be the case unless the
 	// user does something stupid.
 	RPrefs prefs;
+	TRACE("%s\n",g_pszPrefFileName);
 	if (prefs.Open(g_pszPrefFileName, "rt") == 0)
 		{
 		// Get video preferences

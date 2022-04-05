@@ -25,7 +25,7 @@
 #ifndef CYAN
 #define CYAN
 
-#if  !defined(WIN32) && !defined(PLATFORM_PLAYSTATION3) 
+#if  !defined(WIN32) && (defined(PLATFORM_PLAYSTATION3) && defined(__PSL1GHT__))
 #include <sys/param.h>
 #endif
 
@@ -178,13 +178,15 @@ extern int16_t rspExec(			// Returns 0 on success.
 // File Path API
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef WIN32
+#if defined(WIN32)
 #ifndef PATH_MAX  // !!! FIXME: where is this really defined?
 #define PATH_MAX 260
 #endif
-#elif PLATFORM_PLAYSTATION3
+#elif defined(PLATFORM_PLAYSTATION3) && !defined(__PSL1GHT__)
 #include <cell/cell_fs.h>
 #define PATH_MAX CELL_FS_MAX_FS_PATH_LENGTH
+#else
+#define PATH_MAX 260
 #endif
 
 #define RSP_MAX_PATH                        PATH_MAX

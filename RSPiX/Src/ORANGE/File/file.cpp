@@ -424,6 +424,12 @@ extern const char *FindCorrectFile(const char *_pszName, const char *pszMode)
             if (prefpath[strlen(prefpath)-1] != '/') strcat(prefpath, "/");
 
             strcat(prefpath, "Library/Application Support/Postal Plus/");
+
+	    #elif defined(PLATFORM_PLAYSTATION3)
+	    // oh well.
+	    const char *homedir = "/dev_hdd0/game/PST3000/";
+	    snprintf(prefpath, sizeof(prefpath), "%s", homedir);
+	    
             #else
             const char *homedir = getenv("HOME");
             const char *xdghomedir = getenv("XDG_DATA_HOME");

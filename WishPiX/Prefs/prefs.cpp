@@ -201,6 +201,7 @@ int16_t RPrefs::Open(					// Returns 0 if successfull, non-zero otherwise
 		m_sReadOnly = 1;
 
 	// Attempt to open file
+	TRACE("%s\n", pszFile);
 	m_pFile = fopen(FindCorrectFile(pszFile, pszMode), pszMode);
 	if (m_pFile != NULL)
 		{

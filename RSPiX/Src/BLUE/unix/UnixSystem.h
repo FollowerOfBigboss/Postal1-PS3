@@ -36,6 +36,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+// #if defined(__PSL1GHT__)
+// #include <cstdio>
+// #endif
+
+
+
 #ifdef WIN32
 // !!! FIXME: use SDL_snprintf() in SDL2.
 #ifndef snprintf
@@ -57,6 +63,7 @@
 
 #include <map>
 using namespace std;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // For compilers that support partial paths in #include's, define this.  For
