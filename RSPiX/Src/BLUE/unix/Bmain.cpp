@@ -36,7 +36,7 @@
 #include <string.h>
 
 
-#ifndef WIN32
+#if !defined(WIN32) && !defined(PLATFORM_PLAYSTATION3)
 #include <unistd.h>
 #include <sys/param.h>
 #endif

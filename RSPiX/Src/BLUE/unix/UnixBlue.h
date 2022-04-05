@@ -648,6 +648,34 @@ extern void rspSetForegroundCallback(
 extern int rspCommandLine(const char *cmd);
 extern void rspPlatformInit(void);
 
+
+
+#ifdef PLATFORM_PLAYSTATION3
+
+inline char* getcwd(char* buf, size_t size)
+{
+	return NULL;
+}
+
+inline int chdir(const char* path)
+{
+	return 0;
+}
+
+inline int access(const char *pathname, int mode)
+{
+	return 0;
+}
+
+inline char *getenv(const char *name)
+{
+	return NULL;
+}
+
+#endif
+
+
+
 #endif // UNIXBLUE_H
 
 ////////////////////////////////////////////////////////////////////////////////

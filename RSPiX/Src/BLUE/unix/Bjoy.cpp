@@ -193,7 +193,12 @@ extern void GetDudeVelocity(double* d_Velocity, double* d_Angle)
 	Sint16 axis_MoveUpDown = ms_ajsCurr[0].axis_MoveUpDown;
 	Sint16 axis_MoveLeftRight = ms_ajsCurr[0].axis_MoveLeftRight;
 
+#ifdef PLATFORM_PLAYSTATION3
+	*d_Velocity = sqrt(pow((double)axis_MoveUpDown, 2) + pow((double)axis_MoveLeftRight, 2)) / 32768.f;
+#else
 	*d_Velocity = sqrt(pow(axis_MoveUpDown, 2) + pow(axis_MoveLeftRight, 2)) / 32768.f;
+#endif
+
 	if (axis_MoveLeftRight != 0)
 		*d_Angle = GetStickAngle(axis_MoveLeftRight, axis_MoveUpDown);
 	else

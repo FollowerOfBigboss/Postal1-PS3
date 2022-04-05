@@ -135,7 +135,13 @@
 // Headers.
 //////////////////////////////////////////////////////////////////////////////
 #include <stdlib.h>
+
+#ifdef PLATFORM_PLAYSTATION3
+#include <memory>
+#else
 #include <memory.h>
+#endif
+
 #include <string.h>
 #include <limits.h>
 #include <float.h>	// For float and double limits.
@@ -143,7 +149,11 @@
 #if PLATFORM_UNIX
 #include <unistd.h>
 #include <dirent.h>
+
+#ifndef PLATFORM_PLAYSTATION3
 #include <sys/param.h>
+#endif
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <ctype.h>
@@ -164,6 +174,15 @@
 #endif
 typedef HRESULT (WINAPI *fnSHGetFolderPathW)(HWND hwnd, int nFolder, HANDLE hToken, DWORD dwFlags, LPWSTR pszPath);
 #endif
+
+#ifdef PLATFORM_PLAYSTATION3
+#define F_OK 00
+#define R_OK 04
+#include <alloca.h>
+#include "CYAN/cyan.h"
+#endif
+
+
 
 #include "Blue.h"
 

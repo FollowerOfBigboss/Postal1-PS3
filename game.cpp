@@ -556,6 +556,7 @@
 	#include <direct.h>
 #else
 	#include <unistd.h>
+	#include "BLUE/Blue.h"
 #endif
 
 #include "WishPiX/Menu/menu.h"

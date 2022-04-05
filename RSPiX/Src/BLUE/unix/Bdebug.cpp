@@ -64,7 +64,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <stdio.h>
 #include <stdarg.h>
+
+#ifndef PLATFORM_PLAYSTATION3
 #include <signal.h>
+#endif
+
 #include <time.h>
 
 #include "BLUE/Blue.h"
