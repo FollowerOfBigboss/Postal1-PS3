@@ -4467,10 +4467,10 @@ extern char* FullPathCD(								// Returns full path in system format
 	return m_acFullPath;
 	}
 
-
-extern char* FullPathHD(								// Returns full path in system format
-	const char* pszPartialPath)								// In:  Partial path in RSPiX format
-	{
+// Returns full path in system format
+// In:  Partial path in RSPiX format
+extern char* FullPathHD(const char* pszPartialPath)
+{
 	// Start with proper base path
 	ASSERT(strlen(g_GameSettings.m_pszHDPath) < RSP_MAX_PATH);
 	strcpy(m_acFullPath, g_GameSettings.m_pszHDPath);
@@ -4491,7 +4491,7 @@ extern char* FullPathHD(								// Returns full path in system format
 
 	// Return pointer to full path
 	return m_acFullPath;
-	}
+}
 
 
 extern char* FullPathVD(								// Returns full path in system format

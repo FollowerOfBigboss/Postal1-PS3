@@ -247,6 +247,7 @@ int16_t RResMgr::Get(									// Returns 0 on success.
 	GenericDestroyResFunc* pfnDestroy,			// In:  Pointer to "destroy" function object
 	GenericLoadResFunc* pfnLoad)					// In:  Pointer to "load" function object
 	{
+	TRACE("RResMgr::Get()\n");
 	int16_t sReturn = SUCCESS;
 	// Map iterator (one of the best things about STL is how readable it is)
 	pair<resclassMap::iterator, bool> p(m_map.begin(), false);

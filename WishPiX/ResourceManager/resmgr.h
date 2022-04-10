@@ -475,24 +475,25 @@ class RResMgr
 
 		// This function closes the Alt SAK file and all resource names
 		void CloseSakAlt()
-		  {
-			  if (m_rfSakAlt.IsOpen())
-			    {
-					m_rfSakAlt.Close();
-					m_SakAltDirectory.erase(m_SakAltDirectory.begin(), m_SakAltDirectory.end());
-			    }
-		  }
+		{
+			if (m_rfSakAlt.IsOpen())
+			{
+				m_rfSakAlt.Close();
+				m_SakAltDirectory.erase(m_SakAltDirectory.begin(), m_SakAltDirectory.end());
+			}
+		}
 
 		// This function closes the SAK file and all resource names
 		// are assumed to refer to individual disk files.
 		void CloseSak()
-			{ if (m_rfSak.IsOpen())
-				{
-					m_rfSak.Close();
-					m_SakDirectory.erase(m_SakDirectory.begin(), m_SakDirectory.end());
-					CloseSakAlt();
-				}
+		{ 
+			if (m_rfSak.IsOpen())
+			{
+				m_rfSak.Close();
+				m_SakDirectory.erase(m_SakDirectory.begin(), m_SakDirectory.end());
+				CloseSakAlt();
 			}
+		}
 
 		// This function sets a base pathname that will be prepended to
 		// the resource name when loading resources from their individaul
@@ -501,9 +502,9 @@ class RResMgr
 
 		// This function returns the base path.
 		char* GetBasePath(void)
-			{
+		{
 			return (char*)m_strBasepath;
-			}
+		}
 
 		// Helper function to position m_rfSak at correct position
 		// for the file you are trying to get
@@ -511,39 +512,39 @@ class RResMgr
 		{
 			RFile* prf = NULL;
 			if (m_rfSakAlt.IsOpen()) 
-			  {
+			{
 				int32_t	lResSeekPos	= m_SakAltDirectory[strResourceName];
 				if (lResSeekPos > 0)
-					{
+				{
 					if (m_rfSakAlt.Seek(lResSeekPos, SEEK_SET) == SUCCESS)
-						{
+					{
 						prf = &m_rfSakAlt;
 						return prf;
-						}
+					}
 					else
-						{
+					{
 						TRACE("RResMgr::FromSak - m_rfSakAlt.Seek(%ld, SEEK_SET) failed.\n", 
 							lResSeekPos);
-						}
-					}
-			  }
-			int32_t	lResSeekPos	= m_SakDirectory[strResourceName];
-			if (lResSeekPos > 0)
-				{
-				if (m_rfSak.Seek(lResSeekPos, SEEK_SET) == SUCCESS)
-					{
-					prf = &m_rfSak;
-					}
-				else
-					{
-					TRACE("RResMgr::FromSak - m_rfSak.Seek(%ld, SEEK_SET) failed.\n", 
-						lResSeekPos);
 					}
 				}
+			}
+			int32_t	lResSeekPos = m_SakDirectory[strResourceName];
+			if (lResSeekPos > 0)
+			{
+				if (m_rfSak.Seek(lResSeekPos, SEEK_SET) == SUCCESS)
+				{
+					prf = &m_rfSak;
+				}
+				else
+				{
+					TRACE("RResMgr::FromSak - m_rfSak.Seek(%ld, SEEK_SET) failed.\n", 
+						lResSeekPos);
+				}
+			}
 #ifdef RESMGR_VERBOSE
 			else
-				TRACE("RResMgr::FromSak - Break Yo Self! Resource %s is not in this SAK file\n",
-				      (char*) strResourceName);
+				TRACE("RResMgr::FromSak - Break Yo Self! Resource %s is not in this SAK file\n", 
+					(char*) strResourceName);
 //				      (char*) strResourceName.c_str());
 #endif // RESMGR_VERBOSE
 
@@ -660,13 +661,13 @@ class RResMgr
 		// Helper function to combine the resource name and the base pathname
 		// to load your file.
 		char* FromSystempath(RString strResourceName)
-			{
+		{
 			RString strSystemPartial = rspPathToSystem((char*) strResourceName);
 			m_strFullpath = m_strBasepath + strSystemPartial;
 			// Make sure that the RString is not too long for rspix functions
 			ASSERT(m_strFullpath.GetLen() < RSP_MAX_PATH);
 			return (char*) m_strFullpath;
-			}
+		}
 
 		// Purge all resources even if reference count is not
 		// zero.  This is used only by the destructor to 
@@ -683,13 +684,16 @@ class RResMgr
 // file or a RSPiX file spec relative to RResMgr's base path.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+// Returns 0 on success
+// In:  Resource Manager to be used
+// In:  Resource name
+// Out: Pointer to resource returned here
+// In:  Endian nature of resource file
 template <class T>
-int16_t rspGetResource(									// Returns 0 on success
-	RResMgr*	presmgr,										// In:  Resource Manager to be used
-	const char*	pszResName,								// In:  Resource name
-	T**	pT,												// Out: Pointer to resource returned here
-	RFile::Endian endian = RFile::LittleEndian)	// In:  Endian nature of resource file
-	{
+int16_t rspGetResource(RResMgr*	presmgr, const char* pszResName, T** pT, RFile::Endian endian = RFile::LittleEndian)
+{
+	TRACE("rspGetResource(): resName: %s\n", pszResName);
 	// Create function objects for the specified type.  We have to allocate
 	// them using new because if they're just on the stack, they won't exist
 	// beyond this function.  Instead, we leave it up to the Get() function
@@ -701,7 +705,7 @@ int16_t rspGetResource(									// Returns 0 on success
 
 	// Pass everything in generic form to the resource manager
 	return presmgr->Get(pszResName, (void**)pT, endian, pcreate, pdestroy, pload);
-	}
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -709,14 +713,16 @@ int16_t rspGetResource(									// Returns 0 on success
 // Release a resource and set the specified pointer to NULL.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+// Returns 0 on success
+// In:  Resource Manager to be used
+// In:  Pointer to resource
 template <class T>
-void rspReleaseResource(								// Returns 0 on success
-	RResMgr*	presmgr,										// In:  Resource Manager to be used
-	T** ppres)												// In:  Pointer to resource
-	{
+void rspReleaseResource(RResMgr* presmgr, T** ppres)
+{
 	presmgr->Release(*ppres);
 	*ppres = NULL;
-	}
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -755,6 +761,7 @@ int16_t rspGetResourceInstance(							// Returns 0 on success
 	T**	pT,												// Out: Pointer to resource returned here
 	RFile::Endian endian = RFile::LittleEndian)	// In:  Endian nature of resource file
 	{
+	TRACE("rspGetResourceInstance()\n");
 	// Create function objects for the specified type.  We do NOT have to allocate
 	// them using new because they're just needed for a little while.
 	CreateResFunc<T>	create;
@@ -781,6 +788,7 @@ void rspReleaseResourceInstance(						// Returns 0 on success
 																// objects via the resmgr.
 	T** ppres)												// In:  Pointer to resource
 	{
+	TRACE("rspReleaseResourceInstance()\n");
 	// Be gone.
 	delete *ppres;
 	*ppres = NULL;

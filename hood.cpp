@@ -223,35 +223,34 @@
 // Constructor
 // (protected).
 ////////////////////////////////////////////////////////////////////////////////
-CHood::CHood(CRealm* pRealm)
-	: CThing(pRealm, CHoodID)
-	{
+CHood::CHood(CRealm* pRealm) : CThing(pRealm, CHoodID)
+{
 	// Initialize ptrs to resources.
 	m_pimBackground	= NULL;
-	m_pTerrainMap		= NULL;
-	m_pLayerMap			= NULL;
+	m_pTerrainMap = NULL;
+	m_pLayerMap = NULL;
 
 	int16_t i;
 	for (i = 0; i < MaxLayers; i++)
-		{
-		m_apspryAlphas[i]		= NULL;
-		m_apspryOpaques[i]	= NULL;
-		}
+	{
+		m_apspryAlphas[i] = NULL;
+		m_apspryOpaques[i] = NULL;
+	}
 
 	m_pimXRayMask		= NULL;
 	m_pmaTransparency	= NULL;
 	m_pltAmbient		= NULL;
-	m_pltSpot			= NULL;
+	m_pltSpot		= NULL;
 
 	m_pimEmptyBar		= NULL;			
-	m_pimEmptyBarSelected= NULL;	
+	m_pimEmptyBarSelected = NULL;	
 	m_pimFullBar		= NULL;			
 	m_pimFullBarSelected	= NULL;	
 	m_pimTopBar = NULL;
 
-	m_pimNum			= NULL;		
+	m_pimNum	= NULL;		
 	m_pimNumLite	= NULL;
-	m_pimNumLow		= NULL;	
+	m_pimNumLow	= NULL;	
 	m_pimNumGone	= NULL;		
 	
 	// Must flag resources as not yet existing
@@ -262,34 +261,34 @@ CHood::CHood(CRealm* pRealm)
 
 	m_sSceneRotX		= 30;
 	m_sRealmRotX		= 45;
-	m_dScale3d			= 1.0;
+	m_dScale3d		= 1.0;
 
 	m_sShadowAngle = 0;	
 	m_dShadowLength = 1.0;	
 	m_sShadowIntensity = 64;	
 	
-	m_sScaleAttribHeights	= TRUE;
+	m_sScaleAttribHeights = TRUE;
 
 	// Let realm have quick access to us.
 	pRealm->m_phood	= this;
 
 	// We want a Startup() call.
-	m_sCallStartup		= 1;
+	m_sCallStartup	= 1;
 
 	// No Init() calls yet.
-	m_sNumInits			= 0;
-	}
+	m_sNumInits = 0;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Destructor
 // (public).
 ////////////////////////////////////////////////////////////////////////////////
 CHood::~CHood()
-	{
+{
 	Kill();
 	// Clear Realm's ptr.
 	m_pRealm->m_phood	= NULL;
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Load object (should call base class version!)
@@ -410,22 +409,22 @@ int16_t CHood::Load(								// Returns 0 if successfull, non-zero otherwise
 
 		// Make sure there were no file errors or format errors . . .
 		if (!pFile->Error() && sResult == 0)
-			{
+		{
 			sResult = Init();
-			}
+		}
 		else
-			{
+		{
 			sResult = -1;
 			TRACE("CHood::Load(): Error reading from file!\n");
-			}
 		}
+	}
 	else
-		{
+	{
 		TRACE("CHood::Load(): CThing::Load() failed.\n");
-		}
+	}
 
 	return sResult;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -434,13 +433,13 @@ int16_t CHood::Load(								// Returns 0 if successfull, non-zero otherwise
 int16_t CHood::Save(								// Returns 0 if successfull, non-zero otherwise
 	RFile* pFile,									// In:  File to save to
 	int16_t sFileCount)								// In:  File count (unique per file, never 0)
-	{
+{
 	int16_t	sResult	= 0;
 
 	// In most cases, the base class Save() should be called.
 	sResult	= CThing::Save(pFile, sFileCount);
 	if (sResult == 0)
-		{
+	{
 		// Save object data
 		pFile->Write(m_sScaleAttribHeights);
 		pFile->Write(m_sRealmRotX);
@@ -454,70 +453,70 @@ int16_t CHood::Save(								// Returns 0 if successfull, non-zero otherwise
 
 		sResult	= pFile->Error();
 		if (sResult == 0)
-			{
-			}
-		else
-			{
-			TRACE("CHood::Save(): Error writing to file.\n");
-			}
-		}
-	else
 		{
-		TRACE("CHood::Save(): CThing::Save() failed.\n");
 		}
+		else
+		{
+			TRACE("CHood::Save(): Error writing to file.\n");
+		}
+	}
+	else
+	{
+		TRACE("CHood::Save(): CThing::Save() failed.\n");
+	}
 
 	return sResult;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Startup object
 ////////////////////////////////////////////////////////////////////////////////
 int16_t CHood::Startup(void)								// Returns 0 if successfull, non-zero otherwise
-	{
+{
 	return 0;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Shutdown object
 ////////////////////////////////////////////////////////////////////////////////
 int16_t CHood::Shutdown(void)							// Returns 0 if successfull, non-zero otherwise
-	{
+{
 	return 0;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Suspend object
 ////////////////////////////////////////////////////////////////////////////////
 void CHood::Suspend(void)
-	{
-	}
+{
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Resume object
 ////////////////////////////////////////////////////////////////////////////////
 void CHood::Resume(void)
-	{
-	}
+{
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Update object
 ////////////////////////////////////////////////////////////////////////////////
 void CHood::Update(void)
-	{
-	}
+{
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Render object
 ////////////////////////////////////////////////////////////////////////////////
 void CHood::Render(void)
-	{
-	}
+{
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // User callback on btn released within button.
@@ -1018,92 +1017,101 @@ extern int wideScreenWidth;
 // Get all required resources
 ////////////////////////////////////////////////////////////////////////////////
 int16_t CHood::GetResources(void)						// Returns 0 if successfull, non-zero otherwise
-	{
+{
 	int16_t sResult = 0;
 
 	// If all resources were already successfully loaded, then don't do this again.
 	// Note that if only some of them loaded and then an error occurred, we'll
 	// end up reloading all of them, even those that loaded okay.
 	if (!m_bResourcesExist)
-		{
+	{
 		// Free any resources that might have been loaded by a previous (unsuccessfull) attempt
 		FreeResources();
 
 		char	szFileName[RSP_MAX_PATH];			// Temp storage to create filenames.
 		char	szBasePath[RSP_MAX_PATH];			// Temp storage of file path.
+	
+#ifdef PLATFORM_PLAYSTATION3
 		
 		// Create the real base file path.
 		sprintf(szBasePath, "hoods/%s/%s", m_acBaseName, m_acBaseName);
-
+		TRACE("Base PATH IS: %s\n",szBasePath);
+#else
+		// Create the real base file path.
+		sprintf(szBasePath, "hoods/%s/%s", m_acBaseName, m_acBaseName);
+#endif
 		// Add .ext for SAKs.
 		sprintf(szFileName, "res/hoods/%s.sak", m_acBaseName);
+		TRACE("szFileName %s\n", szFileName);
 
 		// Open SAK, if available . . .
 		if (m_pRealm->m_resmgr.OpenSak(FullPathHD(szFileName)) == 0)
-			{
+		{
+			TRACE("Using SAK from HD.\n");
 			// Using SAK from HD.
-			}
+		}
 		else
-			{
+		{
 			if (m_pRealm->m_resmgr.OpenSak(FullPathHoods(szFileName)) == 0)
-				{
+			{
 				// Using SAK from hoods path.
-				}
+				TRACE("Using SAK from hoods path.\n");
+			}
 			else
-				{
+			{
+				TRACE("Using Disk, set path.\n");
 				// Using Disk, set path.
 				m_pRealm->m_resmgr.SetBasePath(g_GameSettings.m_szNoSakDir);
-				}
 			}
+		}
 
 		// Background filename.
 		sprintf(szFileName, "%s.bmp", szBasePath);
-
+		TRACE("szFileName %s\n", szFileName);
 		// Load background
-		if (rspGetResource(
-			&(m_pRealm->m_resmgr),
-			szFileName,
-			&m_pimBackground) != 0)
-			{
+		if (rspGetResource(&(m_pRealm->m_resmgr), szFileName, &m_pimBackground) != 0)
+		{
 			sResult = -1;
 			TRACE("CHood::GetResources(): Couldn't load background: %s\n", szFileName);
 			goto Error;
-			}
+		}
+		
+		TRACE("BMP loading PASSED!\n");
 
 		// Attempt to load all layers . . .
 		int32_t	lIndex;
 		int16_t	sNumAlphaLayersLoaded	= 0;
 		int16_t	sNumOpaqueLayersLoaded	= 0;
-		for (lIndex	= 0; lIndex < MaxLayers; lIndex++)
-			{
+		for (lIndex = 0; lIndex < MaxLayers; lIndex++)
+		{
 			// Make alpha layer name.
 			sprintf(szFileName, "%s%02da.say", szBasePath, lIndex);
 			// Load & convert . . .
 			if (SpryLoadConv(&(m_pRealm->m_resmgr), m_apspryAlphas + lIndex, szFileName, RImage::FSPR8) == 0)
-				{
+			{
 				sNumAlphaLayersLoaded++;
-				}
+			}
 
 			// Make opaque layer name.
 			sprintf(szFileName, "%s%02do.say", szBasePath, lIndex);
 			// Load & convert . . .
 			if (SpryLoadConv(&(m_pRealm->m_resmgr), m_apspryOpaques + lIndex, szFileName, RImage::FSPR8) == 0)
-				{
+			{
 				sNumOpaqueLayersLoaded++;
-				}
 			}
+		}
 
 		// If no layers loaded . . .
 		if (sNumOpaqueLayersLoaded == 0 && sNumAlphaLayersLoaded == 0)
-			{
+		{
 			TRACE("GetResources(): No alpha or opaque layers successfully loaded.\n");
-			}
+		}
 		else
-			{
+		{
 			TRACE("GetResources(): Successfully loaded %hd Alpha layer%s and %hd Opaque layer%s.\n",
 				sNumAlphaLayersLoaded, (sNumAlphaLayersLoaded == 1 ? "" : "s"),
 				sNumOpaqueLayersLoaded, (sNumOpaqueLayersLoaded == 1 ? "" : "s"));
-			}
+		}
 
 		sprintf(szFileName, "%s.mp1", szBasePath);
 
@@ -1120,104 +1128,74 @@ int16_t CHood::GetResources(void)						// Returns 0 if successfull, non-zero oth
 
 		sprintf(szFileName, "%s.mp2", szBasePath);
 
-		if (rspGetResource(
-			&(m_pRealm->m_resmgr),
-			szFileName,
-			&m_pLayerMap) != 0)
-			{
+		if (rspGetResource(&(m_pRealm->m_resmgr), szFileName, &m_pLayerMap) != 0)
+		{
 			sResult = -1;
 			TRACE("CHood::GetResources(): Couldn't load attribute map %s\n", szFileName);
 			goto Error;
-			}
+		}
 			
 
 		// Make XRay mask name.
 		sprintf(szFileName, "%s.XRayMask.bmp", szBasePath);
-		if (rspGetResource(
-			&(m_pRealm->m_resmgr),
-			szFileName,
-			&m_pimXRayMask) != 0)
-			{
+		if (rspGetResource(&(m_pRealm->m_resmgr), szFileName, &m_pimXRayMask) != 0)
+		{
 			sResult	= -1;
 			TRACE("GetResources(): Failed to load: %s.\n", szFileName);
-			}
+		}
 
 		sprintf(szFileName, "%s.Transparency.MultiAlpha", szBasePath);
-		if (rspGetResource(
-			&(m_pRealm->m_resmgr),
-			szFileName,
-			&m_pmaTransparency) != 0)
-			{
+		if (rspGetResource(&(m_pRealm->m_resmgr), szFileName, &m_pmaTransparency) != 0)
+		{
 			sResult	= -1;
 			TRACE("GetResources(): Failed to load: %s.\n", szFileName);
-			}
+		}
 
 		sprintf(szFileName, "%s.Ambient.alpha", szBasePath);
-		if (rspGetResource(
-			&(m_pRealm->m_resmgr),
-			szFileName,
-			&m_pltAmbient) != 0)
-			{
+		if (rspGetResource(&(m_pRealm->m_resmgr), szFileName, &m_pltAmbient) != 0)
+		{
 			sResult	= -1;
 			TRACE("GetResources(): Failed to load: %s.\n", szFileName);
-			}
+		}
 
 		sprintf(szFileName, "%s.Spot.alpha", szBasePath);
-		if (rspGetResource(
-			&(m_pRealm->m_resmgr),
-			szFileName,
-			&m_pltSpot) != 0)
-			{
+		if (rspGetResource(&(m_pRealm->m_resmgr), szFileName, &m_pltSpot) != 0)
+		{
 			sResult	= -1;
 			TRACE("GetResources(): Failed to load: %s.\n", szFileName);
-			}
+		}
 
 		// Load all the assets for the toolbar
 		sprintf(szFileName, "%s.emptybar.bmp", szBasePath);
-		if (rspGetResource(
-			&(m_pRealm->m_resmgr),
-			szFileName,
-			&m_pimEmptyBar) != 0)
-			{
+		if (rspGetResource(&(m_pRealm->m_resmgr), szFileName, &m_pimEmptyBar) != 0)
+		{
 			sResult	= -1;
 			TRACE("GetResources(): Failed to load: %s.\n", szFileName);
-			}
+		}
 		sprintf(szFileName, "%s.emptybarselected.bmp", szBasePath);
-		if (rspGetResource(
-			&(m_pRealm->m_resmgr),
-			szFileName,
-			&m_pimEmptyBarSelected) != 0)
-			{
+		if (rspGetResource(&(m_pRealm->m_resmgr), szFileName, &m_pimEmptyBarSelected) != 0)
+		{
 			sResult	= -1;
 			TRACE("GetResources(): Failed to load: %s.\n", szFileName);
-			}
+		}
 		sprintf(szFileName, "%s.fullbar.bmp", szBasePath);
-		if (rspGetResource(
-			&(m_pRealm->m_resmgr),
-			szFileName,
-			&m_pimFullBar) != 0)
-			{
+		if (rspGetResource(&(m_pRealm->m_resmgr), szFileName, &m_pimFullBar) != 0)
+		{
 			sResult	= -1;
 			TRACE("GetResources(): Failed to load: %s.\n", szFileName);
-			}
+		}
 		sprintf(szFileName, "%s.fullbarselected.bmp", szBasePath);
-		if (rspGetResource(
-			&(m_pRealm->m_resmgr),
-			szFileName,
-			&m_pimFullBarSelected) != 0)
-			{
+		if (rspGetResource(&(m_pRealm->m_resmgr), szFileName, &m_pimFullBarSelected) != 0)
+		{
 			sResult	= -1;
 			TRACE("GetResources(): Failed to load: %s.\n", szFileName);
-			}
+		}
 		sprintf(szFileName, "%s.topbar.bmp", szBasePath);
-		if (rspGetResource(
-			&(m_pRealm->m_resmgr),
-			szFileName,
-			&m_pimTopBar) != 0)
-			{
+		if (rspGetResource(&(m_pRealm->m_resmgr), szFileName, &m_pimTopBar) != 0)
+		{
 			sResult	= -1;
 			TRACE("GetResources(): Failed to load: %s.\n", szFileName);
-			}
+		}
 
 
 		RImage * stretched = new RImage();
@@ -1251,7 +1229,7 @@ Error:
 	m_pRealm->m_resmgr.CloseSak();
 
 	return sResult;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1270,7 +1248,7 @@ int16_t CHood::FreeResources(void)						// Returns 0 if successfull, non-zero ot
 		rspReleaseResource(&(m_pRealm->m_resmgr), &m_pimBackground);
 
 	int32_t	lIndex;
-	for (lIndex	= 0; lIndex < MaxLayers; lIndex++)
+	for (lIndex = 0; lIndex < MaxLayers; lIndex++)
 		{
 		if (m_apspryAlphas[lIndex] != NULL)
 			rspReleaseResource(&(m_pRealm->m_resmgr), &(m_apspryAlphas[lIndex]));

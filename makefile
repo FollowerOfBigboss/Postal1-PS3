@@ -292,21 +292,27 @@ endif
 ifeq ($(strip $(PLAYSTATION3)), 1)
   CFLAGS += -DPLATFORM_PLAYSTATION3
   CFLAGS += -D_DEBUG
+  CFLAGS += -DRESMGR_VERBOSE
 #  CFLAGS += -std=c++98
 #  $(info PLAYSTATION3 defined)
+
+ # PSL1GHT includes
+  #CFLAGS += -I$(PS3DEV)/ppu/powerpc64-ps3-elf/include/c++/7.2.0
+  CFLAGS += -I$(PS3DEV)/ppu/include
+  CFLAGS += -I$(PS3DEV)/portlibs/ppu/include/SDL2
+
 endif
 # defines the game needs...
 CFLAGS += -DLOCALE=US -DTARGET=POSTAL_2015
 
 # includes ...
 
-# PSL1GHT includes
-#CFLAGS += -I$(PS3DEV)/ppu/powerpc64-ps3-elf/include/c++/7.2.0
-CFLAGS += -I$(PS3DEV)/ppu/include
-CFLAGS += -I$(PS3DEV)/portlibs/ppu/include/SDL2
-
 CFLAGS += -I$(SRCDIR)
-# CFLAGS += -I$(SRCDIR)/SDL2/include
+
+ifneq ($(strip $(PLAYSTATION3)), 1)
+  CFLAGS += -I$(SRCDIR)/SDL2/include
+endif
+
 CFLAGS += -I$(SRCDIR)/RSPiX
 CFLAGS += -I$(SRCDIR)/RSPiX/Inc
 CFLAGS += -I$(SRCDIR)/RSPiX/Src
@@ -390,7 +396,9 @@ $(BINDIR)/%.a: $(SRCDIR)/%.a
 # $(CLIENTEXE): $(BINDIR) $(OBJS) $(LIBS)
 $(CLIENTEXE): $(BINDIR) $(OBJS)
 	$(LINKER) -o $(CLIENTEXE) $(OBJS) $(LDFLAGS) $(LIBS)
-	sprxlinker $(CLIENTEXE)
+ifeq ($(strip $(target)), PLAYSTATION3)
+	  sprxlinker $(CLIENTEXE)
+endif
 $(BINDIR) :
 	$(MAKE) bindir
 
