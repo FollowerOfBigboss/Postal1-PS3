@@ -63,47 +63,45 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-RMultiGridIndirect*	CreateRegionMap(int16_t sWidth,int16_t sHeight,int16_t sMaxPlanes,
-												 int16_t sTileW,int16_t sTileH)
-	{
-	ASSERT( (sWidth > 0) && (sHeight > 0) && (sMaxPlanes > 0)
-				&& (sTileW > 0) && (sTileH > 0) );
+RMultiGridIndirect* CreateRegionMap(int16_t sWidth,int16_t sHeight,int16_t sMaxPlanes, int16_t sTileW,int16_t sTileH)
+{
+	ASSERT( (sWidth > 0) && (sHeight > 0) && (sMaxPlanes > 0) && (sTileW > 0) && (sTileH > 0) );
 	ASSERT(sMaxPlanes <= MGI_MAX_PLANES);
 
 	RMultiGridIndirect* pMGI = new RMultiGridIndirect;
 	if (!pMGI) 
-		{
+	{
 		TRACE("CreateRegionMap: alloc error!\n");
 
 		return NULL;
-		}
+	}
 
 	if (pMGI->Alloc(sWidth,sHeight,sMaxPlanes,sTileW,sTileH) != SUCCESS) 
-		{
+	{
 		TRACE("CreateRegionMap: alloc error!\n");
 		return NULL;
-		}
+	}
 
 	// Create and install the MultiGrid.
-	RMultiGrid*	pmg = new RMultiGrid;
+	RMultiGrid* pmg = new RMultiGrid;
 
 	if (!pmg)
-		{
+	{
 		TRACE("CreateRegionMap: alloc error!\n");
 		return NULL;
-		}
+	}
 
 	if (pmg->Alloc(sWidth,sHeight) != SUCCESS)
-		{
+	{
 		TRACE("CreateRegionMap: alloc error!\n");
 		delete pmg;
 		return NULL;
-		}
+	}
 
 	pMGI->InstallMultiGrid(pmg);
 
 	return pMGI;
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //	
@@ -123,26 +121,24 @@ RMultiGridIndirect*	CreateRegionMap(int16_t sWidth,int16_t sHeight,int16_t sMaxP
 ////////////////////////////////////////////////////////////////////////////////
 
 int16_t	StrafeAddRegion(RMultiGridIndirect* pMGI,TriggerRgn regions[256])
-	{
+{
 	ASSERT(pMGI);
 	int16_t sRet = SUCCESS;
 
 	for (int16_t i=1; i < 256;i++)
-		{
+	{
 		if (regions[i].pimRgn)
+		{
+			if (pMGI->AddFSPR1(regions[i].pimRgn,regions[i].sX,regions[i].sY, uint8_t(i),TriggerRgn::MaxRgnWidth,TriggerRgn::MaxRgnHeight) != SUCCESS)
 			{
-			if (pMGI->AddFSPR1(regions[i].pimRgn,regions[i].sX,regions[i].sY,
-				uint8_t(i),TriggerRgn::MaxRgnWidth,TriggerRgn::MaxRgnHeight)
-				!= SUCCESS)
-				{
 				TRACE("StrafeAddRegion:: Problem installing region %hd\n",i);
 				sRet = FAILURE;
-				}
 			}
 		}
+	}
 
 	return sRet;
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -153,13 +149,13 @@ int16_t	StrafeAddRegion(RMultiGridIndirect* pMGI,TriggerRgn regions[256])
 //
 ////////////////////////////////////////////////////////////////////////////////
 int16_t CompressMap(RMultiGridIndirect* pMGI,int16_t sTileW,int16_t sTileH)
-	{
+{
 	ASSERT(pMGI);
 	ASSERT(pMGI->m_pmg);
 	// use compression results to optimize
 	pMGI->m_pmg->Compress(sTileW,sTileH);
 	return SUCCESS;
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -167,8 +163,8 @@ int16_t CompressMap(RMultiGridIndirect* pMGI,int16_t sTileW,int16_t sTileH)
 //					alerts all relevant pylons to his presence
 ////////////////////////////////////////////////////////////////////////////////
 //
-void	SpewTriggers(CRealm* pRealm,	uint16_t	usDudeUID,int16_t sX,int16_t sZ)
-	{
+void SpewTriggers(CRealm* pRealm, uint16_t usDudeUID, int16_t sX, int16_t sZ)
+{
 	uint8_t	aucHitList[MGI_MAX_PLANES];
 	if (pRealm->m_pTriggerMap == NULL) return; // No triggers
 
@@ -176,8 +172,8 @@ void	SpewTriggers(CRealm* pRealm,	uint16_t	usDudeUID,int16_t sX,int16_t sZ)
 
 	// GET THE ATTRIBUTE MAP FOR THE TRIGGERS:
 	pRealm->m_pTriggerMap->GetVal(aucHitList,sX,sZ);
-	uint8_t*	pHit = aucHitList;
-	GameMessage	msg;
+	uint8_t* pHit = aucHitList;
+	GameMessage msg;
 
 	msg.msg_DudeTrigger.eType = typeDudeTrigger;
 	msg.msg_DudeTrigger.sPriority = 0;
@@ -187,19 +183,19 @@ void	SpewTriggers(CRealm* pRealm,	uint16_t	usDudeUID,int16_t sX,int16_t sZ)
 
 	int16_t sNum = sMax;
 	while (*pHit && sNum) // got a hit:
-		{
+	{
 		// send a trigger message out:
 		CThing* pThing = NULL;
 
 		if (pRealm->m_idbank.GetThingByID(&pThing, pRealm->m_asPylonUIDs[*pHit]) == SUCCESS)
-			{
+		{
 			if (pThing) pThing->SendThingMessage(&msg, 0, pThing); // post the trigger!
-			}
+		}
 		pHit++;
 		sMax--;
-		}
-	
 	}
+	
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

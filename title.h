@@ -50,24 +50,28 @@
 // may or may not (hopefully not) look like a standard progress meter.  The
 // total range of the progress bar is determined by lTotalUnits.  As far as
 // this module is concerned, these units are completely abstract.
-extern int16_t StartTitle(						// Returns 0 if successfull, non-zero otherwise
-	int16_t	sStartImage = 1,						// In:  Image to start with.  Values less
-														// than 1 indicate a page relative to the
-														// end.
-	bool	bPlayMusak = false,					// In:  true to play title musak.
-	SampleMaster::SoundInstance* psi = 0);	// Out:  Sound instance of musak.
+
+// Returns 0 if successfull, non-zero otherwise
+// In:  Image to start with.  Values less than 1 indicate a page relative to the end
+// In:  true to play title musak.
+// Out:  Sound instance of musak.
+extern int16_t StartTitle(int16_t sStartImage = 1, bool bPlayMusak = false, SampleMaster::SoundInstance* psi = 0);
 														
 
 // Update the title sequence.  The specified number of units are added to a
 // running total.  The ration between the running total and the value passed to
 // StartTitle() determines the new position of the progress meter.
-extern int16_t DoTitle(						// Returns 0 if successfull, non-zero otherwise
-	int32_t lUnits);								// In:  Additional progess units
+
+// Returns 0 if successfull, non-zero otherwise
+// In:  Additional progess units
+extern int16_t DoTitle(int32_t lUnits);
 
 // When you are completely done, call EndTitle().  This gives the title sequence
 // a chance to fully complete the progess meter (in case it never reached 100%
 // due to an overestimated lTotalUnits) and allows all resources to be freed.
-extern int16_t EndTitle(void);				// Returns 0 if successfull, non-zero otherwise
+
+// Returns 0 if successfull, non-zero otherwise
+extern int16_t EndTitle(void);
 
 // Return number of title screens in use
 extern int16_t TitleGetNumTitles(void);

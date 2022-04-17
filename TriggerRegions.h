@@ -39,15 +39,14 @@
 
 // See the cpp file for usage details...
 
-extern	RMultiGridIndirect*	CreateRegionMap(int16_t sWidth,int16_t sHeight,int16_t sMaxPlanes,
-												 int16_t sTileW,int16_t sTileH);
+extern RMultiGridIndirect* CreateRegionMap(int16_t sWidth,int16_t sHeight,int16_t sMaxPlanes, int16_t sTileW,int16_t sTileH);
 
-extern	int16_t	StrafeAddRegion(RMultiGridIndirect* pMGI,TriggerRgn regions[256]);
+extern int16_t StrafeAddRegion(RMultiGridIndirect* pMGI,TriggerRgn regions[256]);
 
-extern	int16_t CompressMap(RMultiGridIndirect* pMGI,int16_t sTileW,int16_t sTileH);
+extern int16_t CompressMap(RMultiGridIndirect* pMGI,int16_t sTileW,int16_t sTileH);
 
 // Have main guys alert pylons to their presence.
-extern	void	SpewTriggers(CRealm* pRealm,	uint16_t	usDudeUID,int16_t sX,int16_t sZ);
+extern void SpewTriggers(CRealm* pRealm, uint16_t usDudeUID, int16_t sX, int16_t sZ);
 
 
 ////////////////////////////////////////////////////////////////////////////////

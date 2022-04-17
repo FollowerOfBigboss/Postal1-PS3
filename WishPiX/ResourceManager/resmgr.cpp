@@ -246,7 +246,7 @@ int16_t RResMgr::Get(									// Returns 0 on success.
 	GenericCreateResFunc* pfnCreate,				// In:  Pointer to "create" function object
 	GenericDestroyResFunc* pfnDestroy,			// In:  Pointer to "destroy" function object
 	GenericLoadResFunc* pfnLoad)					// In:  Pointer to "load" function object
-	{
+{
 	TRACE("RResMgr::Get()\n");
 	int16_t sReturn = SUCCESS;
 	// Map iterator (one of the best things about STL is how readable it is)
@@ -255,7 +255,7 @@ int16_t RResMgr::Get(									// Returns 0 on success.
 	// at this point.  Any other values should be set only if it turns out
 	// that we need to create and load the requested resource!
 	CResourceBlock resBlock;
-	// TRACE("Getting %s\n", (char*)strFilename);
+	TRACE("Getting %s\n", (char*)strFilename);
 	NormalizeResName(&strFilename);
 	resBlock.m_strFilename	= strFilename;
 
@@ -265,7 +265,7 @@ int16_t RResMgr::Get(									// Returns 0 on success.
 	p = m_map.insert(resclassMap::value_type (strFilename, resBlock));
 	// If the requested resource does not already exist, create the resource now and load it
 	if ((*(p.first)).second.m_vpRes == NULL)
-		{
+	{
 		sReturn = GetInstance(	// Returns 0 on success.
 				strFilename,		// In:  Resource name
 				hRes,					// Out: Pointer to resource returned here
@@ -274,7 +274,7 @@ int16_t RResMgr::Get(									// Returns 0 on success.
 				pfnDestroy,			// In:  Pointer to "destroy" function object
 				pfnLoad);			// In:  Pointer to "load" function object
 		if (sReturn == 0)		
-			{
+		{
 			// Fill in the resource block.
 			(*(p.first)).second.m_vpRes = *hRes;
 			(*(p.first)).second.m_pfnDestroy	= pfnDestroy;
@@ -289,31 +289,31 @@ int16_t RResMgr::Get(									// Returns 0 on success.
 			if (m_bTraceUncachedLoads)
 				TRACE("RResMgr::Get - Loading uncached resource %s\n", (char *) strFilename);
 #endif //_DEBUG
-			}
+		}
 		else
-			{
+		{
 			#ifdef RESMGR_VERBOSE
 				TRACE("RResMgr::Get - Break Yo Selfen hosen!  GetInstance() failed.\n");
 			#endif // RESMGR_VERBOSE
-			}
 		}
+	}
 
 	if (sReturn == SUCCESS)
-		{
+	{
 		(*(p.first)).second.m_sRefCount++;
 		(*(p.first)).second.m_sAccessCount++;
 		*hRes = (*(p.first)).second.m_vpRes;
 		// Add a mapping indexed by pointer to make it easy to find the
 		// name of this resource later by using the resource pointer.
 		m_ptrMap[*hRes] = strFilename;
-		}
+	}
 	else
-		{
+	{
 		*hRes = NULL;
 		// In this case, m_vpRes is also NULL, so we don't have to worry about a 
 		// double delete.
 		m_map.erase(strFilename);
-		}
+	}
 
 	// Delete the create and load function objects, and POSSIBLY the destroy function,
 	// if its pointer hasn't been cleared to 0 (which indicates that responsibility for
@@ -323,7 +323,7 @@ int16_t RResMgr::Get(									// Returns 0 on success.
 	delete pfnLoad;
 	
 	return sReturn;
-	}
+}
 
 //////////////////////////////////////////////////////////////////////
 //

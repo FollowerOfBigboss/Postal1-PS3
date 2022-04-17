@@ -350,17 +350,18 @@ int16_t RPrefs::Read()		// Returns 0 if successfull, non-zero otherwise
 //
 ////////////////////////////////////////////////////////////////////////////////
 int16_t RPrefs::Write()
-	{
+{
+	TRACE("RPrefs::Write()\n");
 	if (!m_sErrorStatus)
-		{
+	{
 		// Make sure we can and should do a write
 		if (!m_sReadOnly && m_sModified)
-			{
+		{
 			if (m_pFile != NULL)
-				{
+			{
 				// Read file in case it wasn't already read
 				if(Read() == 0)
-					{
+				{
 					// Close file before it gets deleted (and replaced by a new file)
 					fclose(m_pFile);
 					m_pFile = 0;
@@ -379,14 +380,14 @@ int16_t RPrefs::Write()
 					char* pTmp = strrchr(acTmpFileName, RSP_SYSTEM_PATH_SEPARATOR);
 					pTmp = (pTmp != NULL) ? pTmp + 1 : acTmpFileName;
 					for (int32_t lCount = 0; !bGotTmp && (lCount < 9999999L); lCount++)
-						{
+					{
 						sprintf(pTmp, "t%0.7ld.tmp", (int32_t)lCount);
 						FILE* fpTmp = fopen(FindCorrectFile(acTmpFileName, "r"), "r");
 						if (fpTmp != NULL)
 							fclose(fpTmp);
 						else
 							bGotTmp = true;
-						}
+					}
 					if (bGotTmp)
 						{
 						// Create temp file that will contain new ini stuff
@@ -395,30 +396,30 @@ int16_t RPrefs::Write()
 							{
 							// Write lines out to temp file
 							for (RPrefsLineList::Pointer i = m_pllLines.GetHead(); i != 0; i = m_pllLines.GetNext(i))
-								{
+							{
 								int res = fprintf(pfileTmp, "%s\n", m_pllLines.GetData(i)->GetLine());
 								if ((res >= 0) && m_sUseCRLF)
 									res = fprintf(pfileTmp, "\r");
 								if(res < 0)
-									{
+								{
 									TRACE("RPrefs::Write(): fprintf() data to temp file: %s\n", strerror(errno));
 									m_sErrorStatus = -2;
 									break;
-									}
 								}
+							}
 							// Close temp file
 							fclose(pfileTmp);
 							
-							if (m_sErrorStatus == 0)
-								{
+			if (m_sErrorStatus == 0)
+			{
 								// Remove old file
-								if (remove(FindCorrectFile(m_pszFileName, "w")) == 0)
-									{
+				if (remove(FindCorrectFile(m_pszFileName, "w")) == 0)
+				{
 									// Rename temp file to whatever old file was named
                                     // rename() isn't reliably across filesystems.  --ryan.
 									//if (rename(FindCorrectFile(acTmpFileName, "w"), FindCorrectFile(m_pszFileName, "w")) == 0)
-    									FILE *in = fopen(FindCorrectFile(acTmpFileName, "w"), "r");
-	    								FILE *out = fopen(FindCorrectFile(m_pszFileName, "w"), "w");
+    				FILE *in = fopen(FindCorrectFile(acTmpFileName, "w"), "r");
+	    			FILE *out = fopen(FindCorrectFile(m_pszFileName, "w"), "w");
                                         if (in && out)
                                         {
                                             while (1)
@@ -433,33 +434,33 @@ int16_t RPrefs::Write()
                                         remove(FindCorrectFile(acTmpFileName, "w"));
 
                                         if (in && out)
-										{
-										// Open the new file using the original mode
-										m_pFile = fopen(FindCorrectFile(m_pszFileName, m_pszFileMode), m_pszFileMode);
-										if (m_pFile != NULL)
-											{
-											// Set flag to indicate ini file in memory is in sync with disk
-											m_sModified = 0;
-											}
-										else
-											{
-											TRACE("RPrefs::Write(): fopen() of new file: %s\n", strerror(errno));
-											m_sErrorStatus = -1;
-											}
-										}
-									else
-										{
-										TRACE("RPrefs::Write(): rename() of temp file to original file: %s\n", strerror(errno));
-										m_sErrorStatus = -4;
-										}
-									}
-								else
-									{
-									TRACE("RPrefs::Write(): remove() of old ini file: %s\n", strerror(errno));
-									m_sErrorStatus = -3;
-									}
-								}
-							}
+					{
+						// Open the new file using the original mode
+						m_pFile = fopen(FindCorrectFile(m_pszFileName, m_pszFileMode), m_pszFileMode);
+						if (m_pFile != NULL)
+						{
+							// Set flag to indicate ini file in memory is in sync with disk
+							m_sModified = 0;
+						}
+						else
+						{
+							TRACE("RPrefs::Write(): fopen() of new file: %s\n", strerror(errno));
+							m_sErrorStatus = -1;
+						}
+					}
+					else
+					{
+						TRACE("RPrefs::Write(): rename() of temp file to original file: %s\n", strerror(errno));
+						m_sErrorStatus = -4;
+					}
+				}
+				else
+				{
+					TRACE("RPrefs::Write(): remove() of old ini file: %s\n", strerror(errno));
+					m_sErrorStatus = -3;
+				}
+			}
+		}
 						else
 							{
 							TRACE("RPrefs::Write(): fopen() of temp file: %s\n", strerror(errno));
@@ -478,15 +479,15 @@ int16_t RPrefs::Write()
 					}
 				}
 			else
-				{
+			{
 				m_sErrorStatus = -1;
 				TRACE("RPrefs::Write(): File not open!\n");
-				}
+			}
 			}
 		}
 
 	return m_sErrorStatus;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -495,9 +496,9 @@ int16_t RPrefs::Write()
 //
 ////////////////////////////////////////////////////////////////////////////////
 int16_t RPrefs::Close()
-	{
+{
 	if (m_pFile != NULL)
-		{
+	{
 		// If data was read and was modified and files is NOT read only then write it now!
 		if (m_sDidRead && !m_sReadOnly && m_sModified)
 			Write();
@@ -505,14 +506,14 @@ int16_t RPrefs::Close()
 		// Close the file.  We need to check if the file is still valid because
 		// something might have gone wrong in Write().
 		if (m_pFile != NULL)
-			{
+		{
 			fclose(m_pFile);
 			m_pFile = NULL;
-			}
 		}
+	}
 
 	return m_sErrorStatus;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

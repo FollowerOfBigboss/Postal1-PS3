@@ -71,22 +71,22 @@
 // Typedefs.
 //////////////////////////////////////////////////////////////////////////////
 struct TriggerRgn
-	{
+{
 	///////////////////////////////////////////////////////////////////////////
 	// Typedefs/enums.
 	///////////////////////////////////////////////////////////////////////////
 
 	enum	// Macros.
-		{
-		MaxRgnWidth		= 300,
+	{
+		MaxRgnWidth	= 300,
 		MaxRgnHeight	= 300
-		};
+	};
 
 	typedef enum
-		{
-		Edit,		// Indicates edittable mode for modifying region.
+	{
+		Edit,	// Indicates edittable mode for modifying region.
 		Storage	// Indicates storage mode for memory conservation.
-		} Mode;
+	} Mode;
 
 	///////////////////////////////////////////////////////////////////////////
 	// Instantiable data.
@@ -94,121 +94,127 @@ struct TriggerRgn
 	int16_t		sX;
 	int16_t		sY;
 	RImage*	pimRgn;
-	U16		u16InstanceId;
+	U16	u16InstanceId;
 
 	///////////////////////////////////////////////////////////////////////////
 	// Constructor.
 	///////////////////////////////////////////////////////////////////////////
 	TriggerRgn()
-		{
+	{
 		pimRgn	= NULL;
-		}
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	// Destructor.
 	///////////////////////////////////////////////////////////////////////////
 	~TriggerRgn()
-		{
+	{
 		Destroy();
-		}
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	// Destroy.
 	///////////////////////////////////////////////////////////////////////////
 	void Destroy(void)
-		{
+	{
 		delete pimRgn;
 		pimRgn	= NULL;
-		}
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	// Create.
 	///////////////////////////////////////////////////////////////////////////
-	int16_t Create(		// Returns 0 on success.
-		int16_t	sWidth,	// In:  Max width of region (width of image).
-		int16_t	sHeight)	// In:  Max height of region (height of image).
-		{
-		int16_t	sRes	= 0;	// Assume success.
+
+	// Returns 0 on success.
+	// In:  Max width of region (width of image).
+	// In:  Max height of region (height of image).
+	int16_t Create(int16_t	sWidth, int16_t	sHeight)
+	{
+		int16_t	sRes = 0;	// Assume success.
 
 		Destroy();
 
 		pimRgn	= new RImage;
 		if (pimRgn != NULL)
-			{
-			sRes	= pimRgn->CreateImage(	// Returns 0 if successful.
-				sWidth,							// Width of new buffer.
-				sHeight,							// Height of new buffer.
-				RImage::BMP8);					// Type of new buffer.
+		{
+
+			// Returns 0 if successful.
+			// Width of new buffer.
+			// Height of new buffer.
+			// Type of new buffer.
+			sRes = pimRgn->CreateImage(sWidth, sHeight, RImage::BMP8);
 
 			// If any errors occurred after allocation . . .
 			if (sRes != 0)
-				{
-				Destroy();
-				}
-			}
-		else
 			{
+				Destroy();
+			}
+		}
+		else
+		{
 			TRACE("Create(): Failed to allocate new RImage.\n");
 			sRes	= -1;
-			}
+		}
 
 		return sRes;
-		}
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	// Set current mode { Edit or Storage }.
 	// Edit mode is the 8 bit mode used when editing the region.
 	// Storage is whatever compressed mode is used for the sake of saving mem.
 	///////////////////////////////////////////////////////////////////////////
-	int16_t SetMode(
-		Mode mode)	// In:  New mode { Edit, Storage }.
-		{
-		int16_t	sRes	= 0;	// Assume success.
+	// In:  New mode { Edit, Storage }.
+	int16_t SetMode(Mode mode)
+	{
+		int16_t	sRes = 0;	// Assume success.
 
 		// If we have no image . . .
 		if (pimRgn == NULL)
-			{
-			sRes	= Create(MaxRgnWidth, MaxRgnHeight);
-			}
+		{
+			sRes = Create(MaxRgnWidth, MaxRgnHeight);
+		}
 
 		// If successful so far . . .
 		if (sRes == 0)
-			{
+		{
 			switch (mode)
-				{
+			{
 				case Edit:
 					// This allows us to choose the colors used when coming out
 					// of the FSPR1 format.
-					SetConvertFromFSPR1
-						(
-						250,	// u32ForeColor,				// Make it this color
-						TRUE,	// sTransparent = TRUE,		// 1 or 2 color?
-						0		//	u32BackColor = (U32)0	// matters only if sTransparent = FALSE
-						);
+				
+					// u32ForeColor,		// Make it this color
+					// sTransparent = TRUE,		// 1 or 2 color?
+					// u32BackColor = (U32)0	// matters only if sTransparent = FALSE
+					SetConvertFromFSPR1(250,  TRUE, 0);
 
 					if (pimRgn->Convert(RImage::BMP8) != RImage::BMP8)
-						{
-						sRes	= -1;
-						}
+					{
+						sRes = -1;
+					}
 					break;
 				case Storage:
 					if (pimRgn->Convert(RImage::FSPR1) != RImage::FSPR1)
-						{
-						sRes	= -1;
-						}
+					{
+						sRes = -1;
+					}
 					break;
-				}
 			}
+		}
 
 		return sRes;
-		}
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	// Load.
 	///////////////////////////////////////////////////////////////////////////
-	int16_t Load(			// Returns 0 on success.
-		RFile* pfile)	// In:  File to load from.
-		{
+	
+
+	// Returns 0 on success.
+	// In:  File to load from.
+	int16_t Load(RFile* pfile)
+	{
 		int16_t	sRes	= 0;	// Assume success.
 
 		Destroy();
@@ -216,12 +222,12 @@ struct TriggerRgn
 		// Always a boolean indicating whether we exist . . .
 		int16_t	sExist	= FALSE;	// Safety.
 		if (pfile->Read(&sExist) == 1)
-			{
+		{
 			if (sExist != FALSE)
-				{
+			{
 				pimRgn	= new RImage;
 				if (pimRgn != NULL)
-					{
+				{
 					// Read position.
 					pfile->Read(&sX);
 					pfile->Read(&sY);
@@ -230,46 +236,49 @@ struct TriggerRgn
 					// Load image.
 					sRes	= pimRgn->Load(pfile);
 					if (sRes == 0)
-						{
+					{
 						// Success.
-						}
+					}
 					else
-						{
+					{
 						TRACE("Load(): RImage::Load() failed.\n");
 						delete pimRgn;
 						pimRgn	= NULL;
-						}
-					}
-				else
-					{
-					TRACE("Load(): Failed to allocate new RImage.\n");
-					sRes	= -2;
 					}
 				}
+				else
+				{
+					TRACE("Load(): Failed to allocate new RImage.\n");
+					sRes	= -2;
+				}
 			}
+		}
 		else
-			{
+		{
 			TRACE("Load(): Failed to read existence flag.\n");
 			sRes	= -1;
-			}
+		}
 
 		return sRes;
-		}
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	// Save.
 	///////////////////////////////////////////////////////////////////////////
-	int16_t Save(			// Returns 0 on success.
-		RFile* pfile)	// In:  File to save to.
-		{
+
+
+	// Returns 0 on success.
+	// In:  File to save to.
+	int16_t Save(RFile* pfile)
+	{
 		int16_t	sRes	= 0;	// Assume success.
 
 		// Always a boolean indicating whether we exist . . .
 		int16_t	sExist	= (pimRgn != NULL) ? TRUE : FALSE;
 		if (pfile->Write(sExist) == 1)
-			{
+		{
 			if (pimRgn != NULL)
-				{
+			{
 				// Write position.
 				pfile->Write(sX);
 				pfile->Write(sY);
@@ -278,25 +287,25 @@ struct TriggerRgn
 				// Save image.
 				sRes	= pimRgn->Save(pfile);
 				if (sRes == 0)
-					{
+				{
 					// Success.
-					}
+				}
 				else
-					{
+				{
 					TRACE("Save(): RImage::Save() failed.\n");
-					}
 				}
 			}
+		}
 		else
-			{
+		{
 			TRACE("Save(): Failed to write existence flag.\n");
-			sRes	= -1;
-			}
-
-		return sRes;
+			sRes = -1;
 		}
 
-	};
+		return sRes;
+	}
+
+};
 
 #endif	// TRIGGERRGN_H
 //////////////////////////////////////////////////////////////////////////////

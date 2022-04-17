@@ -303,67 +303,67 @@ RProcessGui	CThing::ms_pgDoGui;
 // include the headers for each class.  Sounds like an RImage-style solution
 // might work, but I'm not sure exactly how.
 CThing::ClassInfo CThing::ms_aClassInfo[CThing::TotalIDs] =
-	{	// Object Allocator					Preload function			Object Name				User can create in Editor
-		// =====================			=====================	================
-		{ CHood::Construct,					0,								"Hood",					false	},
-		{ CDude::Construct,					0,								"Dude",					false	},
-		{ CDoofus::Construct,				0,								"Doofus",				false	},
-		{ NULL, /* Tkachuk */				0,								"Tkachuk",				false },
-		{ NULL, /* CRocketMan */			0,								"RocketMan",			false	},
-		{ NULL, /* CGrenader */				0,								"Grenader",				false	},
-		{ CRocket::Construct,				CRocket::Preload,			"Rocket",				false	},
-		{ CGrenade::Construct,				CGrenade::Preload,		"Grenade",				false	},
-		{ CBall::Construct,					0,								"Ball",					false	},
-		{ CExplode::Construct,				CExplode::Preload,		"Explode",				false	},
-		{ CBouy::Construct,					0,								"Buoy",					true  },
-		{ CNavigationNet::Construct,		0,								"NavNet",				true  },
-		{ CGameEditThing::Construct,		0,								"GameEditThing",		false },
-		{ CNapalm::Construct,				CNapalm::Preload,			"Napalm",				false },
-		{ CFire::Construct,					CFire::Preload,			"Fire",					false },
-		{ NULL, /* CImbecile */				0,								"Imbecile",				false	},
-		{ CFirebomb::Construct,				CFirebomb::Preload,		"Firebomb",				false },
-		{ CFirefrag::Construct,				0,								"Firefrag",				false },
-		{ CAnimThing::Construct,			0,								"AnimThing",			true	},
-		{ CSoundThing::Construct,			0,								"SoundThing",			true	},
-		{ NULL, /* CGunner */				0,								"Gunner",				false	},
-		{ CBand::Construct,					0,								"Band",					true  },
-		{ CItem3d::Construct,				0,								"Item3d",				true	},
-		{ CBarrel::Construct,				0,								"Barrel",				true	},
-		{ CMine::ConstructProximity,		0,								"ProximityMine",		true  },
-		{ CDispenser::Construct,			0,								"Dispenser",			true	},
-		{ CFireball::Construct,				CFireball::Preload,		"Fireball",				false },
-		{ NULL, /* CCop */					0,								"Cop",					false	},
-		{ NULL, /* CPistol */				0,								"Pistol",				false },
-		{ NULL, /* CMachineGun */			0,								"MachineGun",			false },
-		{ NULL, /* CShotGun */				0,								"ShotGun",				false },
-		{ CPerson::Construct,				0,								"Person",				true	},
-		{ CMine::ConstructTimed,			CMine::Preload,			"TimedMine",			true	},
-		{ CMine::ConstructBouncingBetty,	0,/*CMine::Preload*/		"BouncingBettyMine",	true	},
-		{ CMine::ConstructRemoteControl,	0,/*CMine::Preload*/		"RemoteControlMine",	false	},
-		{ CPylon::Construct,					0,								"Pylon",					true  },
-		{ CPowerUp::Construct,				CPowerUp::Preload,		"PowerUp",				true  },
-		{ COstrich::Construct,				0,								"Ostrich",				true  },
-		{ CTrigger::Construct,				0,								"Trigger",				false },
-		{ CHeatseeker::Construct,			CHeatseeker::Preload,	"Heatseeker",			false },
-		{ CChunk::Construct,					0,								"Chunk",					false },
-		{ NULL, /* CAssault */				0,								"AssaultWeapon",		false },
-		{ CSentry::Construct,				0,								"Sentry",				true	},
-		{ NULL, /* CSentryGun */			0,								"CentryGun",			false	},
-		{ CWarp::Construct,					0,								"Warp",					true	},
-		{ CDemon::Construct,					CDemon::Preload,			"Demon",					true  },
-		{ NULL, /* CCharacter */			CCharacter::Preload,		"Character",			false	},
-		{ NULL, /*CGoalTimer */				0,								"GoalTimer",			false },
-		{ CFlag::Construct,					0,								"Flag",					true  },
-		{ CFlagbase::Construct,				0,								"Flagbase",				true  },
-		{ CFirestream::Construct,			0,								"Firestream",			false },
-		{ CDeathWad::Construct,				CDeathWad::Preload,		"DeathWad",				false	},
-		{ NULL, /*CDoubleBarrel */			0,								"DoubleBarrel",		false	},
-		{ NULL, /*CUziID */			0,										"Uzi",					false	},
-		{ NULL, /*CAutoRifleID */			0,								"AutoRifle",			false	},
-		{ NULL, /*CSmallPistolID */		0,								"SmallPistol",			false	},
-		{ CGrenade::ConstructDynamite,	0,								"Dynamite",				false	},
-		{ CSndRelay::Construct,				0,								"SndRelay",				true	},
-	};
+{	// Object Allocator					Preload function			Object Name				User can create in Editor
+	// =====================			=====================	================
+	{ CHood::Construct,					0,								"Hood",					false	},
+	{ CDude::Construct,					0,								"Dude",					false	},
+	{ CDoofus::Construct,				0,								"Doofus",				false	},
+	{ NULL, /* Tkachuk */				0,								"Tkachuk",				false },
+	{ NULL, /* CRocketMan */			0,								"RocketMan",			false	},
+	{ NULL, /* CGrenader */				0,								"Grenader",				false	},
+	{ CRocket::Construct,				CRocket::Preload,			"Rocket",				false	},
+	{ CGrenade::Construct,				CGrenade::Preload,		"Grenade",				false	},
+	{ CBall::Construct,					0,								"Ball",					false	},
+	{ CExplode::Construct,				CExplode::Preload,		"Explode",				false	},
+	{ CBouy::Construct,					0,								"Buoy",					true  },
+	{ CNavigationNet::Construct,		0,								"NavNet",				true  },
+	{ CGameEditThing::Construct,		0,								"GameEditThing",		false },
+	{ CNapalm::Construct,				CNapalm::Preload,			"Napalm",				false },
+	{ CFire::Construct,					CFire::Preload,			"Fire",					false },
+	{ NULL, /* CImbecile */				0,								"Imbecile",				false	},
+	{ CFirebomb::Construct,				CFirebomb::Preload,		"Firebomb",				false },
+	{ CFirefrag::Construct,				0,								"Firefrag",				false },
+	{ CAnimThing::Construct,			0,								"AnimThing",			true	},
+	{ CSoundThing::Construct,			0,								"SoundThing",			true	},
+	{ NULL, /* CGunner */				0,								"Gunner",				false	},
+	{ CBand::Construct,					0,								"Band",					true  },
+	{ CItem3d::Construct,				0,								"Item3d",				true	},
+	{ CBarrel::Construct,				0,								"Barrel",				true	},
+	{ CMine::ConstructProximity,		0,								"ProximityMine",		true  },
+	{ CDispenser::Construct,			0,								"Dispenser",			true	},
+	{ CFireball::Construct,				CFireball::Preload,		"Fireball",				false },
+	{ NULL, /* CCop */					0,								"Cop",					false	},
+	{ NULL, /* CPistol */				0,								"Pistol",				false },
+	{ NULL, /* CMachineGun */			0,								"MachineGun",			false },
+	{ NULL, /* CShotGun */				0,								"ShotGun",				false },
+	{ CPerson::Construct,				0,								"Person",				true	},
+	{ CMine::ConstructTimed,			CMine::Preload,			"TimedMine",			true	},
+	{ CMine::ConstructBouncingBetty,	0,/*CMine::Preload*/		"BouncingBettyMine",	true	},
+	{ CMine::ConstructRemoteControl,	0,/*CMine::Preload*/		"RemoteControlMine",	false	},
+	{ CPylon::Construct,					0,								"Pylon",					true  },
+	{ CPowerUp::Construct,				CPowerUp::Preload,		"PowerUp",				true  },
+	{ COstrich::Construct,				0,								"Ostrich",				true  },
+	{ CTrigger::Construct,				0,								"Trigger",				false },
+	{ CHeatseeker::Construct,			CHeatseeker::Preload,	"Heatseeker",			false },
+	{ CChunk::Construct,					0,								"Chunk",					false },
+	{ NULL, /* CAssault */				0,								"AssaultWeapon",		false },
+	{ CSentry::Construct,				0,								"Sentry",				true	},
+	{ NULL, /* CSentryGun */			0,								"CentryGun",			false	},
+	{ CWarp::Construct,					0,								"Warp",					true	},
+	{ CDemon::Construct,					CDemon::Preload,			"Demon",					true  },
+	{ NULL, /* CCharacter */			CCharacter::Preload,		"Character",			false	},
+	{ NULL, /*CGoalTimer */				0,								"GoalTimer",			false },
+	{ CFlag::Construct,					0,								"Flag",					true  },
+	{ CFlagbase::Construct,				0,								"Flagbase",				true  },
+	{ CFirestream::Construct,			0,								"Firestream",			false },
+	{ CDeathWad::Construct,				CDeathWad::Preload,		"DeathWad",				false	},
+	{ NULL, /*CDoubleBarrel */			0,								"DoubleBarrel",		false	},
+	{ NULL, /*CUziID */			0,										"Uzi",					false	},
+	{ NULL, /*CAutoRifleID */			0,								"AutoRifle",			false	},
+	{ NULL, /*CSmallPistolID */		0,								"SmallPistol",			false	},
+	{ CGrenade::ConstructDynamite,	0,								"Dynamite",				false	},
+	{ CSndRelay::Construct,				0,								"SndRelay",				true	},
+};
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -374,10 +374,11 @@ CThing::ClassInfo CThing::ms_aClassInfo[CThing::TotalIDs] =
 ////////////////////////////////////////////////////////////////////////////////
 // Default (and only) constructor
 ////////////////////////////////////////////////////////////////////////////////
-CThing::CThing(
-	CRealm* pRealm,										// In:  Pointer to realm
-	ClassIDType id)										// In:  Class ID
-	{
+
+// In:  Pointer to realm
+// In:  Class ID
+CThing::CThing(CRealm* pRealm, ClassIDType id)
+{
 	// Make sure CThing static's have been initialized by C++ runtime
 	if (ms_sDetectStaticInits != 1)
 		TRACE("CThing::CThing(): Can't create global/static objects based on CThing!\n");
@@ -386,7 +387,7 @@ CThing::CThing(
 	m_id = id;
 
 	// Default to calling startup and shutdown.  What could be the harm?!
-	m_sCallStartup		= TRUE;
+	m_sCallStartup = TRUE;
 	m_sCallShutdown	= TRUE;
 
 	// Save realm
@@ -407,22 +408,22 @@ CThing::CThing(
 	m_u16InstanceId	= CIdBank::IdNil;
 
 	// Clear editor's RHot*.
-	m_phot				= NULL;
-	}
+	m_phot = NULL;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Destructor
 ////////////////////////////////////////////////////////////////////////////////
 CThing::~CThing()
-	{
+{
 	// Remove this object from realm
 //	m_pRealm->RemoveThing(m_id, m_iterEvery, m_iterClass);
 	m_pRealm->RemoveThing(this);
 	
 	// Release this fellow's ID.
 	m_pRealm->m_idbank.Release(m_u16InstanceId);
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -433,11 +434,13 @@ CThing::~CThing()
 //
 ////////////////////////////////////////////////////////////////////////////////
 // static
-void CThing::SetGuiToNotify(	// Returns nothing.
-	RGuiItem* pguiNotifier)		// In:  The pressed GUI.
-	{
+
+// Returns nothing.
+// In:  The pressed GUI.
+void CThing::SetGuiToNotify(RGuiItem* pguiNotifier)
+{
 	ms_pgDoGui.SetGuiToNotify(pguiNotifier);
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -445,15 +448,16 @@ void CThing::SetGuiToNotify(	// Returns nothing.
 //
 ////////////////////////////////////////////////////////////////////////////////
 // static							// Static for use as a callback.
-int32_t CThing::SysUpdate(			// Returns a non-zero ID to abort or zero
-										// to continue.                          
-	RInputEvent*	pie)			// Out: Next input event to process.     
-	{
+
+// Returns a non-zero ID to abort or zero to continue. 
+// Out: Next input event to process. 
+int32_t CThing::SysUpdate(RInputEvent* pie)   
+{
 	UpdateSystem();
 	rspGetNextInputEvent(pie);
 
 	return 0;
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -468,20 +472,23 @@ int32_t CThing::SysUpdate(			// Returns a non-zero ID to abort or zero
 // (static).
 //
 ////////////////////////////////////////////////////////////////////////////////
-int32_t CThing::DoGui(			// Returns ID of item that terminated looping.
-									// Returns 0 if rspGetQuitStatus() is nonzero.
-									// Returns negative on error.
-	RGuiItem*	pguiRoot)	// Root of GUI items to process through user.
-	{
+
+
+// Returns ID of item that terminated looping.
+// Returns 0 if rspGetQuitStatus() is nonzero.
+// Returns negative on error.
+// Root of GUI items to process through user.
+int32_t CThing::DoGui(RGuiItem* pguiRoot)
+{
 	// Get two controls that can end the processing.
-	RGuiItem*	pguiOk		= pguiRoot->GetItemFromId(1);
-	RGuiItem*	pguiCancel	= pguiRoot->GetItemFromId(2);
+	RGuiItem* pguiOk = pguiRoot->GetItemFromId(1);
+	RGuiItem* pguiCancel = pguiRoot->GetItemFromId(2);
 
 	// Use the update function.
-	ms_pgDoGui.m_fnUpdate	= SysUpdate;
+	ms_pgDoGui.m_fnUpdate = SysUpdate;
 
 	return ms_pgDoGui.DoModal(pguiRoot, pguiOk, pguiCancel);
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //

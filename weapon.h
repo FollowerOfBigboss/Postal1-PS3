@@ -74,22 +74,22 @@
 // CWeapon is the base class for the weapons
 class CWeapon : public CThing
 {
-	//---------------------------------------------------------------------------
-	// Types, enums, etc.
-	//---------------------------------------------------------------------------
-	public:
+//---------------------------------------------------------------------------
+// Types, enums, etc.
+//---------------------------------------------------------------------------
+public:
 
 	typedef uint8_t CWeaponState;
 
 	typedef enum
-		{
-		LaunchSndHalfLife			= 1000,
-		ExplosionSndHalfLife		= 1000,
+	{
+		LaunchSndHalfLife	= 1000,
+		ExplosionSndHalfLife	= 1000,
 		SideEffectSndHalfLife	= 1000,	// Grenade bounce or similar.
-		FireBombSndHalfLife		= 1000,
-		NapalmSndHalfLife			= 1000,
-		MineSndHalfLife			= 80
-		} Macros;
+		FireBombSndHalfLife	= 1000,
+		NapalmSndHalfLife	= 1000,
+		MineSndHalfLife		= 80
+	} Macros;
 
 	typedef enum
 	{
@@ -107,263 +107,284 @@ class CWeapon : public CThing
 		State_RemoteControl
 	};
 
-	//---------------------------------------------------------------------------
-	// Variables
-	//---------------------------------------------------------------------------
-	public:
-		double m_dX;							// x coord
-		double m_dY;							// y coord
-		double m_dZ;							// z coord
-		double m_dVertVel;					// Vertical Velocity
-		double m_dHorizVel;					// Horizontal Velocity								
-		double m_dRot;							// Rotation (in degrees, 0 to 359.999999)
+//---------------------------------------------------------------------------
+// Variables
+//---------------------------------------------------------------------------
+public:
+	double m_dX;						// x coord
+	double m_dY;						// y coord
+	double m_dZ;						// z coord
+	double m_dVertVel;					// Vertical Velocity
+	double m_dHorizVel;					// Horizontal Velocity								
+	double m_dRot;						// Rotation (in degrees, 0 to 359.999999)
 
-		CWeaponState m_eState;				// State variable for run routine
+	CWeaponState m_eState;				// State variable for run routine
 
-		U16		m_idParent;					// Anyone can be this item's parent.
-													// It'd probably be a good idea to make
-													// sure this is NULL before setting it,
-													// though.
+	U16		m_idParent;			// Anyone can be this item's parent.
+												// It'd probably be a good idea to make
+												// sure this is NULL before setting it,
+												// though.
 
-		U16		m_u16ShooterID;			// Instance ID of the shooter (so that credit
-													// for a kill can be determined)
-		CSprite2	m_spriteShadow;			// 2D sprite for shadow on the ground
+	U16		m_u16ShooterID;			// Instance ID of the shooter (so that credit
+								// for a kill can be determined)
+	CSprite2	m_spriteShadow;			// 2D sprite for shadow on the ground
 
-	protected:
-		int32_t m_lTimer;							// Timer for explosion
-		int32_t m_lPrevTime;						// Previous update time
+protected:
+	int32_t m_lTimer;						// Timer for explosion
+	int32_t m_lPrevTime;						// Previous update time
 
-		int16_t m_sSuspend;						// Suspend flag
-		int16_t	m_sCurRadius;					// Radius of the dude's current frame.
+	int16_t m_sSuspend;					// Suspend flag
+	int16_t	m_sCurRadius;					// Radius of the dude's current frame.
 
-		// Tracks file counter so we know when to load/save "common" data 
-		static int16_t ms_sFileCount;
+	// Tracks file counter so we know when to load/save "common" data 
+	static int16_t ms_sFileCount;
 
-	public:
-		// "Constant" values that we want to be able to tune using the editor
+public:
+	// "Constant" values that we want to be able to tune using the editor
 
- 	//---------------------------------------------------------------------------
-	// Constructor(s) / destructor
-	//---------------------------------------------------------------------------
-	protected:
-		// Constructor
-		CWeapon(CRealm* pRealm, ClassIDType id)
-			: CThing(pRealm, id)
-			{
-			m_sSuspend = 0;
-			m_dX = m_dY = m_dZ = m_dRot = m_dVertVel = m_dHorizVel = 0.0;
-			m_eState = State_Idle;
-			m_idParent = CIdBank::IdNil;
-			m_spriteShadow.m_sInFlags = CSprite::InHidden;
-			m_spriteShadow.m_pImage = NULL;
-			m_spriteShadow.m_pthing = this;
-			m_lPrevTime = 0;  // valgrind fix.  --ryan.
-			}
+//---------------------------------------------------------------------------
+// Constructor(s) / destructor
+//---------------------------------------------------------------------------
+protected:
+	// Constructor
+	CWeapon(CRealm* pRealm, ClassIDType id) : CThing(pRealm, id)
+	{
+		m_sSuspend = 0;
+		m_dX = m_dY = m_dZ = m_dRot = m_dVertVel = m_dHorizVel = 0.0;
+		m_eState = State_Idle;
+		m_idParent = CIdBank::IdNil;
+		m_spriteShadow.m_sInFlags = CSprite::InHidden;
+		m_spriteShadow.m_pImage = NULL;
+		m_spriteShadow.m_pthing = this;
+		m_lPrevTime = 0;  // valgrind fix.  --ryan.
+	}
 
 
-	public:
-		// Destructor
-		~CWeapon()
-			{
-				// Remove sprite from scene (this is safe even if it was already removed!)
-				m_pRealm->m_scene.RemoveSprite(&m_spriteShadow);
-				// Release the shadow resource
-				if (m_spriteShadow.m_pImage)
-					rspReleaseResource(&g_resmgrGame, &(m_spriteShadow.m_pImage));
-			}
+public:
+	// Destructor
+	~CWeapon()
+	{
+		// Remove sprite from scene (this is safe even if it was already removed!)
+		m_pRealm->m_scene.RemoveSprite(&m_spriteShadow);
+		// Release the shadow resource
+		if (m_spriteShadow.m_pImage)
+			rspReleaseResource(&g_resmgrGame, &(m_spriteShadow.m_pImage));
+	}
 
-	//---------------------------------------------------------------------------
-	// Required static functions
-	//---------------------------------------------------------------------------
-	public:
-		// Construct object
-		static int16_t Construct(									// Returns 0 if successfull, non-zero otherwise
-			CRealm* pRealm,										// In:  Pointer to realm this object belongs to
-			CThing** ppNew)										// Out: Pointer to new object
-			{
-			return 0;
-			}
+//---------------------------------------------------------------------------
+// Required static functions
+//---------------------------------------------------------------------------
+public:
+	// Construct object
 
-	//---------------------------------------------------------------------------
-	// Required virtual functions (implimenting them as inlines doesn't pay!)
-	//---------------------------------------------------------------------------
-	public:
-		// Load object (should call base class version!)
-		virtual int16_t Load(										// Returns 0 if successfull, non-zero otherwise
-			RFile* pFile,											// In:  File to load from
-			bool bEditMode,										// In:  True for edit mode, false otherwise
-			int16_t sFileCount,										// In:  File count (unique per file, never 0)
-			uint32_t	ulFileVersion);								// In:  Version of file format to load.
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  Pointer to realm this object belongs to
+	// Out: Pointer to new object
+	static int16_t Construct(CRealm* pRealm, CThing** ppNew)
+	{
+		return 0;
+	}
 
-		// Save object (should call base class version!)
-		virtual int16_t Save(													// Returns 0 if successfull, non-zero otherwise
-			RFile* pFile,											// In:  File to save to
-			int16_t sFileCount);									// In:  File count (unique per file, never 0)
+//---------------------------------------------------------------------------
+// Required virtual functions (implimenting them as inlines doesn't pay!)
+//---------------------------------------------------------------------------
+public:
+	// Load object (should call base class version!)
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  File to load from
+	// In:  True for edit mode, false otherwise
+	// In:  File count (unique per file, never 0)
+	// In:  Version of file format to load.
+	virtual int16_t Load(RFile* pFile, bool bEditMode, int16_t sFileCount, uint32_t	ulFileVersion);
 
-		// Setup object after creating it
-		virtual int16_t Setup(
-			int16_t sX,												// In: Starting X position
-			int16_t sY,												// In: Starting Y position
-			int16_t sZ);												// In: Starting Z position
+	// Save object (should call base class version!)
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  File to save to
+	// In:  File count (unique per file, never 0)
+	virtual int16_t Save(RFile* pFile, int16_t sFileCount);
 
-		// Startup object
-		virtual int16_t Startup(void);							// Returns 0 if successfull, non-zero otherwise
+	// Setup object after creating it
+	// In: Starting X position
+	// In: Starting Y position
+	// In: Starting Z position
+	virtual int16_t Setup(int16_t sX, int16_t sY, int16_t sZ);
 
-		// Shutdown object
-		virtual int16_t Shutdown(void);							// Returns 0 if successfull, non-zero otherwise
+	// Startup object
+	// Returns 0 if successfull, non-zero otherwise
+	virtual int16_t Startup(void);
 
-		// Suspend object
-		virtual void Suspend(void);
+	// Shutdown object
+	// Returns 0 if successfull, non-zero otherwise
+	virtual int16_t Shutdown(void);
 
-		// Resume object
-		virtual void Resume(void);
+	// Suspend object
+	virtual void Suspend(void);
 
-		// Update object
-		virtual void Update(void);
+	// Resume object
+	virtual void Resume(void);
 
-		// Render object
-		virtual void Render(void);
+	// Update object
+	virtual void Update(void);
 
-		// Called by editor to init new object at specified position
-		virtual int16_t EditNew(									// Returns 0 if successfull, non-zero otherwise
-			int16_t sX,												// In:  New x coord
-			int16_t sY,												// In:  New y coord
-			int16_t sZ);												// In:  New z coord
+	// Render object
+	virtual void Render(void);
 
-		// Called by editor to modify object
-		virtual int16_t EditModify(void);						// Returns 0 if successfull, non-zero otherwise
+	// Called by editor to init new object at specified position
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  New x coord
+	// In:  New y coord
+	// In:  New z coord
+	virtual int16_t EditNew(int16_t sX, int16_t sY,	int16_t sZ);
 
-		// Called by editor to move object to specified position
-		virtual int16_t EditMove(									// Returns 0 if successfull, non-zero otherwise
-			int16_t sX,												// In:  New x coord
-			int16_t sY,												// In:  New y coord
-			int16_t sZ);												// In:  New z coord
+	// Called by editor to modify object
+	// Returns 0 if successfull, non-zero otherwise
+	virtual int16_t EditModify(void);
 
-		// Called by editor to update object
-		virtual void EditUpdate(void);
+	// Called by editor to move object to specified position
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  New x coord
+	// In:  New y coord
+	// In:  New z coord
+	virtual int16_t EditMove(int16_t sX, int16_t sY, int16_t sZ);
 
-		// Called by editor to render object
-		virtual void EditRender(void);
+	// Called by editor to update object
+	virtual void EditUpdate(void);
 
-		// Give Edit a rectangle around this object
-		virtual void EditRect(RRect* pRect)
-		{
-		}
+	// Called by editor to render object
+	virtual void EditRender(void);
 
-		// Get the coordinates of this thing.
-		virtual					// Overriden here.
-		double GetX(void)	{ return m_dX; }
+	// Give Edit a rectangle around this object
+	virtual void EditRect(RRect* pRect)
+	{
+	}
 
-		virtual					// Overriden here.
-		double GetY(void)	{ return m_dY; }
+	// Get the coordinates of this thing.
+	// Overriden here.
+	virtual	double GetX(void) { return m_dX; }
 
-		virtual					// Overriden here.
-		double GetZ(void)	{ return m_dZ; }
+	// Overriden here.
+	virtual	double GetY(void) { return m_dY; }
 
-		virtual int16_t GetResources(void);
+	// Overriden here.
+	virtual	double GetZ(void) { return m_dZ; }
 
-		virtual int16_t FreeResources(void);
+	virtual int16_t GetResources(void);
 
-		virtual double BounceAngle(double dAngle);
+	virtual int16_t FreeResources(void);
 
-		// Function to modify the velocity for a requested range
-		// Weapons that can modify their velocity to affect the
-		// range can do the calculation and modify their horizontal
-		// velocity.  This default one does nothing
-		virtual int16_t SetRangeToTarget(int16_t sRequestedRange)
-		{
-			return sRequestedRange;
-		}
+	virtual double BounceAngle(double dAngle);
 
-		// Get the descended class's sprite.  Note that the type will vary.
-		// This is a pure virtual function, making this an abstract
-		// (i.e., uninstantiable) class.
-		virtual			// A descended class must define this virtual
-							// in order to be instantiable.
-		CSprite* GetSprite(void) = 0;	// Returns this weapon's sprite.
+	// Function to modify the velocity for a requested range
+	// Weapons that can modify their velocity to affect the
+	// range can do the calculation and modify their horizontal
+	// velocity.  This default one does nothing
+	virtual int16_t SetRangeToTarget(int16_t sRequestedRange)
+	{
+		return sRequestedRange;
+	}
 
-		// Process all messages currently in the message queue through 
-		// ProcessMessage().
-		virtual			// Override to implement additional functionality.
-		void ProcessMessages(void);
+	// Get the descended class's sprite.  Note that the type will vary.
+	// This is a pure virtual function, making this an abstract
+	// (i.e., uninstantiable) class.
 
-		// Process the specified message.  For most messages, this function
-		// will call the equivalent On* function.
-		virtual			// Override to implement additional functionality.
-		void ProcessMessage(		// Returns nothing.
-			GameMessage* pmsg);	// Message to process.
+	// A descended class must define this virtual
+	// in order to be instantiable.
+	// Returns this weapon's sprite.
+	virtual	CSprite* GetSprite(void) = 0;
 
-		// This function provides a way to set the collision bits for
-		// a specific weapon, if that weapon uses collision bits.  Rocket
-		//	and Heatseeker will override this to set their collision bits, 
-		// but others like the cocktail don't use collision bits so they
-		// will just rely on this version of the function to throw out
-		// the request to set the bits.
-		virtual
-		void SetCollideBits(		// Returns nothing
-			U32 u32BitsInclude,  // Bits included in a collision
-			U32 u32BitsDontCare, // Bits that are ignored for collision
-			U32 u32BitsExclude)	// Bits that invalidate collision
-		{
-			// The base class does nothing - override if you want to use it, but
-			// you don't have to if your weapon doesn't have collide bits.
-		}
+	// Process all messages currently in the message queue through 
+	// ProcessMessage().
+	// Override to implement additional functionality.
+	virtual	void ProcessMessages(void);
 
-		// This function provides a way to set the detection bits for
-		// a specific weapon.  If that weapon uses detection bits, it
-		// can override this function, otherwise the bits will be ignored
-		virtual
-		void SetDetectionBits(		// Returns nothing
-			U32 u32BitsInclude,		// Bits included in a collision
-			U32 u32BitsDontcare,		// Bits that are ignored for collision
-			U32 u32BitsExclude)		// Bits that invalidate collision
-		{
-			// The base class does nothing - override if you want to use it, but
-			// you don't have to if your weapon doesn't have detect bits
-		}
+	// Process the specified message.  For most messages, this function
+	// will call the equivalent On* function.
+	// Override to implement additional functionality.
 
-		// Message handling functions ////////////////////////////////////////////
+	// Returns nothing.
+	// Message to process.
+	virtual	void ProcessMessage(GameMessage* pmsg);
 
-		// Handles a Shot_Message.
-		virtual			// Override to implement additional functionality.
-							// Call base class to get default functionality.
-		void OnShotMsg(					// Returns nothing.
-			Shot_Message* pshotmsg);	// In:  Message to handle.
+	// This function provides a way to set the collision bits for
+	// a specific weapon, if that weapon uses collision bits.  Rocket
+	//	and Heatseeker will override this to set their collision bits, 
+	// but others like the cocktail don't use collision bits so they
+	// will just rely on this version of the function to throw out
+	// the request to set the bits.
+	
+	// Returns nothing
+	// Bits included in a collision
+	// Bits that are ignored for collision
+	// Bits that invalidate collision
+	virtual void SetCollideBits(U32 u32BitsInclude, U32 u32BitsDontCare, U32 u32BitsExclude)
+	{
+		// The base class does nothing - override if you want to use it, but
+		// you don't have to if your weapon doesn't have collide bits.
+	}
 
-		// Handles an Explosion_Message.
-		virtual			// Override to implement additional functionality.
-							// Call base class to get default functionality.
-		void OnExplosionMsg(							// Returns nothing.
-			Explosion_Message* pexplosionmsg);	// In:  Message to handle.
+	// This function provides a way to set the detection bits for
+	// a specific weapon.  If that weapon uses detection bits, it
+	// can override this function, otherwise the bits will be ignored
 
-		// Handles a Burn_Message.
-		virtual			// Override to implement additional functionality.
-							// Call base class to get default functionality.
-		void OnBurnMsg(					// Returns nothing.
-			Burn_Message* pburnmsg);	// In:  Message to handle.
+	// Returns nothing
+	// Bits included in a collision
+	// Bits that are ignored for collision
+	// Bits that invalidate collision
+	virtual void SetDetectionBits(U32 u32BitsInclude, U32 u32BitsDontcare, U32 u32BitsExclude)
+	{
+		// The base class does nothing - override if you want to use it, but
+		// you don't have to if your weapon doesn't have detect bits
+	}
 
-		// Handles an ObjectDelete_Message.
-		virtual			// Override to implement additional functionality.
-							// Call base class to get default functionality.
-		void OnDeleteMsg(								// Returns nothing.
-			ObjectDelete_Message* pdeletemsg);	// In:  Message to handle.
+	// Message handling functions ////////////////////////////////////////////
 
-		// Handles Trigger_Message
-		virtual			// Overrride to implement additional functionality
-							// Call base class to get default functionality.
-		void OnTriggerMsg(							// Returns nothing.
-			Trigger_Message* ptriggermsg);		// In: Message to handle
+	// Handles a Shot_Message.
+	// Override to implement additional functionality.
+	// Call base class to get default functionality.
+	// Returns nothing.
+	// In:  Message to handle.
+	virtual	void OnShotMsg(Shot_Message* pshotmsg);
 
-		// Load the default shadow resource unless one has already been loaded
-		// and set the shadow to visible
-		virtual			// Override to implement additional functionality
-							// Call base class to get default functionality
-		int16_t PrepareShadow(void);	// Returns SUCCESS if set successfully
+	// Handles an Explosion_Message.
+	// Override to implement additional functionality.
+	// Call base class to get default functionality.
+	// Returns nothing.
+	// In:  Message to handle.
+	virtual	void OnExplosionMsg(Explosion_Message* pexplosionmsg);
 
-	//---------------------------------------------------------------------------
-	// Internal functions
-	//---------------------------------------------------------------------------
-	protected:
+	// Handles a Burn_Message.
+	// Override to implement additional functionality.
+	// Call base class to get default functionality.
+
+	// Returns nothing.
+	// In:  Message to handle.
+	virtual	void OnBurnMsg(Burn_Message* pburnmsg);
+
+	// Handles an ObjectDelete_Message.
+	// Override to implement additional functionality.
+	// Call base class to get default functionality.
+	// Returns nothing.
+	// In:  Message to handle.
+	virtual void OnDeleteMsg(ObjectDelete_Message* pdeletemsg);
+
+	// Handles Trigger_Message
+	// Overrride to implement additional functionality
+	// Call base class to get default functionality.
+	// Returns nothing.
+	// In: Message to handle
+	virtual	void OnTriggerMsg(Trigger_Message* ptriggermsg);
+
+	// Load the default shadow resource unless one has already been loaded
+	// and set the shadow to visible
+	// Override to implement additional functionality
+	// Call base class to get default functionality
+	// Returns SUCCESS if set successfully
+	virtual	int16_t PrepareShadow(void);
+
+//---------------------------------------------------------------------------
+// Internal functions
+//---------------------------------------------------------------------------
+protected:
 };
 
 #endif //WEAPON_H

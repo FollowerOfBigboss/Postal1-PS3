@@ -52,163 +52,162 @@
 
 
 class CTime
+{
+//---------------------------------------------------------------------------
+// Types, enums, etc.
+//---------------------------------------------------------------------------
+public:
+	enum
 	{
-	//---------------------------------------------------------------------------
-	// Types, enums, etc.
-	//---------------------------------------------------------------------------
-	public:
-		enum
-			{
-			// This determine the maximum amount of elapsed real time that can occur
-			// between calls to Update() before it will fudge elapsed time.  The
-			// primarary reason for this is to make debugging possible.  Without it,
-			// every time you stopped in the debugger, a huge amount of real time
-			// would elapse, and when you resumed the game, everything that was
-			// time-based would react to that huge passage of time, which would be
-			// rediculous.  Instead, if more than this time elapses, we pretend
-			// just some fixed amount of time has elapsed.
-			//
-			// THIS ONLY APPLIES WHEN USING REAL TIME!
-			MaxElapsedRealTime = 200,
+		// This determine the maximum amount of elapsed real time that can occur
+		// between calls to Update() before it will fudge elapsed time.  The
+		// primarary reason for this is to make debugging possible.  Without it,
+		// every time you stopped in the debugger, a huge amount of real time
+		// would elapse, and when you resumed the game, everything that was
+		// time-based would react to that huge passage of time, which would be
+		// rediculous.  Instead, if more than this time elapses, we pretend
+		// just some fixed amount of time has elapsed.
+		//
+		// THIS ONLY APPLIES WHEN USING REAL TIME!
+		MaxElapsedRealTime = 200,
 
-			// If the MaxElapsedRealTime is exceeded, then this is the value that is
-			// used to fudge the elapsed time.  At some point we might want to
-			// calculate and and then use the average elapsed time, but hardwiring
-			// it seems to work pretty well.
-			//
-			// THIS ONLY APPLIES WHEN USING REAL TIME!
-			DefaultElapsedRealTime = 100
-			};
+		// If the MaxElapsedRealTime is exceeded, then this is the value that is
+		// used to fudge the elapsed time.  At some point we might want to
+		// calculate and and then use the average elapsed time, but hardwiring
+		// it seems to work pretty well.
+		//
+		// THIS ONLY APPLIES WHEN USING REAL TIME!
+		DefaultElapsedRealTime = 100
+	};
 
 
-	//---------------------------------------------------------------------------
-	// Variables
-	//---------------------------------------------------------------------------
-	protected:
-		int32_t m_lResetTime;
-		int32_t m_lLastTime;
-		int32_t m_lGameTime;
-		int32_t m_lForceInterval;
-		int16_t	m_sNumSuspends;		// Number of Suspend()s that have occurred w/o
-											// corresponding Resume()s.
+//---------------------------------------------------------------------------
+// Variables
+//---------------------------------------------------------------------------
+protected:
+	int32_t m_lResetTime;
+	int32_t m_lLastTime;
+	int32_t m_lGameTime;
+	int32_t m_lForceInterval;
+	int16_t	m_sNumSuspends;		// Number of Suspend()s that have occurred w/o
+					// corresponding Resume()s.
 
-	//---------------------------------------------------------------------------
-	// Functions
-	//---------------------------------------------------------------------------
-	public:
-		////////////////////////////////////////////////////////////////////////////////
-		// Constructor
-		////////////////////////////////////////////////////////////////////////////////
-		CTime(void)
-			{
-			Reset();
-			}
-
-
-		////////////////////////////////////////////////////////////////////////////////
-		// Destructor
-		////////////////////////////////////////////////////////////////////////////////
-		~CTime(void)
-			{
-			Reset();
-			}
+//---------------------------------------------------------------------------
+// Functions
+//---------------------------------------------------------------------------
+public:
+	////////////////////////////////////////////////////////////////////////////////
+	// Constructor
+	////////////////////////////////////////////////////////////////////////////////
+	CTime(void)
+	{
+		Reset();
+	}
 
 
-		////////////////////////////////////////////////////////////////////////////////
-		// Reset game time to 0.
-		////////////////////////////////////////////////////////////////////////////////
-		void Reset(void)
-			{
-			m_lResetTime = rspGetMilliseconds();
-			m_lLastTime = m_lResetTime;
-			m_lGameTime = 0;
-			m_lForceInterval = 0;
-			m_sNumSuspends	= 0;
-			}
+	////////////////////////////////////////////////////////////////////////////////
+	// Destructor
+	////////////////////////////////////////////////////////////////////////////////
+	~CTime(void)
+	{
+		Reset();
+	}
 
 
-		////////////////////////////////////////////////////////////////////////////////
-		// Suspend game time.
-		////////////////////////////////////////////////////////////////////////////////
-		void Suspend(void)
-			{
-			m_sNumSuspends++;
-			}
+	////////////////////////////////////////////////////////////////////////////////
+	// Reset game time to 0.
+	////////////////////////////////////////////////////////////////////////////////
+	void Reset(void)
+	{
+		m_lResetTime = rspGetMilliseconds();
+		m_lLastTime = m_lResetTime;
+		m_lGameTime = 0;
+		m_lForceInterval = 0;
+		m_sNumSuspends	= 0;
+	}
 
 
-		////////////////////////////////////////////////////////////////////////////////
-		// Resume game time.
-		////////////////////////////////////////////////////////////////////////////////
-		void Resume(void)
-			{
-			m_sNumSuspends--;
-			}
+	////////////////////////////////////////////////////////////////////////////////
+	// Suspend game time.
+	////////////////////////////////////////////////////////////////////////////////
+	void Suspend(void)
+	{
+		m_sNumSuspends++;
+	}
 
 
-		////////////////////////////////////////////////////////////////////////////////
-		// Update game time.  This must be called once per game loop.  If the real
-		// elapsed time between calls to this function exceeds MaxElapsedRealTime, then the
-		// game time will only be moved forward by DefaultElapsedRealTime.
-		////////////////////////////////////////////////////////////////////////////////
-		void Update(
-			int32_t lForceElapsed = 0)
-			{
-			int32_t lNewTime;
-			if (lForceElapsed == 0)
-				{
-				// Get current time
-				lNewTime = rspGetMilliseconds();
-				}
-			else
-				{
-				// Used specified elapsed time to create a "new" time
-				lNewTime = m_lLastTime + lForceElapsed;
-				}
-
-			// If suspended . . .
-			if (m_sNumSuspends > 0)
-				{
-				m_lLastTime	= lNewTime;
-				}
-
-			// Calculate elapsed time since last update
-			int32_t lElapsedTime = lNewTime - m_lLastTime;
-
-			// If we're using real time, we might need to limit the elapsed time
-			if (lForceElapsed == 0)
-				{
-				// If elapsed time is too long, set it to the default elapsed time
-				if (lElapsedTime > MaxElapsedRealTime)
-					lElapsedTime = DefaultElapsedRealTime;
-				}
-
-			// Move game time forward by the elapsed time
-			m_lGameTime += lElapsedTime;
-
-			// Save current time for next update
-			m_lLastTime = lNewTime;
-			}
+	////////////////////////////////////////////////////////////////////////////////
+	// Resume game time.
+	////////////////////////////////////////////////////////////////////////////////
+	void Resume(void)
+	{
+		m_sNumSuspends--;
+	}
 
 
-		////////////////////////////////////////////////////////////////////////////////
-		// Get game time since last Reset().  Note that this is NOT compatible with
-		// the time returned by rspGetMilliseconds()!
-		////////////////////////////////////////////////////////////////////////////////
-		int32_t GetGameTime(void)
-			{
-			// Return current game time
-			return m_lGameTime;
-			}
+	////////////////////////////////////////////////////////////////////////////////
+	// Update game time.  This must be called once per game loop.  If the real
+	// elapsed time between calls to this function exceeds MaxElapsedRealTime, then the
+	// game time will only be moved forward by DefaultElapsedRealTime.
+	////////////////////////////////////////////////////////////////////////////////
+	void Update(int32_t lForceElapsed = 0)
+	{
+		int32_t lNewTime;
+		if (lForceElapsed == 0)
+		{
+			// Get current time
+			lNewTime = rspGetMilliseconds();
+		}
+		else
+		{
+			// Used specified elapsed time to create a "new" time
+			lNewTime = m_lLastTime + lForceElapsed;
+		}
 
-		////////////////////////////////////////////////////////////////////////////////
-		// Get real time since last Reset().
-		////////////////////////////////////////////////////////////////////////////////
-		int32_t GetRealTime(void)
-			{
-			// Return real elapsed time since last reset
-			return rspGetMilliseconds() - m_lResetTime;
-			}
-		};
+		// If suspended . . .
+		if (m_sNumSuspends > 0)
+		{
+			m_lLastTime	= lNewTime;
+		}
+
+		// Calculate elapsed time since last update
+		int32_t lElapsedTime = lNewTime - m_lLastTime;
+
+		// If we're using real time, we might need to limit the elapsed time
+		if (lForceElapsed == 0)
+		{
+			// If elapsed time is too long, set it to the default elapsed time
+			if (lElapsedTime > MaxElapsedRealTime)
+				lElapsedTime = DefaultElapsedRealTime;
+		}
+
+		// Move game time forward by the elapsed time
+		m_lGameTime += lElapsedTime;
+
+		// Save current time for next update
+		m_lLastTime = lNewTime;
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Get game time since last Reset().  Note that this is NOT compatible with
+	// the time returned by rspGetMilliseconds()!
+	////////////////////////////////////////////////////////////////////////////////
+	int32_t GetGameTime(void)
+	{
+		// Return current game time
+		return m_lGameTime;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Get real time since last Reset().
+	////////////////////////////////////////////////////////////////////////////////
+	int32_t GetRealTime(void)
+	{
+		// Return real elapsed time since last reset
+		return rspGetMilliseconds() - m_lResetTime;
+	}
+};
 
 
 #endif // YATIME_H

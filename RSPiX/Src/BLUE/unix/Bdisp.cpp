@@ -45,12 +45,12 @@ static Uint32 *TexturePointer = NULL;
 static Uint8 *PalettedTexturePointer = NULL;
 
 typedef struct		// Stores information on usable video modes.
-	{
+{
 	int16_t				sWidth;
 	int16_t				sHeight;
 	int16_t				sColorDepth;
 	int16_t				sPages;
-	} VIDEO_MODE, *PVIDEO_MODE;
+} VIDEO_MODE, *PVIDEO_MODE;
 
 static RSList<VIDEO_MODE, int16_t>	slvmModes;	// List of available video modes.
 
@@ -251,11 +251,11 @@ extern void Disp_Init(void)	// Returns nothing.
 	// Initialize maps to indentities.
 	int16_t i;
 	for (i = 0; i < 256; i++)
-		{
+	{
 		au8MapRed[i]	= i;
 		au8MapGreen[i]	= i;
 		au8MapBlue[i]	= i;
-		}
+	}
 
 	// Never ever ever unlock these.
 	asPalEntryLocks[0]	= TRUE;
@@ -264,8 +264,8 @@ extern void Disp_Init(void)	// Returns nothing.
 	slvmModes.SetCompareFunc(CompareModes);
 }
 
-extern void rspSetApplicationName(
-	char* pszName)								// In: Application name
+// In: Application name
+extern void rspSetApplicationName(char* pszName) 
 {
     SDL_free(sdlAppName);
     sdlAppName = SDL_strdup(pszName);

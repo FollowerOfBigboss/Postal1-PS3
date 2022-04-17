@@ -69,34 +69,37 @@ int16_t CWeapon::ms_sFileCount;
 ////////////////////////////////////////////////////////////////////////////////
 // Load object (should call base class version!)
 ////////////////////////////////////////////////////////////////////////////////
-int16_t CWeapon::Load(										// Returns 0 if successfull, non-zero otherwise
-	RFile* pFile,											// In:  File to load from
-	bool bEditMode,										// In:  True for edit mode, false otherwise
-	int16_t sFileCount,										// In:  File count (unique per file, never 0)
-	uint32_t	ulFileVersion)									// In:  Version of file format to load.
-	{
+
+
+// Returns 0 if successfull, non-zero otherwise
+// In:  File to load from
+// In:  True for edit mode, false otherwise
+// In:  File count (unique per file, never 0)
+// In:  Version of file format to load.
+int16_t CWeapon::Load(RFile* pFile, bool bEditMode, int16_t sFileCount, uint32_t ulFileVersion)
+{
 	int16_t sResult = 0;
 
 	// Call the CThing base class load to get the instance ID
 	sResult	= CThing::Load(pFile, bEditMode, sFileCount, ulFileVersion);
 	if (sResult == 0)
-		{
+	{
 		// Load common data just once per file (not with each object)
 		if (ms_sFileCount != sFileCount)
-			{
+		{
 			ms_sFileCount = sFileCount;
 
 			// Load static data.
 			switch (ulFileVersion)
-				{
+			{
 				default:
 				case 1:
 					break;
-				}
 			}
+		}
 
 		switch (ulFileVersion)
-			{
+		{
 			default:
 			case 1:
 				// Load object data
@@ -108,56 +111,60 @@ int16_t CWeapon::Load(										// Returns 0 if successfull, non-zero otherwise
 				pFile->Read(&m_dHorizVel);
 				pFile->Read(&m_eState);
 				break;
-			}
+		}
 
 		
 		// If the file version is earlier than the change to real 3D coords . . .
 		if (ulFileVersion < 24)
-			{
+		{
 			// Convert to 3D.
-			m_pRealm->MapY2DtoZ3D(
-				m_dZ,
-				&m_dZ);
-			}
+			m_pRealm->MapY2DtoZ3D(m_dZ, &m_dZ);
+		}
 
 		// Make sure there were no file errors or format errors . . .
 		if (!pFile->Error() && sResult == 0)
-			{
+		{
 			// Get resources
-	//		sResult = GetResources();
-			}
+			// sResult = GetResources();
+		}
 		else
-			{
+		{
 			sResult = -1;
 			TRACE("CWeapon::Load(): Error reading from file!\n");
-			}
 		}
+	}
 	else
-		{
+	{
 		TRACE("CWeapon::Load():  CThing::Load() failed.\n");
-		}
+	}
 
 	return sResult;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Save object (should call base class version!)
 ////////////////////////////////////////////////////////////////////////////////
-int16_t CWeapon::Save(										// Returns 0 if successfull, non-zero otherwise
-	RFile* pFile,											// In:  File to save to
-	int16_t sFileCount)										// In:  File count (unique per file, never 0)
-	{
+
+// Returns 0 if successfull, non-zero otherwise
+// In:  File to save to
+// In:  File count (unique per file, never 0)
+
+
+
+
+int16_t CWeapon::Save(RFile* pFile, int16_t sFileCount)
+{
 	// Call the base class save to save the u16InstanceID
 	CThing::Save(pFile, sFileCount);
 
 	// Save common data just once per file (not with each object)
 	if (ms_sFileCount != sFileCount)
-		{
+	{
 		ms_sFileCount = sFileCount;
 
 		// Save static data
-		}
+	}
 
 	// Save object data
 	pFile->Write(&m_dX);
@@ -169,20 +176,22 @@ int16_t CWeapon::Save(										// Returns 0 if successfull, non-zero otherwise
 	pFile->Write(&m_eState);
 
 	return 0;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Startup object
 ////////////////////////////////////////////////////////////////////////////////
-int16_t CWeapon::Startup(void)								// Returns 0 if successfull, non-zero otherwise
-	{
+
+// Returns 0 if successfull, non-zero otherwise
+int16_t CWeapon::Startup(void)
+{
 
 	// Init other stuff
 	m_lPrevTime = m_pRealm->m_time.GetGameTime();
 
 	return 0;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -190,36 +199,38 @@ int16_t CWeapon::Startup(void)								// Returns 0 if successfull, non-zero othe
 ////////////////////////////////////////////////////////////////////////////////
 
 int16_t CWeapon::Setup(int16_t sX, int16_t sY, int16_t sZ)
-	{
+{
 	m_dX = sX;
 	m_dY = sY;
 	m_dZ = sZ;
 	return 0;
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Shutdown object
 ////////////////////////////////////////////////////////////////////////////////
-int16_t CWeapon::Shutdown(void)							// Returns 0 if successfull, non-zero otherwise
-	{
+
+// Returns 0 if successfull, non-zero otherwise
+int16_t CWeapon::Shutdown(void)
+{
 	return 0;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Suspend object
 ////////////////////////////////////////////////////////////////////////////////
 void CWeapon::Suspend(void)
-	{
+{
 	m_sSuspend++;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Resume object
 ////////////////////////////////////////////////////////////////////////////////
 void CWeapon::Resume(void)
-	{
+{
 	m_sSuspend--;
 
 	// If we're actually going to start updating again, we need to reset
@@ -227,7 +238,7 @@ void CWeapon::Resume(void)
 	// This method is far from precise, but I'm hoping it's good enough.
 	if (m_sSuspend == 0)
 		m_lPrevTime = m_pRealm->m_time.GetGameTime();
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -266,13 +277,13 @@ void CWeapon::Render(void)
 		m_spriteShadow.m_sAlphaLevel = 200 - ((int16_t) m_dY - sY);
 		// Check bounds . . .
 		if (m_spriteShadow.m_sAlphaLevel < 0)
-			{
+		{
 			m_spriteShadow.m_sAlphaLevel	= 0;
-			}
+		}
 		else if (m_spriteShadow.m_sAlphaLevel > 255)
-			{
+		{
 			m_spriteShadow.m_sAlphaLevel	= 255;
-			}
+		}
 
 		// If the main sprite is on the ground, then hide the shadow.
 		if ((int16_t) m_dY - sY == 0)
@@ -293,11 +304,13 @@ void CWeapon::Render(void)
 ////////////////////////////////////////////////////////////////////////////////
 // Called by editor to init new object at specified position
 ////////////////////////////////////////////////////////////////////////////////
-int16_t CWeapon::EditNew(									// Returns 0 if successfull, non-zero otherwise
-	int16_t sX,												// In:  New x coord
-	int16_t sY,												// In:  New y coord
-	int16_t sZ)												// In:  New z coord
-	{
+
+// Returns 0 if successfull, non-zero otherwise
+// In:  New x coord
+// In:  New y coord
+// In:  New z coord
+int16_t CWeapon::EditNew(int16_t sX, int16_t sY, int16_t sZ)
+{
 	int16_t sResult = 0;
 	
 	// Use specified position
@@ -306,70 +319,72 @@ int16_t CWeapon::EditNew(									// Returns 0 if successfull, non-zero otherwis
 	m_dZ = (double)sZ;
 
 	return sResult;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Called by editor to modify object
 ////////////////////////////////////////////////////////////////////////////////
 int16_t CWeapon::EditModify(void)
-	{
+{
 	return 0;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Called by editor to move object to specified position
 ////////////////////////////////////////////////////////////////////////////////
-int16_t CWeapon::EditMove(									// Returns 0 if successfull, non-zero otherwise
-	int16_t sX,												// In:  New x coord
-	int16_t sY,												// In:  New y coord
-	int16_t sZ)												// In:  New z coord
-	{
+
+// Returns 0 if successfull, non-zero otherwise
+// In:  New x coord
+// In:  New y coord
+// In:  New z coord
+int16_t CWeapon::EditMove(int16_t sX, int16_t sY, int16_t sZ)
+{
 	m_dX = (double)sX;
 	m_dY = (double)sY;
 	m_dZ = (double)sZ;
 
 	return 0;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Called by editor to update object
 ////////////////////////////////////////////////////////////////////////////////
 void CWeapon::EditUpdate(void)
-	{
-	}
+{
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Called by editor to render object
 ////////////////////////////////////////////////////////////////////////////////
 void CWeapon::EditRender(void)
-	{
+{
 	// In some cases, object's might need to do a special-case render in edit
 	// mode because Startup() isn't called.  In this case it doesn't matter, so
 	// we can call the normal Render().
 	Render();
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Get all required resources
 ////////////////////////////////////////////////////////////////////////////////
 int16_t CWeapon::GetResources(void)						// Returns 0 if successfull, non-zero otherwise
-	{
+{
 	return 0;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Free all resources
 ////////////////////////////////////////////////////////////////////////////////
 int16_t CWeapon::FreeResources(void)						// Returns 0 if successfull, non-zero otherwise
-	{
+{
 	return 0;
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // BounceAngle
@@ -388,25 +403,27 @@ double CWeapon::BounceAngle(double dRot)
 // (virtual).
 ////////////////////////////////////////////////////////////////////////////////
 void CWeapon::ProcessMessages(void)
-	{
+{
 	// Check queue of messages.
 	GameMessage	msg;
 	while (m_MessageQueue.DeQ(&msg) == true)
-		{
+	{
 		ProcessMessage(&msg);
-		}
 	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Process the specified message.  For most messages, this function
 // will call the equivalent On* function.
 // (virtual).
 ////////////////////////////////////////////////////////////////////////////////
-void CWeapon::ProcessMessage(		// Returns nothing.
-	GameMessage* pmsg)					// Message to process.
-	{
+
+// Returns nothing.
+// Message to process.
+void CWeapon::ProcessMessage(GameMessage* pmsg)
+{
 	switch (pmsg->msg_Generic.eType)
-		{
+	{
 		case typeShot:
 			OnShotMsg(&(pmsg->msg_Shot) );
 			break;
@@ -430,15 +447,16 @@ void CWeapon::ProcessMessage(		// Returns nothing.
 		default:
 			// Should this complain when it doesn't know a message type?
 			break;
-		}
 	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Handles a msg_Shot.
 // (virtual).
 ////////////////////////////////////////////////////////////////////////////////
-void CWeapon::OnShotMsg(	// Returns nothing.
-	Shot_Message* pshotmsg)		// In:  Message to handle.
+// Returns nothing.
+// In:  Message to handle.
+void CWeapon::OnShotMsg(Shot_Message* pshotmsg)
 {
 }
 
@@ -446,8 +464,11 @@ void CWeapon::OnShotMsg(	// Returns nothing.
 // Handles an Explosion_Message.
 // (virtual).
 ////////////////////////////////////////////////////////////////////////////////
-void CWeapon::OnExplosionMsg(			// Returns nothing.
-	Explosion_Message* pexplosionmsg)	// In:  Message to handle.
+
+
+// Returns nothing.
+// In:  Message to handle.
+void CWeapon::OnExplosionMsg(Explosion_Message* pexplosionmsg)
 {
 }
 
@@ -455,8 +476,9 @@ void CWeapon::OnExplosionMsg(			// Returns nothing.
 // Handles a Burn_Message.
 // (virtual).
 ////////////////////////////////////////////////////////////////////////////////
-void CWeapon::OnBurnMsg(	// Returns nothing.
-	Burn_Message* pburnmsg)		// In:  Message to handle.
+// Returns nothing.
+// In:  Message to handle.
+void CWeapon::OnBurnMsg(Burn_Message* pburnmsg)
 {
 }
 
@@ -464,8 +486,10 @@ void CWeapon::OnBurnMsg(	// Returns nothing.
 // Handles an ObjectDelete_Message.
 // (virtual).
 ////////////////////////////////////////////////////////////////////////////////
-void CWeapon::OnDeleteMsg(				// Returns nothing.
-	ObjectDelete_Message* pdeletemsg)	// In:  Message to handle.
+
+// Returns nothing.
+// In:  Message to handle.
+void CWeapon::OnDeleteMsg(ObjectDelete_Message* pdeletemsg)
 {
 }
 
@@ -473,8 +497,10 @@ void CWeapon::OnDeleteMsg(				// Returns nothing.
 // Handles a Trigger_Message
 // (virtual).
 ////////////////////////////////////////////////////////////////////////////////
-void CWeapon::OnTriggerMsg(			// Returns nothing
-	Trigger_Message* ptriggermsg)		// In: Message to handle
+
+// Returns nothing
+// In: Message to handle
+void CWeapon::OnTriggerMsg(Trigger_Message* ptriggermsg)
 {
 }
 

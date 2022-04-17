@@ -338,34 +338,34 @@ class CResourceBlock
 		GenericDestroyResFunc* m_pfnDestroy;
 
 		CResourceBlock()
-			{
+		{
 			m_sRefCount = 0;
 			m_sAccessCount = 0;
 			m_vpRes = NULL;
 			m_pfnDestroy = 0;
-			};
+		};
 
 		~CResourceBlock()
-			{
+		{
 			FreeResource();
 
 			// Delete the function object
 			delete m_pfnDestroy;
 			m_pfnDestroy = 0;
-			};
+		};
 
 		void FreeResource(void)
-			{
+		{
 			if (m_vpRes)
-				{
+			{
 				// Must have the destroy function.
 				ASSERT(m_pfnDestroy);
 
 				// Destroy resource.
 				(*m_pfnDestroy)(m_vpRes);
 				m_vpRes = 0;
-				}
 			}
+		}
 
 };
 
@@ -559,6 +559,7 @@ class RResMgr
 
 		void NormalizeResName(RString* pstrResourceName)
 		{
+			
 			int32_t i;
 			for (i = 0; i < pstrResourceName->GetLen(); i++)
 			{
@@ -566,6 +567,7 @@ class RResMgr
 					pstrResourceName->SetAt(i, '/');
 				pstrResourceName->SetAt(i, tolower(pstrResourceName->GetAt(i)));
 			}
+			TRACE("NormalizeResName(): %s\n",(char*)(*pstrResourceName));
 		}
 
 		// This flag will print trace messages of non-cached loads.  You can
@@ -738,11 +740,11 @@ bool rspReleaseAndPurgeResource(	// Returns true if it was acutally purged,
 											// false if its reference count prevented it from being purged
 	RResMgr* presmgr,					// In:  Resource Manager to purge resource from
 	T** ppres)
-	{
+{
 	bool bPurged = presmgr->ReleaseAndPurge(*ppres);
 	*ppres = NULL;
 	return bPurged;
-	}
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -787,12 +789,12 @@ void rspReleaseResourceInstance(						// Returns 0 on success
 																// if we ever decide to track these
 																// objects via the resmgr.
 	T** ppres)												// In:  Pointer to resource
-	{
+{
 	TRACE("rspReleaseResourceInstance()\n");
 	// Be gone.
 	delete *ppres;
 	*ppres = NULL;
-	}
+}
 
 #endif //RESMGR_H
 

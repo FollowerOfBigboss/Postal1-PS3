@@ -80,126 +80,137 @@ class CRealm;
 
 // This is the hood object
 class CTrigger : public CThing
-	{
-	//---------------------------------------------------------------------------
-	// Types, enums, etc.
-	//---------------------------------------------------------------------------
-	public:
+{
+//---------------------------------------------------------------------------
+// Types, enums, etc.
+//---------------------------------------------------------------------------
+public:
 
-	//---------------------------------------------------------------------------
-	// Variables
-	//---------------------------------------------------------------------------
-	public:
+//---------------------------------------------------------------------------
+// Variables
+//---------------------------------------------------------------------------
+public:
 		
-		RMultiGridIndirect* m_pmgi;							// Attribute map of regions
-		uint16_t	m_ausPylonUIDs[256];							// Look up for Pylon ID's
+	RMultiGridIndirect* m_pmgi;							// Attribute map of regions
+	uint16_t	m_ausPylonUIDs[256];						// Look up for Pylon ID's
 
-	//---------------------------------------------------------------------------
-	// Constructor(s) / destructor
-	//---------------------------------------------------------------------------
-	protected:
-		// Constructor
-		CTrigger(CRealm* pRealm);
+//---------------------------------------------------------------------------
+// Constructor(s) / destructor
+//---------------------------------------------------------------------------
+protected:
+	// Constructor
+	CTrigger(CRealm* pRealm);
 
-	public:
-		// Destructor
-		~CTrigger();
+public:
+	// Destructor
+	~CTrigger();
 
-	//---------------------------------------------------------------------------
-	// Required static functions
-	//---------------------------------------------------------------------------
-	public:
-		// Construct object
-		static int16_t Construct(									// Returns 0 if successfull, non-zero otherwise
-			CRealm* pRealm,										// In:  Pointer to realm this object belongs to
-			CThing** ppNew)										// Out: Pointer to new object
-			{
-			int16_t sResult = 0;
-			*ppNew = new CTrigger(pRealm);
-			if (*ppNew == 0)
-				{
-				sResult = -1;
-				TRACE("CTrigger::Construct(): Couldn't construct CTrigger!\n");
-				}
-			return sResult;
-			}
+//---------------------------------------------------------------------------
+// Required static functions
+//---------------------------------------------------------------------------
+public:
+	// Construct object
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  Pointer to realm this object belongs to
+	// Out: Pointer to new object
+	static int16_t Construct(CRealm* pRealm, CThing** ppNew)
+	{
+		int16_t sResult = 0;
+		*ppNew = new CTrigger(pRealm);
+		if (*ppNew == 0)
+		{
+			sResult = -1;
+			TRACE("CTrigger::Construct(): Couldn't construct CTrigger!\n");
+		}
+		return sResult;
+	}
 
 	//---------------------------------------------------------------------------
 	// Required virtual functions (implimenting them as inlines doesn't pay!)
 	//---------------------------------------------------------------------------
-	public:
-		// Load object (should call base class version!)
-		int16_t Load(													// Returns 0 if successfull, non-zero otherwise
-			RFile* pFile,											// In:  File to load from
-			bool bEditMode,										// In:  True for edit mode, false otherwise
-			int16_t sFileCount,										// In:  File count (unique per file, never 0)
-			uint32_t	ulFileVersion);								// In:  Version of file format to load.
+public:
+	// Load object (should call base class version!)
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  File to load from
+	// In:  True for edit mode, false otherwise
+	// In:  File count (unique per file, never 0)
+	// In:  Version of file format to load.
 
-		// Save object (should call base class version!)
-		int16_t Save(													// Returns 0 if successfull, non-zero otherwise
-			RFile* pFile,											// In:  File to save to
-			int16_t sFileCount);									// In:  File count (unique per file, never 0)
+	int16_t Load(RFile* pFile, bool bEditMode, int16_t sFileCount, uint32_t	ulFileVersion);
 
-		// Startup object
-		int16_t Startup(void);										// Returns 0 if successfull, non-zero otherwise
+	// Save object (should call base class version!)
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  File to save to
+	// In:  File count (unique per file, never 0)
+	int16_t Save(RFile* pFile, int16_t sFileCount);
 
-		// Shutdown object
-		int16_t Shutdown(void);									// Returns 0 if successfull, non-zero otherwise
+	// Startup object
+	// Returns 0 if successfull, non-zero otherwise
+	int16_t Startup(void);
 
-		// Suspend object
-		void Suspend(void);
+	// Shutdown object
+	// Returns 0 if successfull, non-zero otherwise
+	int16_t Shutdown(void);
 
-		// Resume object
-		void Resume(void);
+	// Suspend object
+	void Suspend(void);
 
-		// Update object
-		void Update(void);
+	// Resume object
+	void Resume(void);
 
-		// Render object
-		void Render(void);
+	// Update object
+	void Update(void);
 
-		// Called by editor to init new object at specified position
-		int16_t EditNew(												// Returns 0 if successfull, non-zero otherwise
-			int16_t sX,												// In:  New x coord
-			int16_t sY,												// In:  New y coord
-			int16_t sZ);												// In:  New z coord
+	// Render object
+	void Render(void);
 
-		// Called by editor to modify object
-		int16_t EditModify(void);									// Returns 0 if successfull, non-zero otherwise
+	// Called by editor to init new object at specified position
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  New x coord
+	// In:  New y coord
+	// In:  New z coord
+	int16_t EditNew(int16_t sX, int16_t sY,	int16_t sZ);
 
-		// Called by editor to move object to specified position
-		int16_t EditMove(											// Returns 0 if successfull, non-zero otherwise
-			int16_t sX,												// In:  New x coord
-			int16_t sY,												// In:  New y coord
-			int16_t sZ);												// In:  New z coord
+	// Called by editor to modify object
+	// Returns 0 if successfull, non-zero otherwise
+	int16_t EditModify(void);
 
-		// Called by editor to update object
-		void EditUpdate(void);
+	// Called by editor to move object to specified position
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  New x coord
+	// In:  New y coord
+	// In:  New z coord
+	int16_t EditMove(int16_t sX, int16_t sY, int16_t sZ);
 
-		// Called by editor to render object
-		void EditRender(void);
+	// Called by editor to update object
+	void EditUpdate(void);
 
-		// Called by editor to get the clickable pos/area of an object.
-		virtual	// If you override this, do NOT call this base class.
-		void EditRect(				// Returns nothiing.
-			RRect*	prc)			// Out: Clickable pos/area of object.
-			{
-			// Default implementation makes the object unclickable.
-			prc->sX	= 0;
-			prc->sY	= 0;
-			prc->sW	= 16;
-			prc->sH	= 16;
-			}
+	// Called by editor to render object
+	void EditRender(void);
 
-	//---------------------------------------------------------------------------
-	// Trigger Specific Functions
-	//---------------------------------------------------------------------------
-	public:
+	// Called by editor to get the clickable pos/area of an object.
+	
+	// If you override this, do NOT call this base class.
+	// Returns nothiing.
+	// Out: Clickable pos/area of object.
+	virtual void EditRect(RRect*	prc)
+	{
+		// Default implementation makes the object unclickable.
+		prc->sX	= 0;
+		prc->sY	= 0;
+		prc->sW	= 16;
+		prc->sH	= 16;
+	}
 
-		// After the game editor creates the attribute data, stick it here
-		void	AddData(RMultiGridIndirect* pmgi);
+//---------------------------------------------------------------------------
+// Trigger Specific Functions
+//---------------------------------------------------------------------------
+public:
+
+	// After the game editor creates the attribute data, stick it here
+	void AddData(RMultiGridIndirect* pmgi);
 		
-	};
+};
 
 
 #endif //HOOD_H

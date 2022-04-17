@@ -4672,6 +4672,7 @@ int16_t CorrectifyBasePath(								// Returns 0 if successfull, non-zero otherwi
 				pszOrigDir = getcwd(pszOrigDir, RSP_MAX_PATH);
 
 				// Change to specified directory, which may be relative or absolute
+				TRACE("pszBasePath %s\n", pszBasePath);
 				if (chdir(pszBasePath) == 0)
 					{
 					// Get directory, which is always returned as absolute

@@ -281,240 +281,238 @@ class CSmash;
 // Template node class for linked lists
 template <class Owner>
 class CListNode
-	{
+{
 	typedef CListNode Node;
 
 //	protected:
-	public:
-		CListNode()	{ }	// Do not use.
+public:
+	CListNode() { }	// Do not use.
 
-	public:
-		CListNode(Owner* powner)
-			{ m_powner	= powner; }
+public:
+	CListNode(Owner* powner) { m_powner = powner; }
 
-		// Note:  This function can only be used with a list that has
-		// dummy nodes for head and tail.
-		Owner* GetNext(void)
-			{ return m_pnNext->m_powner; }
-		// Note:  This function can only be used with a list that has
-		// dummy nodes for head and tail.
-		Owner* GetPrev(void)
-			{ return m_pnPrev->m_powner; }
+	// Note:  This function can only be used with a list that has
+	// dummy nodes for head and tail.
+	Owner* GetNext(void) { return m_pnNext->m_powner; }
+	// Note:  This function can only be used with a list that has
+	// dummy nodes for head and tail.
+	Owner* GetPrev(void) { return m_pnPrev->m_powner; }
 
-		// Note:  This function can only be used with a list that has
-		// dummy nodes for head and tail.
-		void InsertBefore(
-			Node* pn)	// In:  Node to insert before.
-			{
-			ASSERT(m_pnNext == NULL && m_pnPrev == NULL);
-			m_pnNext					= pn;
-			m_pnPrev					= pn->m_pnPrev;
-			m_pnPrev->m_pnNext	= this;
-			pn->m_pnPrev			= this;
-			}
+	// Note:  This function can only be used with a list that has
+	// dummy nodes for head and tail.
 
-		// Note:  This function can only be used with a list that has
-		// dummy nodes for head and tail.
-		void AddAfter(
-			Node* pn)	// In:  Node to add after.
-			{
-			ASSERT(m_pnNext == NULL && m_pnPrev == NULL);
-			m_pnNext					= pn->m_pnNext;
-			m_pnPrev					= pn;
-			m_pnNext->m_pnPrev	= this;
-			pn->m_pnNext			= this;
-			}
+	// In:  Node to insert before.
+	void InsertBefore(Node* pn)
+	{
+		ASSERT(m_pnNext == NULL && m_pnPrev == NULL);
+		m_pnNext = pn;
+		m_pnPrev = pn->m_pnPrev;
+		m_pnPrev->m_pnNext = this;
+		pn->m_pnPrev = this;
+	}
 
-		// Note:  This function can only be used with a list that has
-		// dummy nodes for head and tail.
-		// Note:  Do not call, if already removed.
-		void Remove(void)
-			{
-			m_pnNext->m_pnPrev		= m_pnPrev;
-			m_pnPrev->m_pnNext		= m_pnNext;
-			m_pnNext						= NULL;
-			m_pnPrev						= NULL;
-			}
+	// Note:  This function can only be used with a list that has
+	// dummy nodes for head and tail.
+	
+	// In:  Node to add after.
+	void AddAfter(Node* pn)
+	{
+		ASSERT(m_pnNext == NULL && m_pnPrev == NULL);
+		m_pnNext = pn->m_pnNext;
+		m_pnPrev = pn;
+		m_pnNext->m_pnPrev = this;
+		pn->m_pnNext = this;
+	}
 
-	public:
-		Node*		m_pnNext;
-		Node*		m_pnPrev;
-		Owner*	m_powner;
-	};
+	// Note:  This function can only be used with a list that has
+	// dummy nodes for head and tail.
+	// Note:  Do not call, if already removed.
+	void Remove(void)
+	{
+		m_pnNext->m_pnPrev = m_pnPrev;
+		m_pnPrev->m_pnNext = m_pnNext;
+		m_pnNext = NULL;
+		m_pnPrev = NULL;
+	}
+
+public:
+	Node* m_pnNext;
+	Node* m_pnPrev;
+	Owner*	m_powner;
+};
 
 
 // This abstract class is the root of all objects that are part of a CRealm.
 // Its primary purpose is to force all derived classes to supply a common set
 // of functions so all ojects can be accessed in a generic manner.
 class CThing
-	{
+{
 	// Make CRealm a friend so it can access private stuff
 	friend class CRealm;
 
-	//---------------------------------------------------------------------------
-	// Types, enums, etc.
-	//---------------------------------------------------------------------------
-	public:
+//---------------------------------------------------------------------------
+// Types, enums, etc.
+//---------------------------------------------------------------------------
+public:
 
-		// Typedefs for static functions that all derived classes should have
-		typedef int16_t (*FuncConstruct)(CRealm* pRealm, CThing** ppNew);
-		typedef short (*FuncPreload)(CRealm* pRealm);
-		typedef short (*FuncDestroy)(void);
+	// Typedefs for static functions that all derived classes should have
+	typedef int16_t (*FuncConstruct)(CRealm* pRealm, CThing** ppNew);
+	typedef short (*FuncPreload)(CRealm* pRealm);
+	typedef short (*FuncDestroy)(void);
 
-		// Struct containing info about derived classes
-		typedef struct
-			{
-			FuncConstruct funcConstruct;						// Construct() function pointer
-			FuncPreload funcPreload;							// Preload() function pointer
-			const char* pszClassName;							// Pointer to class name
-			bool bEditorCreatable;								// true indicates the editor can
-																		// create this object at user 
-																		// request.  false indicates it
-																		// cannot.
-			} ClassInfo;
+	// Struct containing info about derived classes
+	typedef struct
+	{
+		FuncConstruct funcConstruct;						// Construct() function pointer
+		FuncPreload funcPreload;						// Preload() function pointer
+		const char* pszClassName;						// Pointer to class name
+		bool bEditorCreatable;							// true indicates the editor can create this object at user request.  false indicates it cannot.
+	} ClassInfo;
 
-		// Typedef for class ID's, required because we want specify the type,
-		// whereas the compiler always uses type int for enums.
-		typedef uint8_t ClassIDType;
+	// Typedef for class ID's, required because we want specify the type,
+	// whereas the compiler always uses type int for enums.
+	typedef uint8_t ClassIDType;
 
-		// Class ID's for all derived classes that need to be loaded/saved.  If
-		// these numbers change, it will completely invalidate any world files
-		// that were created prior to the change!  Add new ID's after existing
-		// ID's so the existing ones don't change.
-		typedef enum
-			{
-			// First entry should start at 0!
-			CHoodID = 0,
-			CDudeID,
-			CDoofusID,
-			CTkachukID,
-			CRocketManID,
-			CGrenaderID,
-			CRocketID,
-			CGrenadeID,
-			CBallID,
-			CExplodeID,
-			CBouyID,
-			CNavigationNetID,
-			CGameEditThingID,
-			CNapalmID,
-			CFireID,
-			CImbecileID,
-			CFirebombID,
-			CFirefragID,
-			CAnimThingID,
-			CSoundThingID,
-			CGunnerID,
-			CBandID,
-			CItem3dID,
-			CBarrelID,
-			CProximityMineID,
-			CDispenserID,
-			CFireballID,
-			CCopID,
-			CPistolID,
-			CMachineGunID,
-			CShotGunID,
-			CPersonID,
-			CTimedMineID,
-			CBouncingBettyMineID,
-			CRemoteControlMineID,
-			CPylonID,
-			CPowerUpID,
-			COstrichID,
-			CTriggerID,
-			CHeatseekerID,
-			CChunkID,
-			CAssaultWeaponID,
-			CSentryID,
-			CSentryGunID,
-			CWarpID,
-			CDemonID,
-			CCharacterID,
-			CGoalTimerID,
-			CFlagID,
-			CFlagbaseID,
-			CFirestreamID,
-			CDeathWadID,
-			CDoubleBarrelID,
-			CUziID,
-			CAutoRifleID,
-			CSmallPistolID,
-			CDynamiteID,
-			CSndRelayID,
+	// Class ID's for all derived classes that need to be loaded/saved.  If
+	// these numbers change, it will completely invalidate any world files
+	// that were created prior to the change!  Add new ID's after existing
+	// ID's so the existing ones don't change.
+	typedef enum
+	{
+		// First entry should start at 0!
+		CHoodID = 0,
+		CDudeID,
+		CDoofusID,
+		CTkachukID,
+		CRocketManID,
+		CGrenaderID,
+		CRocketID,
+		CGrenadeID,
+		CBallID,
+		CExplodeID,
+		CBouyID,
+		CNavigationNetID,
+		CGameEditThingID,
+		CNapalmID,
+		CFireID,
+		CImbecileID,
+		CFirebombID,
+		CFirefragID,
+		CAnimThingID,
+		CSoundThingID,
+		CGunnerID,
+		CBandID,
+		CItem3dID,
+		CBarrelID,
+		CProximityMineID,
+		CDispenserID,
+		CFireballID,
+		CCopID,
+		CPistolID,
+		CMachineGunID,
+		CShotGunID,
+		CPersonID,
+		CTimedMineID,
+		CBouncingBettyMineID,
+		CRemoteControlMineID,
+		CPylonID,
+		CPowerUpID,
+		COstrichID,
+		CTriggerID,
+		CHeatseekerID,
+		CChunkID,
+		CAssaultWeaponID,
+		CSentryID,
+		CSentryGunID,
+		CWarpID,
+		CDemonID,
+		CCharacterID,
+		CGoalTimerID,
+		CFlagID,
+		CFlagbaseID,
+		CFirestreamID,
+		CDeathWadID,
+		CDoubleBarrelID,
+		CUziID,
+		CAutoRifleID,
+		CSmallPistolID,
+		CDynamiteID,
+		CSndRelayID,
+		// This must be the last entry so it gets set to the total number of ID's
+		TotalIDs
+	};
 
-			// This must be the last entry so it gets set to the total number of ID's
-			TotalIDs
-			};
-
-		typedef enum	// Macros within CThing namespace.
-			{
-			InvalidPosition	= -5770321
-			} Macros;
+	typedef enum	// Macros within CThing namespace.
+	{
+		InvalidPosition	= -5770321
+	} Macros;
 
 
-	//---------------------------------------------------------------------------
-	// Protected static member variables
-	//---------------------------------------------------------------------------
-	protected:
-		// Flag to detect attempts to construct a CGameObj before CGameObj's static
-		// member variables are initialized by the C++ startup process.  Aside from
-		// the typical problems involving C++ initialization order, it doesn't really
-		// make sense to create CGameObj's as global/static objects since they are
-		// supposed to be created/destroyed dynamically as worlds are loaded.
-		static int16_t ms_sDetectStaticInits;
+//---------------------------------------------------------------------------
+// Protected static member variables
+//---------------------------------------------------------------------------
+protected:
+	// Flag to detect attempts to construct a CGameObj before CGameObj's static
+	// member variables are initialized by the C++ startup process.  Aside from
+	// the typical problems involving C++ initialization order, it doesn't really
+	// make sense to create CGameObj's as global/static objects since they are
+	// supposed to be created/destroyed dynamically as worlds are loaded.
+	static int16_t ms_sDetectStaticInits;
 
-		// This is used by DoGui() to perform GUI processing.
-		static RProcessGui	ms_pgDoGui;
+	// This is used by DoGui() to perform GUI processing.
+	static RProcessGui ms_pgDoGui;
 
-	//---------------------------------------------------------------------------
-	// Public static member variables
-	//---------------------------------------------------------------------------
-	public:
-		// Array of class info for each derived class
-		static ClassInfo ms_aClassInfo[TotalIDs];
+//---------------------------------------------------------------------------
+// Public static member variables
+//---------------------------------------------------------------------------
+public:
+	// Array of class info for each derived class
+	static ClassInfo ms_aClassInfo[TotalIDs];
 
-	//---------------------------------------------------------------------------
-	// Static functions dealing with common static functions in derived classes.
-	// The purpose of these functions is to make it easy to call the appropriate
-	// static function in a derived class based on its class ID.  This basically
-	// impliments something similar to virtual functions, except these are static
-	// functions, which the C++ mechanism doesn't support.
-	//---------------------------------------------------------------------------
-	public:
-		// Construct object
-		static int16_t Construct(									// Returns 0 if successfull, non-zero otherwise
-			ClassIDType id,										// In:  Class ID
-			CRealm* pRealm,										// In:  Pointer to realm this object belongs to
- 			CThing** ppNew);										// Out: Pointer to new object
+//---------------------------------------------------------------------------
+// Static functions dealing with common static functions in derived classes.
+// The purpose of these functions is to make it easy to call the appropriate
+// static function in a derived class based on its class ID.  This basically
+// impliments something similar to virtual functions, except these are static
+// functions, which the C++ mechanism doesn't support.
+//---------------------------------------------------------------------------
+public:
+	// Construct object
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  Class ID
+	// In:  Pointer to realm this object belongs to
+	// Out: Pointer to new object
+	static int16_t Construct(ClassIDType id, CRealm* pRealm, CThing** ppNew);
 
-		// Construct object and assign it an ID from the Realm's ID bank,
-		// if it does not already have one.
-		static int16_t ConstructWithID(							// Returns 0 if successfull, non-zero otherwise
-			ClassIDType id,										// In:  Class ID
-			CRealm* pRealm,										// In:  Pointer to realm this object belongs to
- 			CThing** ppNew);										// Out: Pointer to new object
+	// Construct object and assign it an ID from the Realm's ID bank,
+	// if it does not already have one.
+	
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  Class ID
+	// In:  Pointer to realm this object belongs to
+	// Out: Pointer to new object
+	static int16_t ConstructWithID(ClassIDType id, CRealm* pRealm, CThing** ppNew);
 
-	//---------------------------------------------------------------------------
-	// Non-static variables
-	//---------------------------------------------------------------------------
-	public:
-		// Prioritized Message queue for Things to use to communicate with each other
-		RPQueue <GameMessage, int16_t> m_MessageQueue;
+//---------------------------------------------------------------------------
+// Non-static variables
+//---------------------------------------------------------------------------
+public:
+	// Prioritized Message queue for Things to use to communicate with each other
+	RPQueue <GameMessage, int16_t> m_MessageQueue;
 
-		// Pointer to the realm this object belongs to
-		CRealm* m_pRealm;
+	// Pointer to the realm this object belongs to
+	CRealm* m_pRealm;
 
-		// This is intended for the editor.  It would probably be a bad idea to use
-		// this pointer outside of gameedit.cpp.
-		RHot*	m_phot;
+	// This is intended for the editor.  It would probably be a bad idea to use
+	// this pointer outside of gameedit.cpp.
+	RHot*	m_phot;
 
-	protected:
-		// Flag indicating whether object wants it's Startup() to be called
-		int16_t m_sCallStartup;
+protected:
+	// Flag indicating whether object wants it's Startup() to be called
+	int16_t m_sCallStartup;
 
-		// Flag indicating whether object wants it's Shutdown() to be called
-		int16_t m_sCallShutdown;
+	// Flag indicating whether object wants it's Shutdown() to be called
+	int16_t m_sCallShutdown;
 
 /*
 		// Iterator that specifies this object's position in the realm's container
@@ -528,192 +526,219 @@ class CThing
 #endif
 */
 
-		// Class ID is stored here for instant access
-		ClassIDType m_id;
+	// Class ID is stored here for instant access
+	ClassIDType m_id;
 
-		// Unique ID specific to this instance of CThing (set in constructor,
-		// released in destructor).
-		U16			m_u16InstanceId;
+	// Unique ID specific to this instance of CThing (set in constructor,
+	// released in destructor).
+	U16 m_u16InstanceId;
 
-	//---------------------------------------------------------------------------
-	// Public member variables
-	//---------------------------------------------------------------------------
-	public:
+//---------------------------------------------------------------------------
+// Public member variables
+//---------------------------------------------------------------------------
+public:
 	
-		CListNode<CThing>	m_everything;	
-		CListNode<CThing> m_nodeClass;	
+	CListNode<CThing>	m_everything;	
+	CListNode<CThing> m_nodeClass;	
 
 
-	//---------------------------------------------------------------------------
-	// Constructor(s) / destructor
-	//---------------------------------------------------------------------------
-	protected:
-		// Constructor
-		CThing(
-			CRealm* pRealm,										// In:  Pointer to realm
-			ClassIDType id);										// In:  Class ID
+//---------------------------------------------------------------------------
+// Constructor(s) / destructor
+//---------------------------------------------------------------------------
+protected:
+	// Constructor
+	// In:  Pointer to realm
+	// In:  Class ID
+	CThing(CRealm* pRealm, ClassIDType id);
 
-	public:
-		// Destructor (must be virtual so derived class destructors are always called!)
-		virtual ~CThing();
+public:
+	// Destructor (must be virtual so derived class destructors are always called!)
+	virtual ~CThing();
 
-	//---------------------------------------------------------------------------
-	// CThing-only functions
-	//---------------------------------------------------------------------------
-	public:
-		// Get object's class ID (must NOT be virtual!)
-		ClassIDType GetClassID(void)							// Returns object's class ID
-			{
-			return m_id;
-			}
+//---------------------------------------------------------------------------
+// CThing-only functions
+//---------------------------------------------------------------------------
+public:
+	// Get object's class ID (must NOT be virtual!)
+	
+	// Returns object's class ID
+	ClassIDType GetClassID(void)
+	{
+		return m_id;
+	}
 
-		// Get object instance's unique ID.
-		U16 GetInstanceID(void)
-			{
-			return m_u16InstanceId;
-			}
+	// Get object instance's unique ID.
+	U16 GetInstanceID(void)
+	{
+		return m_u16InstanceId;
+	}
 
-		// Set object instance's unique ID.
-		void SetInstanceID(	// Returns nothing.
-			U16	u16Id);		// New id for this instance.
+	// Set object instance's unique ID.
 
-		// Helper for processing your GUIs.
-		// Will be made visible by calling pguiRoot->SetVisible(TRUE).
-		// GUI will be run with focus-awareness until a GUI with ID 1 or 2 is
-		// clicked.  Typically, 1 should be an 'OK' equivalent and 2 'Cancel'.
-		// Return value indicates which item was clicked (1, 2, or by the ID
-		// of a GUI that was previously passed to SetGuiToNotify() ).
-		// Processing involves using queued RSPiX user input via
-		// rspGetNextInputEvent().
-		static							// Static for your usage pleasure.
-		int32_t DoGui(						// Returns ID of item that terminated looping.
-											// Returns 0 if rspGetQuitStatus() is nonzero.
-											// Returns negative on error.
-			RGuiItem*	pguiRoot);	// Root of GUI items to process through user.
+	// Returns nothing.
+	// New id for this instance.
+	void SetInstanceID(U16 u16Id);
 
-		// Call this for any GUIs besides the standard OK (ID 1) and Cancel (ID 2)
-		// to set the callback (for on 'pressed') for any GUI you want to end
-		// a DoGui().
-		static								// Static.
-		void SetGuiToNotify(				// Returns nothing.
-			RGuiItem* pguiNotifier);	// In:  The pressed GUI.
+	// Helper for processing your GUIs.
+	// Will be made visible by calling pguiRoot->SetVisible(TRUE).
+	// GUI will be run with focus-awareness until a GUI with ID 1 or 2 is
+	// clicked.  Typically, 1 should be an 'OK' equivalent and 2 'Cancel'.
+	// Return value indicates which item was clicked (1, 2, or by the ID
+	// of a GUI that was previously passed to SetGuiToNotify() ).
+	// Processing involves using queued RSPiX user input via
+	// rspGetNextInputEvent().
 
-		// Callback from ms_pgDoGui for system update.
-		static								// Static for use as a callback.
-		int32_t SysUpdate(					// Returns a non-zero ID to abort or zero
-												// to continue.                          
-			RInputEvent*	pie);			// Out: Next input event to process.     
+	// Static for your usage pleasure.
+	// Returns ID of item that terminated looping.
+	// Returns 0 if rspGetQuitStatus() is nonzero.
+	// Returns negative on error.
+	// Root of GUI items to process through user.
+	static int32_t DoGui(RGuiItem*	pguiRoot);
 
-		int16_t SendThingMessage(pGameMessage pMessage, U16 u16ID)
-			{
-				return SendThingMessage(pMessage, pMessage->msg_Generic.sPriority, u16ID);
-			}
+	// Call this for any GUIs besides the standard OK (ID 1) and Cancel (ID 2)
+	// to set the callback (for on 'pressed') for any GUI you want to end
+	// a DoGui().
 
-		int16_t SendThingMessage(pGameMessage pMessage, CThing* pThing)
-			{
-				return SendThingMessage(pMessage, pMessage->msg_Generic.sPriority, pThing);
-			}
+	// Static.
+	// Returns nothing.
+	// In:  The pressed GUI.
+	static void SetGuiToNotify(RGuiItem* pguiNotifier);
 
-		int16_t SendThingMessage(pGameMessage pMessage, int16_t sPriority, U16 u16ID);
+	// Callback from ms_pgDoGui for system update.
 
-		int16_t SendThingMessage(pGameMessage pMessage, int16_t sPriority, CThing* pThing);
+	// Static for use as a callback.
 
-		// Maps a 3D coordinate onto the viewing plane.
-		void Map3Dto2D(		// Returns nothing.
-			int16_t sX,			// In.
-			int16_t	sY,			// In.
-			int16_t	sZ,			// In.
-			int16_t* psX,			// Out.
-			int16_t* psY);		// Out.
+	// Returns a non-zero ID to abort or zero to continue. 
+	// Out: Next input event to process. 
+	static int32_t SysUpdate(RInputEvent* pie);   
 
-		// Maps a 3D coordinate onto the viewing plane.
-		void Map3Dto2D(		// Returns nothing.
-			double	dX,		// In.
-			double	dY,		// In.
-			double	dZ,		// In.
-			double* pdX,		// Out.
-			double* pdY);		// Out.
+	int16_t SendThingMessage(pGameMessage pMessage, U16 u16ID)
+	{
+		return SendThingMessage(pMessage, pMessage->msg_Generic.sPriority, u16ID);
+	}
 
-	//---------------------------------------------------------------------------
-	// Virtual functions that should be overloaded for additional functionality.
-	// The default implementations simply return success.
-	//---------------------------------------------------------------------------
-	public:
-		// Load object (should call base class version!)
-		virtual int16_t Load(										// Returns 0 if successfull, non-zero otherwise
-			RFile* pFile,											// In:  File to load from
-			bool bEditMode,										// In:  True for edit mode, false otherwise
-			int16_t sFileCount,										// In:  File count (unique per file, never 0)
-			uint32_t	ulFileVersion);								// In:  File version being loaded.
+	int16_t SendThingMessage(pGameMessage pMessage, CThing* pThing)
+	{
+		return SendThingMessage(pMessage, pMessage->msg_Generic.sPriority, pThing);
+	}
 
-		// Save object (should call base class version!)
-		virtual int16_t Save(										// Returns 0 if successfull, non-zero otherwise
-			RFile* pFile,											// In:  File to save to
-			int16_t /*sFileCount*/)								// In:  File count (unique per file, never 0)
-			{
-			// Save this thing's ID.  The ID is unique to this 'thing' within its realm
-			// (i.e., no other CThing or derived class has this same ID within this realm).
-			// This is assigned by the editor via a call to the realm's m_idbank.Get().
-			pFile->Write(m_u16InstanceId);
+	int16_t SendThingMessage(pGameMessage pMessage, int16_t sPriority, U16 u16ID);
 
-			return pFile->Error();
-			}
+	int16_t SendThingMessage(pGameMessage pMessage, int16_t sPriority, CThing* pThing);
 
-		// Startup object
-		virtual int16_t Startup(void)							// Returns 0 if successfull, non-zero otherwise
-			{
-			return 0;
-			}
+	// Maps a 3D coordinate onto the viewing plane.
 
-		// Shutdown object
-		virtual int16_t Shutdown(void)							// Returns 0 if successfull, non-zero otherwise
-			{
-			return 0;
-			}
+	// Returns nothing.
+	// In.
+	// In.
+	// In.
+	// Out.
+	// Out.
+	void Map3Dto2D(int16_t sX, int16_t sY, int16_t sZ, int16_t* psX, int16_t* psY);
 
-		// Suspend object
-		virtual void Suspend(void)
-			{
-			}
 
-		// Resume object
-		virtual void Resume(void)
-			{
-			}
 
-		// Update object
-		virtual void Update(void)
-			{
-			}
+	// Maps a 3D coordinate onto the viewing plane.
 
-		// Render object
-		virtual void Render(void)
-			{
-			}
+	// Returns nothing.
+	// In.
+	// In.
+	// In.
+	// Out.
+	// Out.
+	void Map3Dto2D(double dX, double dY, double dZ, double* pdX, double* pdY);
 
-		// Called by editor to init new object at specified position
-		virtual int16_t EditNew(									// Returns 0 if successfull, non-zero otherwise
-			int16_t /*sX*/,											// In:  New x coord
-			int16_t /*sY*/,											// In:  New y coord
-			int16_t /*sZ*/)											// In:  New z coord
-			{
-			return 0;
-			}
+//---------------------------------------------------------------------------
+// Virtual functions that should be overloaded for additional functionality.
+// The default implementations simply return success.
+//---------------------------------------------------------------------------
+public:
+	// Load object (should call base class version!)
 
-		// Called by editor to modify object
-		virtual int16_t EditModify(void)						// Returns 0 if successfull, non-zero otherwise
-			{
-			return 0;
-			}
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  File to load from
+	// In:  True for edit mode, false otherwise
+	// In:  File count (unique per file, never 0)
+	// In:  File version being loaded.
+	virtual int16_t Load(RFile* pFile, bool bEditMode, int16_t sFileCount, uint32_t	ulFileVersion);
 
-		// Called by editor to move object to specified position
-		virtual int16_t EditMove(									// Returns 0 if successfull, non-zero otherwise
-			int16_t /*sX*/,											// In:  New x coord
-			int16_t /*sY*/,											// In:  New y coord
-			int16_t /*sZ*/)											// In:  New z coord
-			{
-			return 0;
-			}
+	// Save object (should call base class version!)
+
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  File to save to
+	// In:  File count (unique per file, never 0)
+	virtual int16_t Save(RFile* pFile, int16_t /*sFileCount*/)
+	{
+		// Save this thing's ID.  The ID is unique to this 'thing' within its realm
+		// (i.e., no other CThing or derived class has this same ID within this realm).
+		// This is assigned by the editor via a call to the realm's m_idbank.Get().
+		pFile->Write(m_u16InstanceId);
+
+		return pFile->Error();
+	}
+
+	// Startup object
+	// Returns 0 if successfull, non-zero otherwise
+	virtual int16_t Startup(void)
+	{
+		return 0;
+	}
+
+	// Shutdown object
+	// Returns 0 if successfull, non-zero otherwise
+	virtual int16_t Shutdown(void)
+	{
+		return 0;
+	}
+
+	// Suspend object
+	virtual void Suspend(void)
+	{
+	}
+
+	// Resume object
+	virtual void Resume(void)
+	{
+	}
+
+	// Update object
+	virtual void Update(void)
+	{
+	}
+
+	// Render object
+	virtual void Render(void)
+	{
+	}
+
+	// Called by editor to init new object at specified position
+
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  New x coord
+	// In:  New y coord
+	// In:  New z coord
+	virtual int16_t EditNew(int16_t /*sX*/,	int16_t /*sY*/,	int16_t /*sZ*/)
+	{
+		return 0;
+	}
+
+	// Called by editor to modify object
+	// Returns 0 if successfull, non-zero otherwise
+	virtual int16_t EditModify(void)
+	{
+		return 0;
+	}
+
+	// Called by editor to move object to specified position
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  New x coord
+	// In:  New y coord
+	// In:  New z coord
+
+	virtual int16_t EditMove(int16_t /*sX*/, int16_t /*sY*/, int16_t /*sZ*/)
+	{
+		return 0;
+	}
 
 		// Called by editor to get the clickable pos/area of an object in 2D.
 		virtual	// If you override this, do NOT call this base class.
@@ -761,19 +786,19 @@ class CThing
 		// InvalidPosition to indicate that it is not implemented for this 
 		// class type.  Override these functions for your class type to 
 		// enable this feature.
-		virtual					// Override to implement this functionality.
-		double GetX(void)	{ return InvalidPosition; }
+	
+		// Override to implement this functionality.
+		virtual double GetX(void) { return InvalidPosition; }
 
-		virtual					// Override to implement this functionality.
-		double GetY(void)	{ return InvalidPosition; }
+		// Override to implement this functionality.
+		virtual double GetY(void) { return InvalidPosition; }
 
-		virtual					// Override to implement this functionality.
-		double GetZ(void)	{ return InvalidPosition; }
+		// Override to implement this functionality.
+		virtual	double GetZ(void) { return InvalidPosition; }
 
 		// Get the smash - for normal CThings that don't have a smash, it
 		// will return NULL, CThing3d's though always have a smash.
-		virtual 
-		CSmash* GetSmash(void) {return NULL;}
+		virtual CSmash* GetSmash(void) {return NULL;}
 
 		//////////////////////////////////////////////////////////////////////////
 		// These are defined merely to discourage their use within CThings.
@@ -787,34 +812,29 @@ class CThing
 
 		// Never rely on sounds finishing w/i a CThing.  This varies greatly from
 		// machine to machine (and, in many cases, from run to run).
-		bool IsSamplePlaying(	 
-										
-			SampleMasterID	/*id*/)	
-			{
+		bool IsSamplePlaying(SampleMasterID /*id*/)	
+		{
 			ASSERT(0);
 			return false;
-			}
+		}
 
-		bool IsSamplePlaying(	
-			RSnd*	/*psnd*/,				
-			SampleMasterID /*id*/)	
-			{
+		bool IsSamplePlaying(RSnd* /*psnd*/, SampleMasterID /*id*/)	
+		{
 			ASSERT(0);
 			return false;
-			}
+		}
 
 		int32_t rspGetMilliseconds(void)
-			{
+		{
 			ASSERT(0);
 			return 0;
-			}
+		}
 		
-		int32_t rspGetMicroseconds(
-			int16_t /*sReset	= FALSE*/)
-			{
+		int32_t rspGetMicroseconds(int16_t /*sReset	= FALSE*/)
+		{
 			ASSERT(0);
 			return 0;
-			}
+		}
 
 	};
 
