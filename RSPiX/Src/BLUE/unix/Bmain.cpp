@@ -125,11 +125,6 @@ extern void rspDoSystem(void)										// Returns nothing.
 	{
         rspPresentFrame();
 
-        #if WITH_STEAMWORKS
-        extern void RunSteamworksUpkeep();
-        RunSteamworksUpkeep();
-        #endif
-
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {

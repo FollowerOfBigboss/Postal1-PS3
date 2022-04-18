@@ -588,14 +588,8 @@ enum Achievement
     ACHIEVEMENT_MAX  // not an achievement, just the total count.
 };
 
-#if WITH_STEAMWORKS
-extern void UnlockAchievement(const Achievement ach);
-extern void RunSteamworksUpkeep();
-extern void RequestSteamStatsStore();
-#else
 #define UnlockAchievement(x) do {} while (0)
 #define RunSteamworksUpkeep() do {} while (0)
-#endif
 
 #endif // GAME_H
 ////////////////////////////////////////////////////////////////////////////////

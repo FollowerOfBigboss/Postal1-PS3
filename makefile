@@ -5,10 +5,6 @@
 BINDIR := ./bin
 SRCDIR := .
 
-ifeq ($(WITH_STEAMWORKS),1)
-  steamworks := true
-endif
-
 ifeq ($(PANDORA),1)
   macosx := false
   CPUARCH := arm
@@ -355,11 +351,6 @@ else
 	  STEAMLDFLAGS += steamworks/sdk/redistributable_bin/linux32/libsteam_api.so
     endif
   endif
-endif
-
-ifeq ($(strip $(steamworks)),true)
-  CFLAGS += -DWITH_STEAMWORKS=1 -Isteamworks/sdk/public
-  LDFLAGS += $(STEAMLDFLAGS)
 endif
 
 CFLAGS += -DALLOW_TWINSTICK

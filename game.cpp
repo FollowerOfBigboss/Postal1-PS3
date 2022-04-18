@@ -625,12 +625,7 @@
 
 #define LEVEL_DIR							"res/levels/."
 
-#if WITH_STEAMWORKS
-extern bool EnableSteamCloud;
-#define SAVEGAME_DIR						(EnableSteamCloud ? "steamcloud" : "savegame")
-#else
 #define SAVEGAME_DIR						("savegame")
-#endif
 
 #define CHECK_FOR_ASSETS_FILENAME	"res/res.sak"
 #define CHECK_FOR_POSTALSD_FILENAME "res/hoods/ezmart.sak"

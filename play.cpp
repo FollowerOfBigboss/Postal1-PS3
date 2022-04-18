@@ -371,10 +371,6 @@
 	#include <sys/stat.h>
 #endif
 
-#if WITH_STEAMWORKS
-#include "steam/steam_api.h"
-#endif
-
 //#define RSP_PROFILE_ON
 //#include "ORANGE/Debug/profile.h"
 
@@ -449,12 +445,7 @@
 // Default value for "final frame" in network mode (6.8 years at 10fps)
 #define DEFAULT_FINAL_FRAME				LONG_MAX
 
-#if WITH_STEAMWORKS
-extern bool EnableSteamCloud;
-#define SAVEGAME_DIR						(EnableSteamCloud ? "steamcloud" : "savegame")
-#else
 #define SAVEGAME_DIR						("savegame")
-#endif
 
 #define SAVEGAME_EXT							"gme"
 
@@ -3506,32 +3497,9 @@ class CPlayInput : public CPlay
 						// way to choose the appropriate original action).
 						if (Game_SavePlayersGame(szFile, pinfo->Realm()->m_flags.sDifficulty) == SUCCESS)
 						{
-							#if WITH_STEAMWORKS
-							if ((EnableSteamCloud) && (strncmp(szFile, "steamcloud/", 11) == 0))
-							{
-								char fname[64];
-								snprintf(fname, sizeof (fname), "savegame_%s", szFile + 11);
-								ISteamRemoteStorage *cloud = SteamRemoteStorage();
-								if (cloud)
-								{
-									FILE *io = fopen(FindCorrectFile(szFile, "rb"), "rb");
-									if (io)
-									{
-										char buf[1024];
-										const size_t br = fread(buf, 1, sizeof (buf), io);
-										fclose(io);
-										if (br > 0)
-											cloud->FileWrite(fname, buf, (int32) br);
-									}
-								}
-							}
-							#endif
 						}
 					}
 					#else
-						#if WITH_STEAMWORKS
-						#error You need to switch over from this code to the in-game file UI first.
-						#endif
 					sResult = rspSaveBox(g_pszSaveGameTitle, szFile, szFile, sizeof(szFile), SAVEGAME_EXT);
 					if (sResult == 0)
 						{
@@ -5260,10 +5228,6 @@ extern int16_t Play(										// Returns 0 if successfull, non-zero otherwise
 								Stat_Deaths++;
 							}
 						StatsAreAllowed = false;
-
-						#if WITH_STEAMWORKS
-						RequestSteamStatsStore();  // this is a good time to push any updated stats from the level.
-						#endif
 
 						// Figure out what to do next (same realm, next realm, game over, etc.)
 						if (!sResult)

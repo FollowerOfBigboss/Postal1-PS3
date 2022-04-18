@@ -222,12 +222,7 @@
 #define HIGHSCORE_ITEM_FILE			"menu/HiScoreItem.gui"
 //HighScore GUI disabled #define HIGH_SCORE_DLG
 
-#if WITH_STEAMWORKS
-extern bool EnableSteamCloud;
-#define HIGHSCORE_SCORES_FILE						(EnableSteamCloud ? "steamcloud/high.ini" : "savegame/high.ini")
-#else
 #define HIGHSCORE_SCORES_FILE						"savegame/high.ini"
-#endif
 
 #define TEXT_SHADOW_COLOR				220
 
