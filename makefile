@@ -1,4 +1,3 @@
-
 # !!! FIXME: Make this more robust. MUCH more robust.
 # !!! FIXME: ...or at least comment the rest of these options...
 
@@ -11,7 +10,6 @@ ifeq ($(PANDORA),1)
   CC := gcc
   CXX := g++
   LINKER := g++
-  steamworks := false
   CFLAGS += -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -ftree-vectorize -ffast-math -DPANDORA
   CLIENTEXE := $(BINDIR)/postal1-arm
 else ifeq ($(ODROID),1)
@@ -20,7 +18,6 @@ else ifeq ($(ODROID),1)
   CC := gcc
   CXX := g++
   LINKER := g++
-  steamworks := false
   CFLAGS += -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=hard -ftree-vectorize -ffast-math -DODROID
   CLIENTEXE := $(BINDIR)/postal1-arm
 else ifeq ($(linux_x86),1)
@@ -30,14 +27,13 @@ else ifeq ($(linux_x86),1)
 else ifeq ($(macosx_x86),1)
   target := macosx_x86
   CLIENTEXE := $(BINDIR)/postal1-x86
-
 else ifeq ($(PSL1GHT),1)
   target := PSL1GHT
-  CLIENTEXE := $(BINDIR)/postal-PS3.elf
+  CLIENTEXE := $(BINDIR)/postal-PS3
   CFLAGS += -D__PSL1GHT__
 else ifeq ($(SCE),1)
   target := SCE
-  CLIENTEXE := $(BINDIR)/postal-PS3.elf
+  CLIENTEXE := $(BINDIR)/postal-PS3
   CFLAGS += -D__CELLOS_LV2__
 else
   target := linux_x86_64
@@ -46,6 +42,7 @@ endif
 
 # ----------------------------------------------------- ... bleh.
 
+$(info Selected Target: $(target))
 
 ifeq ($(strip $(target)), SCE)
   macosx := false
@@ -293,20 +290,11 @@ CFLAGS += -fsigned-char -DPLATFORM_UNIX -w
 ifeq ($(strip $(macosx)),true)
   CFLAGS += -DPLATFORM_MACOSX
 endif
-
-
 ifeq ($(strip $(SCE)), 1)
   CFLAGS += -std=c++98
-
-endif
-
-
-
-ifeq ($(strip $(SCE)), 1)
   CFLAGS += -D_DEBUG
   CFLAGS += -DRESMGR_VERBOSE
 endif
-
 ifeq ($(strip $(PSL1GHT)), 1)
   CFLAGS += -D_DEBUG
   CFLAGS += -DRESMGR_VERBOSE
@@ -320,11 +308,9 @@ CFLAGS += -DLOCALE=US -DTARGET=POSTAL_2015
 # includes ...
 
 CFLAGS += -I$(SRCDIR)
-
-ifneq ($(strip $(PLAYSTATION3)), 1)
+ifneq ($(strip $(PSL1GHT)), 1)
   CFLAGS += -I$(SRCDIR)/SDL2/include
 endif
-
 CFLAGS += -I$(SRCDIR)/RSPiX
 CFLAGS += -I$(SRCDIR)/RSPiX/Inc
 CFLAGS += -I$(SRCDIR)/RSPiX/Src
@@ -350,21 +336,19 @@ ifeq ($(strip $(macosx)),true)
   LDFLAGS += -arch i386 -mmacosx-version-min=10.6
   LDFLAGS += -framework CoreFoundation -framework Cocoa
   LIBS += SDL2/libs/macosx/libSDL2-2.0.0.dylib
-  STEAMLDFLAGS += steamworks/sdk/redistributable_bin/osx32/libsteam_api.dylib
 else
-  ifeq ($(CPUARCH),arm)
-    LIBS += -lSDL2
-  else
-    ifeq ($(CPUARCH),x86_64)
-	  LIBS += -lSDL2
-    else ifeq($(CPUARCH), CELL)
-      LIBS +=
-    else
-	  LIBS += SDL2/libs/linux-x86/libSDL2-2.0.so.0
-	  LDFLAGS += -Wl,-rpath,\$$ORIGIN
-	  STEAMLDFLAGS += steamworks/sdk/redistributable_bin/linux32/libsteam_api.so
-    endif
-  endif
+	ifeq ($(CPUARCH),arm)
+    	LIBS += -lSDL2
+	else
+		ifeq ($(CPUARCH),x86_64)
+			LIBS += -lSDL2
+    	else ifeq ($(CPUARCH), CELL)
+			LIBS += 
+    	else
+			LIBS += SDL2/libs/linux-x86/libSDL2-2.0.so.0
+			LDFLAGS += -Wl,-rpath,\$$ORIGIN
+    	endif
+  	endif
 endif
 
 ifeq ($(strip $(SCE)), 1)
@@ -409,7 +393,9 @@ $(BINDIR)/%.a: $(SRCDIR)/%.a
 $(CLIENTEXE): $(BINDIR) $(OBJS)
 	$(LINKER) -o $(CLIENTEXE) $(OBJS) $(LDFLAGS) $(LIBS)
 ifeq ($(strip $(target)), PSL1GHT)
-	  sprxlinker $(CLIENTEXE)
+	  mv $(CLIENTEXE) $(CLIENTEXE).elf
+	  sprxlinker $(CLIENTEXE).elf
+	  make_self $(CLIENTEXE).elf $(CLIENTEXE).self
 endif
 $(BINDIR) :
 	$(MAKE) bindir
