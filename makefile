@@ -342,13 +342,13 @@ else
 	else
 		ifeq ($(CPUARCH),x86_64)
 			LIBS += -lSDL2
-    	else ifeq ($(CPUARCH), CELL)
+		else ifeq ($(CPUARCH), CELL)
 			LIBS += 
-    	else
+		else
 			LIBS += SDL2/libs/linux-x86/libSDL2-2.0.so.0
 			LDFLAGS += -Wl,-rpath,\$$ORIGIN
-    	endif
-  	endif
+		endif
+	endif
 endif
 
 ifeq ($(strip $(SCE)), 1)
