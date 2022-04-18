@@ -38,7 +38,7 @@ else ifeq ($(PSL1GHT),1)
 else ifeq ($(SCE),1)
   target := SCE
   CLIENTEXE := $(BINDIR)/postal-PS3.elf
-
+  CFLAGS += -D__CELLOS_LV2__
 else
   target := linux_x86_64
   CLIENTEXE := $(BINDIR)/postal1-x86_64
@@ -357,16 +357,21 @@ else
   else
     ifeq ($(CPUARCH),x86_64)
 	  LIBS += -lSDL2
-    else ifeq ($(CPUARCH), CELL)
-	# PSL1GHT LINKINGS ...
-	LDFLAGS += -L$(PS3DEV)/portlibs/ppu/lib -L$(PS3DEV)/ppu/lib
-	LIBS += -lSDL2 -lio -laudio -lrsx -lgcm_sys -lsysutil -lrt -llv2 
+    else ifeq($(CPUARCH), CELL)
+      LIBS +=
     else
 	  LIBS += SDL2/libs/linux-x86/libSDL2-2.0.so.0
 	  LDFLAGS += -Wl,-rpath,\$$ORIGIN
 	  STEAMLDFLAGS += steamworks/sdk/redistributable_bin/linux32/libsteam_api.so
     endif
   endif
+endif
+
+ifeq ($(strip $(SCE)), 1)
+endif
+ifeq ($(strip $(PSL1GHT)), 1)
+	LDFLAGS += -L$(PS3DEV)/portlibs/ppu/lib -L$(PS3DEV)/ppu/lib
+	LIBS += -lSDL2 -lio -laudio -lrsx -lgcm_sys -lsysutil -lrt -llv2 
 endif
 
 CFLAGS += -DALLOW_TWINSTICK

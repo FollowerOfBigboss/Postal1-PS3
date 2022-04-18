@@ -150,7 +150,7 @@
 #include <unistd.h>
 #include <dirent.h>
 
-#if !defined(__PSL1GHT__) || !defined(__CELLOS_LV2__)
+#if !defined(__PSL1GHT__) && !defined(__CELLOS_LV2__)
 #include <sys/param.h>
 #endif
 
