@@ -1031,7 +1031,7 @@ int16_t CHood::GetResources(void)						// Returns 0 if successfull, non-zero oth
 		char	szFileName[RSP_MAX_PATH];			// Temp storage to create filenames.
 		char	szBasePath[RSP_MAX_PATH];			// Temp storage of file path.
 	
-#ifdef PLATFORM_PLAYSTATION3
+#if defined(__PSL1GHT__) || defined(__CELLOS_LV2__)
 		
 		// Create the real base file path.
 		sprintf(szBasePath, "hoods/%s/%s", m_acBaseName, m_acBaseName);

@@ -31,10 +31,9 @@
 #ifndef PROTOBSDIP_H
 #define PROTOBSDIP_H
 
-#ifdef WIN32
+#if defined(WIN32)
 #include <winsock.h>
-
-#elif PLATFORM_PLAYSTATION3
+#elif defined(__PSL1GHT__) || defined(__CELLOS_LV2__)
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>

@@ -36,7 +36,7 @@
 #include <string.h>
 
 
-#if !defined(WIN32) && !defined(PLATFORM_PLAYSTATION3)
+#if !defined(WIN32) && !defined(__CELLOS_LV2__)
 #include <unistd.h>
 #include <sys/param.h>
 #endif

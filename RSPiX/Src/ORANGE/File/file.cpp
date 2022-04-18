@@ -136,7 +136,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <stdlib.h>
 
-#ifdef PLATFORM_PLAYSTATION3
+#if defined(__PSL1GHT__) || defined(__CELLOS_LV2__)
 #include <memory>
 #else
 #include <memory.h>
@@ -150,7 +150,7 @@
 #include <unistd.h>
 #include <dirent.h>
 
-#ifndef PLATFORM_PLAYSTATION3
+#if !defined(__PSL1GHT__) || !defined(__CELLOS_LV2__)
 #include <sys/param.h>
 #endif
 
@@ -175,7 +175,7 @@
 typedef HRESULT (WINAPI *fnSHGetFolderPathW)(HWND hwnd, int nFolder, HANDLE hToken, DWORD dwFlags, LPWSTR pszPath);
 #endif
 
-#ifdef PLATFORM_PLAYSTATION3
+#if defined(__CELLOS_LV2__) || defined(__PSL1GHT__)
 #define F_OK 00
 #define R_OK 04
 #include <alloca.h>
@@ -425,7 +425,7 @@ extern const char *FindCorrectFile(const char *_pszName, const char *pszMode)
 
             strcat(prefpath, "Library/Application Support/Postal Plus/");
 
-	    #elif defined(PLATFORM_PLAYSTATION3)
+	    #elif defined(__CELLOS_LV2__) || defined(__PSL1GHT__)
 	    // oh well.
 	    const char *homedir = "/dev_hdd0/game/PST3000/";
 	    snprintf(prefpath, sizeof(prefpath), "%s", homedir);

@@ -30,10 +30,15 @@ else ifeq ($(linux_x86),1)
 else ifeq ($(macosx_x86),1)
   target := macosx_x86
   CLIENTEXE := $(BINDIR)/postal1-x86
-else ifeq ($(PLAYSTATION3),1)
-  target := PLAYSTATION3
+
+else ifeq ($(PSL1GHT),1)
+  target := PSL1GHT
   CLIENTEXE := $(BINDIR)/postal-PS3.elf
   CFLAGS += -D__PSL1GHT__
+else ifeq ($(SCE),1)
+  target := SCE
+  CLIENTEXE := $(BINDIR)/postal-PS3.elf
+
 else
   target := linux_x86_64
   CLIENTEXE := $(BINDIR)/postal1-x86_64
@@ -41,14 +46,17 @@ endif
 
 # ----------------------------------------------------- ... bleh.
 
-ifeq ($(strip $(target)), PLAYSTATION3)
+
+ifeq ($(strip $(target)), SCE)
   macosx := false
   CPUARCH := CELL
-  # CC := ppu-lv2-gcc
-  # CXX := ppu-lv2-g++
-  # LINKER := ppu-lv2-g++
-
-  # PSL1GHT TOOLCHAIN
+  CC := ppu-lv2-gcc
+  CXX := ppu-lv2-g++
+  LINKER := ppu-lv2-g++
+endif
+ifeq ($(strip $(target)), PSL1GHT)
+  macosx := false
+  CPUARCH := CELL
   CC := ppu-gcc
   CXX := ppu-g++
   LINKER := ppu-g++
@@ -285,19 +293,27 @@ CFLAGS += -fsigned-char -DPLATFORM_UNIX -w
 ifeq ($(strip $(macosx)),true)
   CFLAGS += -DPLATFORM_MACOSX
 endif
-ifeq ($(strip $(PLAYSTATION3)), 1)
-  CFLAGS += -DPLATFORM_PLAYSTATION3
-  CFLAGS += -D_DEBUG
-  CFLAGS += -DRESMGR_VERBOSE
-#  CFLAGS += -std=c++98
-#  $(info PLAYSTATION3 defined)
 
- # PSL1GHT includes
-  #CFLAGS += -I$(PS3DEV)/ppu/powerpc64-ps3-elf/include/c++/7.2.0
-  CFLAGS += -I$(PS3DEV)/ppu/include
-  CFLAGS += -I$(PS3DEV)/portlibs/ppu/include/SDL2
+
+ifeq ($(strip $(SCE)), 1)
+  CFLAGS += -std=c++98
 
 endif
+
+
+
+ifeq ($(strip $(SCE)), 1)
+  CFLAGS += -D_DEBUG
+  CFLAGS += -DRESMGR_VERBOSE
+endif
+
+ifeq ($(strip $(PSL1GHT)), 1)
+  CFLAGS += -D_DEBUG
+  CFLAGS += -DRESMGR_VERBOSE
+  CFLAGS += -I$(PS3DEV)/ppu/include
+  CFLAGS += -I$(PS3DEV)/portlibs/ppu/include/SDL2
+endif
+
 # defines the game needs...
 CFLAGS += -DLOCALE=US -DTARGET=POSTAL_2015
 
@@ -387,7 +403,7 @@ $(BINDIR)/%.a: $(SRCDIR)/%.a
 # $(CLIENTEXE): $(BINDIR) $(OBJS) $(LIBS)
 $(CLIENTEXE): $(BINDIR) $(OBJS)
 	$(LINKER) -o $(CLIENTEXE) $(OBJS) $(LDFLAGS) $(LIBS)
-ifeq ($(strip $(target)), PLAYSTATION3)
+ifeq ($(strip $(target)), PSL1GHT)
 	  sprxlinker $(CLIENTEXE)
 endif
 $(BINDIR) :

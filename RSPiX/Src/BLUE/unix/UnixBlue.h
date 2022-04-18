@@ -650,7 +650,7 @@ extern void rspPlatformInit(void);
 
 
 
-#if defined(PLATFORM_PLAYSTATION3) && !defined(__PSL1GHT__)
+#if defined(__CELLOS_LV2__) && !defined(__PSL1GHT__)
 
 inline char* getcwd(char* buf, size_t size)
 {

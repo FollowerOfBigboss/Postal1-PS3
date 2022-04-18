@@ -65,7 +65,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#ifndef PLATFORM_PLAYSTATION3
+#if !defined(__CELLOS_LV2__) || !defined(__PSL1GHT__)
 #include <signal.h>
 #endif
 
@@ -131,7 +131,7 @@ void rspTrace(char *frmt, ... )
 		va_end (varp);
 		LOGI("%s",errortext);
 
-#elif defined(__PSL1GHT__) || defined(PLATFORM_PLAYSTATION3) 
+#elif defined(__PSL1GHT__) || defined(__CELLOS_LV2__) 
 	vprintf(frmt, varp);
 #else
 	vfprintf(stderr, frmt, varp);
