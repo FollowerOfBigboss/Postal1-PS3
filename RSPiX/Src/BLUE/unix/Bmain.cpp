@@ -101,10 +101,10 @@ int16_t rspInitBlue(void)
 // 
 //////////////////////////////////////////////////////////////////////////////
 void rspKillBlue(void)
-	{
-	    // Kill display module.
-    	SDL_Quit();
-	}
+{
+    // Kill display module.
+    SDL_Quit();
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // 
@@ -173,9 +173,9 @@ extern void rspSetDoSystemMode(	// Returns nothing.
 //
 ////////////////////////////////////////////////////////////////////////////////
 extern int16_t rspGetQuitStatus(void)				// Returns TRUE if quit detected, FALSE otherwise
-	{
+{
 	return ms_sQuit;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -188,9 +188,9 @@ extern int16_t rspGetQuitStatus(void)				// Returns TRUE if quit detected, FALSE
 ////////////////////////////////////////////////////////////////////////////////
 extern void rspSetQuitStatus(
 	int16_t sStatus)										// In:  New status
-	{
+{
 	ms_sQuit = sStatus;
-	}
+}
 
 extern int _argc;
 extern char **_argv;

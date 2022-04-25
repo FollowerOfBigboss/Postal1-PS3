@@ -382,14 +382,17 @@ int16_t RPrefs::Write()
 					for (int32_t lCount = 0; !bGotTmp && (lCount < 9999999L); lCount++)
 					{
 						sprintf(pTmp, "t%0.7ld.tmp", (int32_t)lCount);
+						TRACE("In t0000 file\n");
 						FILE* fpTmp = fopen(FindCorrectFile(acTmpFileName, "r"), "r");
+						TRACE("Managed to open t00000 file!\n");
 						if (fpTmp != NULL)
 							fclose(fpTmp);
 						else
 							bGotTmp = true;
 					}
 					if (bGotTmp)
-						{
+					{
+						TRACE("Got tmp\n");
 						// Create temp file that will contain new ini stuff
 						FILE *pfileTmp = fopen(FindCorrectFile(acTmpFileName, "w"), "w");
 						if (pfileTmp != NULL)
@@ -462,16 +465,16 @@ int16_t RPrefs::Write()
 			}
 		}
 						else
-							{
+						{
 							TRACE("RPrefs::Write(): fopen() of temp file: %s\n", strerror(errno));
 							m_sErrorStatus = -1;
-							}
+						}
 						}
 					else
-						{
+					{
 						TRACE("RPrefs::Write(): Couldn't get temp file name!\n");
 						m_sErrorStatus = -5;
-						}
+					}
 					}
 				else
 					{

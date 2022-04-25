@@ -291,13 +291,13 @@ RFile::RFile(void)
 //
 //////////////////////////////////////////////////////////////////////////////
 RFile::~RFile(void)
-	{
+{
 	if (m_fs != NULL || m_pucFile != NULL)
-		{
+	{
 		Close();
 		TRACE("~RFile(): Closed the file that you forgot to, hoser!\n");
-		}
 	}
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // Methods.
@@ -308,6 +308,7 @@ RFile::~RFile(void)
 //  (also zlib-licensed.)
 static int locateOneElement(char *buf)
 {
+	TRACE("locateOneElement()\n");
 	char *ptr = NULL;
 	DIR *dirp = NULL;
 	struct dirent *dent = NULL;
@@ -318,8 +319,13 @@ static int locateOneElement(char *buf)
 	ptr = strrchr(buf, '/');  /* find entry at end of path. */
 	if (ptr == NULL)
 	{
+		#if defined(__PSL1GHT__)
+		dirp = opendir("/dev_hdd0/game/PST3000/");
+		ptr = buf;
+		#else
 		dirp = opendir(".");
 		ptr = buf;
+		#endif
 	}
 	else
 	{
@@ -347,6 +353,8 @@ static int locateOneElement(char *buf)
 
 static void locateCorrectCase(char *buf)
 {
+	TRACE("locateCorrectCase()\n");
+	TRACE("%s\n", buf);
 #if PLATFORM_UNIX
 	char *ptr = buf;
 	char *prevptr = buf;
@@ -370,6 +378,7 @@ static void locateCorrectCase(char *buf)
 
 extern const char *FindCorrectFile(const char *_pszName, const char *pszMode)
 {
+	TRACE("FindCorrectFile()\n");
     char *pszName = (char *) alloca(strlen(_pszName) + 1);
     strcpy(pszName, _pszName);
 
@@ -426,63 +435,65 @@ extern const char *FindCorrectFile(const char *_pszName, const char *pszMode)
             strcat(prefpath, "Library/Application Support/Postal Plus/");
 
 	    #elif defined(__CELLOS_LV2__) || defined(__PSL1GHT__)
-	    // oh well.
+	    
+		// oh well.
 	    const char *homedir = "/dev_hdd0/game/PST3000/";
 	    snprintf(prefpath, sizeof(prefpath), "%s", homedir);
 	    
-            #else
-            const char *homedir = getenv("HOME");
-            const char *xdghomedir = getenv("XDG_DATA_HOME");
-            const char *append = "";
+        #else
+        const char *homedir = getenv("HOME");
+        const char *xdghomedir = getenv("XDG_DATA_HOME");
+        const char *append = "";
 
-            if (xdghomedir == NULL)
+        if (xdghomedir == NULL)
+        {
+            if (homedir == NULL)
+                xdghomedir = ".";  // oh well.
+            else
             {
-                if (homedir == NULL)
-                    xdghomedir = ".";  // oh well.
-                else
-                {
-                    xdghomedir = homedir;
-                    append = "/.local/share";
-                }
+                xdghomedir = homedir;
+                append = "/.local/share";
             }
+        }
 
-            snprintf(prefpath, sizeof (prefpath), "%s%s/PostalPlus/", xdghomedir, append);
+        snprintf(prefpath, sizeof (prefpath), "%s%s/PostalPlus/", xdghomedir, append);
 
-            if (homedir != NULL)
+        if (homedir != NULL)
+        {
+            char oldpath[PATH_MAX];
+            snprintf(oldpath, sizeof (oldpath), "%s/.postal1", homedir);
+            if (access(oldpath, F_OK) == 0)
             {
-                char oldpath[PATH_MAX];
-                snprintf(oldpath, sizeof (oldpath), "%s/.postal1", homedir);
-                if (access(oldpath, F_OK) == 0)
-                {
-                    TRACE("using oldschool prefpath at \"%s\"\n", oldpath);
-                    snprintf(prefpath, sizeof (prefpath), "%s/", oldpath);
-                }
+                TRACE("using oldschool prefpath at \"%s\"\n", oldpath);
+                snprintf(prefpath, sizeof (prefpath), "%s/", oldpath);
             }
+        }
 
-            // try to make sure the dirs exist...
-            for (char *i = prefpath; *i; i++)
+        // try to make sure the dirs exist...
+        for (char *i = prefpath; *i; i++)
+        {
+            if (*i == '/')
             {
-                if (*i == '/')
-                {
-                    *i = '\0';
-                    mkdir(prefpath, 0700);
-                    *i = '/';
-                }
+                *i = '\0';
+                mkdir(prefpath, 0700);
+                *i = '/';
             }
-            mkdir(prefpath, 0700);
-            #endif
+        }
+    	mkdir(prefpath, 0700);
+        #endif
 
             TRACE("prefpath is \"%s\"\n", prefpath);
         }
         initialized = true;
     }
 
+	TRACE("initiliazed passed\n");
+
     static char finalname[PATH_MAX];
     static bool bail_early = true;
 
     if (nohomedir)
         strcpy(finalname, pszName);
-
     else if ((strlen(pszName) + strlen(prefpath)) > sizeof (finalname))
         strcpy(finalname, pszName); // oh well.
 
@@ -491,12 +502,20 @@ extern const char *FindCorrectFile(const char *_pszName, const char *pszMode)
         bail_early = false;
         sprintf(finalname, "%s%s", prefpath, pszName);
     }
+	
+	TRACE("nohomedir passed\n");
+
 
     locateCorrectCase(finalname);
 
+	
     if (bail_early)  // don't choose between prefpath and basedir?
+	{
+		TRACE("Fall to bail early\n");
         return(finalname);
+	}
 
+	TRACE("Before strcspn\n");
     // writing? Always use prefpath.
     if (strcspn(pszMode, "aAwW+") < strlen(pszMode))
     {
@@ -506,6 +525,7 @@ extern const char *FindCorrectFile(const char *_pszName, const char *pszMode)
             if (((*ptr == '/') || (*ptr == '\\')) && (ptr != finalname))
             {
                 *ptr = '\0';
+				TRACE("Before access call\n");
                 if (access(finalname, F_OK) == -1)
                 {
                     TRACE("Making directory \"%s\"\n", finalname);
@@ -522,6 +542,7 @@ extern const char *FindCorrectFile(const char *_pszName, const char *pszMode)
         // read AND write.  :/   Copy the file if it's not there.
         if ((strchr(pszMode, '+')) && (access(finalname, F_OK) == -1))
         {
+			TRACE("fopen calls\n");
             FILE *in = fopen(pszName, "rb");
             FILE *out = fopen(finalname, "wb");
             if (in && out)
@@ -550,6 +571,7 @@ extern const char *FindCorrectFile(const char *_pszName, const char *pszMode)
         }
     }
 
+	TRACE("FindCorrectFile() end\n");
     return finalname;
 }
 

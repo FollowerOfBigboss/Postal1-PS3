@@ -70,16 +70,18 @@
 //////////////////////////////////////////////////////////////////////////////////////
 // Module specific (static) globals.
 //////////////////////////////////////////////////////////////////////////////////////
-static char *ms_aszSeed[NUM_KEYS]=				{	"S3D5Lf6klfdsjiureLJKHLKmnblkjshgwieourLKHLKJHSDA0432175094SJAKLFK7348LSDLKJDHFOIUhjgdskgfeiurytowelxcmnvbdfhgeoriyfdslkhgfdgyuie",
-																"KlkjILKJ879IHKJ8kj67kjh7IUKJHjkh98769872vYUTui6JHG87jhg78JHg787JHGUYuytuyjg876RHCVBnvbAIUT678787igJGFHGFTy67uhHJKJHUYTjhg6HGHG76",
-																"4LKJH5Euhysdiouyfjlkw45879345kjshfdgcvxJSDHFR8734hdskmfv7y8KJLSDGFAVBMZXBV789kMNADFYUYjhkgkjhdsgfowe787243KJHGDSAGJKkjgdfuye3sd7",
-																"l45kjhdfuihlIUYSLKHi87ylKJHYOIUmsagKJLHgY9802734KJHLKiuoymNJHTmnb4iU7687nkmbojyTD64654HJG765KHKJhg87jKHKJ76dcbnmbDBDSJFDHJ6IHGHJ",
-																"fdlkhgljslfkdfhvcxzb 902374jklhfdgoIUOYLSKFDJH98798ysdlk9870OLHL987sdxmncosidHGKJ876kjhtdg786JHG87kj76Kjhgkjhi8K8HG98kgdnb mvzms",
-																"lsdhflkasjhLKJHSLKHAFD987435LRKJHL34UY5L34J64MNB7IU4Yiuoyt87sdfjshg87ahjkjhgds87JHGKJHT8kjhgdfsvbmyt4eu678JHGkjyt6jKH78k0kjt02KJ",
-																"lkjhUIYkljhlUYOI6yt9876HJMNBVuyt97JKHfMvhjytrfiyIUHGKVBMNBuyi9872548JKN76kj9fsd8KHG8JKg7872732jK8JgkjhKJHGKJHgkjhg7jkhgkjhgkjhgk",
-																"dsdfLKJH;LKjKJFLdJGmhpi657oU6Y76fhgf5dyfh879346nmzmbvc56erter654gvcbmzwsdfdsmxcngfvRDFrEDfg76bDewdfvdfgwqsdfdgfcrRDfhgfderfdfteP",
-																"lkhfdsRE546457djh6g65l67KJHLkhmnbvxcbDF09KLJliuyfdsgxcvbFDGERsdasdfgTEdhFDtYrt8765DFRrfgfhvhghretwRF67654DFhDGFDVctTRTtrytrRyiTY",
-																"28734jsdfhg873jksgUIYTIUkhgiuT7YIGVBKjg8796KHG8o76HJG876tKJHG8976GFd6584H6G67RT987kJHG65978JKHG8JHGKJHGkhjgkjhgidsytf87439649283"};
+static char *ms_aszSeed[NUM_KEYS]=	{	
+	"S3D5Lf6klfdsjiureLJKHLKmnblkjshgwieourLKHLKJHSDA0432175094SJAKLFK7348LSDLKJDHFOIUhjgdskgfeiurytowelxcmnvbdfhgeoriyfdslkhgfdgyuie",
+	"KlkjILKJ879IHKJ8kj67kjh7IUKJHjkh98769872vYUTui6JHG87jhg78JHg787JHGUYuytuyjg876RHCVBnvbAIUT678787igJGFHGFTy67uhHJKJHUYTjhg6HGHG76",
+	"4LKJH5Euhysdiouyfjlkw45879345kjshfdgcvxJSDHFR8734hdskmfv7y8KJLSDGFAVBMZXBV789kMNADFYUYjhkgkjhdsgfowe787243KJHGDSAGJKkjgdfuye3sd7",
+	"l45kjhdfuihlIUYSLKHi87ylKJHYOIUmsagKJLHgY9802734KJHLKiuoymNJHTmnb4iU7687nkmbojyTD64654HJG765KHKJhg87jKHKJ76dcbnmbDBDSJFDHJ6IHGHJ",
+	"fdlkhgljslfkdfhvcxzb 902374jklhfdgoIUOYLSKFDJH98798ysdlk9870OLHL987sdxmncosidHGKJ876kjhtdg786JHG87kj76Kjhgkjhi8K8HG98kgdnb mvzms",
+	"lsdhflkasjhLKJHSLKHAFD987435LRKJHL34UY5L34J64MNB7IU4Yiuoyt87sdfjshg87ahjkjhgds87JHGKJHT8kjhgdfsvbmyt4eu678JHGkjyt6jKH78k0kjt02KJ",
+	"lkjhUIYkljhlUYOI6yt9876HJMNBVuyt97JKHfMvhjytrfiyIUHGKVBMNBuyi9872548JKN76kj9fsd8KHG8JKg7872732jK8JgkjhKJHGKJHgkjhg7jkhgkjhgkjhgk",
+	"dsdfLKJH;LKjKJFLdJGmhpi657oU6Y76fhgf5dyfh879346nmzmbvc56erter654gvcbmzwsdfdsmxcngfvRDFrEDfg76bDewdfvdfgwqsdfdgfcrRDfhgfderfdfteP",
+	"lkhfdsRE546457djh6g65l67KJHLkhmnbvxcbDF09KLJliuyfdsgxcvbFDGERsdasdfgTEdhFDtYrt8765DFRrfgfhvhghretwRF67654DFhDGFDVctTRTtrytrRyiTY",
+	"28734jsdfhg873jksgUIYTIUkhgiuT7YIGVBKjg8796KHG8o76HJG876tKJHG8976GFd6584H6G67RT987kJHG65978JKHG8JHGKJHGkhjgkjhgidsytf87439649283"
+};
 
 
 
@@ -112,7 +114,7 @@ void MakeCRCTable();
 //
 //////////////////////////////////////////////////////////////////////////////////////
 int16_t Encrypt(char* szInputString,char* szOutputString,int16_t sSourceLength)
-	{
+{
 	int16_t		rc=0,				// assume success
 				sIndex=0,
 				sStartIndex=GetRandom()%KEY_LENGTH,
@@ -125,13 +127,13 @@ int16_t Encrypt(char* szInputString,char* szOutputString,int16_t sSourceLength)
 	
 	//pass one xor against the seed
 	while(1)
-		{
+	{
 		//base case time to break
 		if(sIndex==sSourceLength)
-			{
+		{
 			szOutputString[sIndex+2]='\0';
 			break;
-			}
+		}
 		
 		szOutputString[sIndex+2]=szInputString[sIndex]^(~ms_aszSeed[sCurrentKey][sSeedIndex]);
 		
@@ -140,26 +142,26 @@ int16_t Encrypt(char* szInputString,char* szOutputString,int16_t sSourceLength)
 		//time to wrap?
 		if(sSeedIndex==KEY_LENGTH)
 			sSeedIndex=0;
-		}
+	}
 
 	sIndex=2;
 	
 	//pass two xor against previous char
 	while(1)
-		{
+	{
 		//base case time to break
 		if(sIndex==sSourceLength+1)
-			{
+		{
 			break;
-			}
+		}
 
 		//xor with previous char
 		szOutputString[sIndex]^=szOutputString[sIndex-1];
 		sIndex++;
-		}
+	}
 
 	return sIndex+1;
-	}
+}
 
 //////////////////////////////////////////////////////////////////////////////////////
 //
@@ -338,7 +340,7 @@ int16_t Decrypt(char* szFileName,char* szOutputString)
 //
 //////////////////////////////////////////////////////////////////////////////////////
 int16_t Verify(char *szSource,int16_t sLength,uint16_t usCRC)
-	{
+{
 	int16_t rc=0;	//assume success
 	
 	ms_usCRC=0;
@@ -347,30 +349,30 @@ int16_t Verify(char *szSource,int16_t sLength,uint16_t usCRC)
 		UPDATE_CRC(szSource[i]);			
 
 	if(ms_usCRC!=usCRC)
-		{
+	{
 		TRACE("Error: CRC failure !!!  Old CRC: %hu  New CRC: %hu\n");
 		rc=-1;
-		}
+	}
 
 	return rc;
-	}
+}
 
 
 void MakeCRCTable()
-	{
+{
 	uint16_t i, j, r;
 
 	for (i = 0; i <= UCHAR_MAX; i++) 
-		{
+	{
 		r = i;
 		for (j = 0; j < CHAR_BIT; j++)
 			if (r & 1) r = (r >> 1) ^ CRCPOLY;
 			else       r >>= 1;
 		ms_usCRCtable[i] = r;
-		}
+	}
 	
 	return;
-	}
+}
 
 //////////////////////////////////////////////////////////////////////////////////////
 // EOF

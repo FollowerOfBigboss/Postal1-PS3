@@ -960,13 +960,14 @@ static void EnumExistingSaveGames(Menu *menu)
 //
 ////////////////////////////////////////////////////////////////////////////////
 extern void TheGame(void)
-	{
+{
 	int16_t sResult = 0;
 
+#if !defined(__PSL1GHT__) && !defined(__CELLOS_LV2__)
 	// Set up callbacks for when OS sends us to foreground or background.
 	rspSetBackgroundCallback(BackgroundCall);
 	rspSetForegroundCallback(ForegroundCall);
-
+#endif
 	ms_u32Cookie	= ~ms_u32Cookie;
 	g_lRegValue = 0;
 	g_lExpValue = 0;
@@ -999,8 +1000,7 @@ extern void TheGame(void)
 	// Lock the RSPiX composite buffer so we can rect it.
 	rspLockBuffer();
 	// Clear screen buffer
-	rspRect(RSP_BLACK_INDEX, g_pimScreenBuf, 
-		0, 0, g_pimScreenBuf->m_sWidth, g_pimScreenBuf->m_sHeight);
+	rspRect(RSP_BLACK_INDEX, g_pimScreenBuf, 0, 0, g_pimScreenBuf->m_sWidth, g_pimScreenBuf->m_sHeight);
 	// Unlock now that we're done with the composite buffer.
 	rspUnlockBuffer();
 
@@ -1012,7 +1012,7 @@ extern void TheGame(void)
 	RFile file;
 
 	if (sResult == 0)
-		{
+	{
 #ifdef PROMPT_FOR_ORIGINAL_CD
 		rspMsgBox(RSP_MB_ICN_INFO | RSP_MB_BUT_OK, g_pszAppName, g_pszPromptForOriginalCD);
 #endif
@@ -1057,69 +1057,69 @@ extern void TheGame(void)
 		// Try loading special file that exists solely for the purpose of checking for
 		// valid paths in the prefs file.  We do this for each of the paths.
 		if (sResult == 0)
-			{
+		{
 			if (file.Open(FullPathHD(CHECK_FOR_ASSETS_FILENAME), "r", RFile::LittleEndian) == 0)
 				file.Close();
 			else
-				{
+			{
 				sResult = -1;
 				TRACE("Game(): Can't find assets based on HD path specified in prefs!\n");
 				rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszCantFindAssets, "HD");
-				}
 			}
+		}
 		if (sResult == 0)
-			{
+		{
 			if (file.Open(FullPathVD(CHECK_FOR_ASSETS_FILENAME), "r", RFile::LittleEndian) == 0)
 				file.Close();
 			else
-				{
+			{
 				sResult = -1;
 				TRACE("Game(): Can't find assets based on VD path specified in prefs!\n");
 				rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszCantFindAssets, "VD");
-				}
 			}
+		}
 		if (sResult == 0)
-			{
+		{
 			if (file.Open(FullPathSound(CHECK_FOR_ASSETS_FILENAME), "r", RFile::LittleEndian) == 0)
 				file.Close();
 			else
-				{
+			{
 				sResult = -1;
 				TRACE("Game(): Can't find assets based on Sound path specified in prefs!\n");
 				rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszCantFindAssets, "Sound");
-				}
 			}
+		}
 		if (sResult == 0)
-			{
+		{
 			if (file.Open(FullPathGame(CHECK_FOR_ASSETS_FILENAME), "r", RFile::LittleEndian) == 0)
 				file.Close();
 			else
-				{
+			{
 				sResult = -1;
 				TRACE("Game(): Can't find assets based on Game path specified in prefs!\n");
 				rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszCantFindAssets, "Game");
-				}
 			}
+		}
 		if (sResult == 0)
-			{
+		{
 			if (file.Open(FullPathHoods(CHECK_FOR_ASSETS_FILENAME), "r", RFile::LittleEndian) == 0)
 				file.Close();
 			else
-				{
+			{
 				sResult = -1;
 				TRACE("Game(): Can't find assets based on Hoods path specified in prefs!\n");
 				rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszCantFindAssets, "Hoods");
-				}
 			}
+		}
 
 
 		// Check for special file, COOKIE, and size.
 		if (sResult == 0)
-			{
+		{
 			ms_u32Cookie	^= COOKIE_XOR_MASK; 
 
 			if (file.Open(FullPathCD(CHECK_FOR_ASSETS_FILENAME), "rb", RFile::LittleEndian) == 0)
-				{
+			{
 #if defined(CHECK_FOR_COOKIE)
 				if (file.Seek(COOKIE_FILE_POSITION, SEEK_SET) == 0)
 					{
@@ -1153,23 +1153,23 @@ extern void TheGame(void)
 #endif // defined(CHECK_FOR_COOKIE)
 
 				file.Close();
-				}
+			}
 			else
-				{
+			{
 				sResult = -1;
 				TRACE("Game(): Can't find assets based on CD path specified in prefs!\n");
-				}
+			}
 
 			// If any problems . . .
 			if (sResult != 0)
-				{
+			{
 				rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszCantFindAssets, "CD");
-				}
 			}
+		}
 
 		// Check for CDROM drive.
 		if (sResult == 0)
-			{
+		{
 #if defined(MUST_BE_ON_CD)
 			// Check for the special case where the path is the one we use for
 			// development.  If someone out there happens to use this as their
@@ -1192,29 +1192,29 @@ extern void TheGame(void)
 					}
 				}
 #endif
-			}
+		}
 
 		if (sResult == 0)
-			{
+		{
 
 			// Set the gamma level to value indicated by settings.
 			SetGammaLevel(g_GameSettings.m_sGammaVal);
 
 			// If trickier quit specified . . .
 			if (g_GameSettings.m_sTrickySystemQuit != FALSE)
-				{
+			{
 				// Add shift key as a requirement for the quit status keys.
 				rspSetQuitStatusFlags(RSP_GKF_SHIFT);
-				}
+			}
 
 			// Open SAKs or setup equivalent paths.
 			sResult = OpenSaks();
 			if (sResult == 0)
-				{
+			{
 				// Start title, passing the "total units" for its progress meter
 				sResult = StartTitle(1, true, &ms_siMusak);
 				if (sResult == 0)
-					{
+				{
 
 					// Load assets that we want to keep around at all times
 					sResult = LoadAssets();
@@ -1222,7 +1222,7 @@ extern void TheGame(void)
 					// End title (regardless of previous result)
 					EndTitle();
 					if (sResult == 0)
-						{
+					{
 
 						// Set the font most GUIs will use (the menu system uses its own RPrint).
 						// Note that the size does not matter, we just want to set the font ptr.
@@ -1233,20 +1233,20 @@ extern void TheGame(void)
 
 						// If there weren't any errors, wrap things up
 						if (!sResult)
-							{
+						{
 
 							// Do ending credits
 							if (rspGetQuitStatus() > 1)
-								{
+							{
 								rspSetQuitStatus(0);
 								Credits();
-								}
 							}
 						}
+					}
 					else
-						{
+					{
 						rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszGeneralError);
-						}
+					}
 
 					// Unload assets loaded earlier
 					UnloadAssets();
@@ -1281,11 +1281,11 @@ extern void TheGame(void)
 			int32_t	lTimeOutTime	= rspGetMilliseconds() + TIME_OUT_FOR_ABORT_SOUNDS;
 			// Wait for them to stop.
 			while (IsSamplePlaying() == true && rspGetMilliseconds() < lTimeOutTime)
-				{
+			{
 				// Always do periodic updates.
 				// Crucial to sound completing.
 				UpdateSystem();
-				}
+			}
 
 			// Close SAKs and/or create SAKs??
 			CloseSaks();
@@ -1294,27 +1294,29 @@ extern void TheGame(void)
 		// Save all settings to preference file
 		sResult = CSettings::SavePrefs(g_pszPrefFileName);
 		if (sResult > 0)
-			{
+		{
 			TRACE("Game(): Read-only prefs file!\n");
 //			rspMsgBox(RSP_MB_ICN_INFO | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszPrefReadOnly);
-			}
+		}
 		else if (sResult < 0)
-			{
+		{
 			TRACE("Game(): Error writing prefs file!\n");
 			rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszPrefWriteError);
-			}
+		}
 
 		}
 	else
-		{
+	{
 		TRACE("Game(): Error returned by ReadGamePrefs()!\n");
 		rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszPrefReadError);
-		}
+	}
 
+#if !defined(__PSL1GHT__) && !defined(__CELLOS_LV2__)
 	// Remove the callbacks
 	rspSetBackgroundCallback(NULL);
 	rspSetForegroundCallback(NULL);
-	}
+#endif
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2770,7 +2772,7 @@ static int16_t OpenSaks(void)
 //
 ////////////////////////////////////////////////////////////////////////////////
 static void CloseSaks(void)
-	{
+{
 	g_resmgrShell.Purge();
 	g_resmgrShell.CloseSak();
 	
@@ -2782,7 +2784,7 @@ static void CloseSaks(void)
 
 	g_resmgrRes.Purge();
 	g_resmgrRes.CloseSak();
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2847,9 +2849,9 @@ static int16_t LoadAssets(void)
 //
 ////////////////////////////////////////////////////////////////////////////////
 static int16_t UnloadAssets(void)
-	{
+{
 	return 0;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -4436,10 +4438,10 @@ extern char* FullPath(									// Returns full path in system format
 		}
 	}
 
-
-extern char* FullPathCD(								// Returns full path in system format
-	char* pszPartialPath)								// In:  Partial path in RSPiX format
-	{
+// Returns full path in system format
+// In:  Partial path in RSPiX format
+extern char* FullPathCD(char* pszPartialPath)								
+{
 	// Start with proper base path
 	ASSERT(strlen(g_GameSettings.m_pszCDPath) < RSP_MAX_PATH);
 	strcpy(m_acFullPath, g_GameSettings.m_pszCDPath);
@@ -4460,7 +4462,7 @@ extern char* FullPathCD(								// Returns full path in system format
 
 	// Return pointer to full path
 	return m_acFullPath;
-	}
+}
 
 // Returns full path in system format
 // In:  Partial path in RSPiX format

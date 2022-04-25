@@ -163,90 +163,90 @@ RImage*	RInitBLiT::pimScreenBackPlane = NULL;
 // Note that a dib buffer MUST return a negative pitch!
 // 
 void rspNameBuffers(RImage** ppimMemBuf,RImage** ppimVidBuf,RImage** ppimBackBuf)
-	{
+{
 	// Set aliases to the buffers and get the most current values possible.
 	int16_t sVidW,sVidH,sVidD,sMemW,sMemH;
 	rspGetVideoMode(&sVidD,&sVidW,&sVidH,NULL,&sMemW,&sMemH);
 
 	if (ppimMemBuf != NULL) 
-		{
+	{
 		*ppimMemBuf = RInitBLiT::pimScreenBuffer;
 		(*ppimMemBuf)->m_sWidth = sMemW;	// assume same  for all...
 		(*ppimMemBuf)->m_sHeight = sMemH;	// assume same  for all...
 		(*ppimMemBuf)->m_sDepth = sVidD;	// assume same  for all...
 		// If not already locked . . .
 		if (!gsBufferLocked)
-			{
+		{
 			void*	pvTmp;	// JMI:  Use a temp var (otherwise we end up having to 
 								// clear RInitBlit::pimScreenBuffer->m_pData right after
 								// this the way we used to).
 
 			// Really all we get out of this is the pitch.
 			if (rspLockVideoBuffer(&pvTmp, &((*ppimMemBuf)->m_lPitch)) == 0)
-				{
-				rspUnlockVideoBuffer();
-				}
-			}
-		else
 			{
-			// It is already locked and, therefore, the m_pData and m_lPitch are already
-			// valid.
+				rspUnlockVideoBuffer();
 			}
 		}
+		else
+		{
+			// It is already locked and, therefore, the m_pData and m_lPitch are already
+			// valid.
+		}
+	}
 
 	if (ppimVidBuf != NULL) 
-		{
+	{
 		*ppimVidBuf = RInitBLiT::pimScreenVisible;
 		(*ppimVidBuf)->m_sWidth = sMemW;	//double if pixel doubled
 		(*ppimVidBuf)->m_sHeight = sMemH;	// double if pixel doubled
 		(*ppimVidBuf)->m_sDepth = sVidD;	// assume same  for all...
 		// If not already locked . . .
 		if (!gsBufferLocked)
-			{
+		{
 			void*	pvTmp;	// JMI:  Use a temp var (otherwise we end up having to 
 								// clear RInitBlit::pimScreenVisible->m_pData right after
 								// this the way we used to).
 
 			// Really all we get out of this is the pitch.
 			if (rspLockVideoPage(&pvTmp,&((*ppimVidBuf)->m_lPitch)) == 0)
-				{
-				rspUnlockVideoPage(); // pitch is correct (unscaled)
-				}
-			}
-		else
 			{
-			// It is already locked and, therefore, the m_pData and m_lPitch are already
-			// valid.
+				rspUnlockVideoPage(); // pitch is correct (unscaled)
 			}
 		}
+		else
+		{
+			// It is already locked and, therefore, the m_pData and m_lPitch are already
+			// valid.
+		}
+	}
 
 	if (ppimBackBuf != NULL)
-		{
+	{
 		*ppimBackBuf = RInitBLiT::pimScreenBackPlane;
 		(*ppimBackBuf)->m_sWidth = sMemW;	// assume same  for all...
 		(*ppimBackBuf)->m_sHeight = sMemH;	// assume same  for all...
 		(*ppimBackBuf)->m_sDepth = sVidD;	// assume same  for all...
 		// If not already locked . . .
 		if (!gsBufferLocked)
-			{
+		{
 			void*	pvTmp;	// JMI:  Use a temp var (otherwise we end up having to 
 								// clear RInitBlit::pimScreenBackPlane->m_pData right after
 								// this the way we used to).
 
 			// Really all we get out of this is the pitch.
 			if (rspLockVideoFlipPage(&pvTmp, &((*ppimBackBuf)->m_lPitch)) == 0)
-				{
-				rspUnlockVideoFlipPage(); // pitch is correct (unscaled)
-				}
-			}
-		else
 			{
-			// It is already locked and, therefore, the m_pData and m_lPitch are already
-			// valid.
+				rspUnlockVideoFlipPage(); // pitch is correct (unscaled)
 			}
 		}
-
+		else
+		{
+			// It is already locked and, therefore, the m_pData and m_lPitch are already
+			// valid.
+		}
 	}
+
+}
 
 RInitBLiT	RStartBlittingForFun;	// only included once, of course!
 
@@ -255,7 +255,7 @@ RInitBLiT	RStartBlittingForFun;	// only included once, of course!
 //#include ".h"	// need the macro
 
 int16_t rspSetWindowColors()
-	{
+{
 #ifdef _DEBUG
 
 	TRACE("rspSetWindowColors:  Not yet implemented on this platform!\n");
@@ -263,7 +263,7 @@ int16_t rspSetWindowColors()
 #endif
 
 	return -1;
-	}
+}
 
 
 // waits for any click!
@@ -296,7 +296,7 @@ void rspWaitForClick(int16_t sWait)
 // A COPY of the class definition:
 // Not a complete descriptor -> just replaces the pData of an uncompressed buffer.
 class RCompressedImageData
-	{
+{
 public:
 	uint16_t	usCompType;	// = FSPR8 image type
 	uint16_t	usSourceType;	// uncompressed Image pre-compressed type
@@ -307,24 +307,24 @@ public:
 	uint8_t** pCtlArry;		// 32-aligned, arry of offset ptrs into CtlBlock
 
 	RCompressedImageData()
-		{
+	{
 		usCompType = usSourceType = 0;
 		pCBuf = pCMem = pControlBlock = NULL;
 		pLineArry = pCtlArry = NULL;
-		}
+	}
 
 	~RCompressedImageData()
-		{
+	{
 		if (pCMem) free(pCMem);
 		if (pControlBlock) free(pControlBlock);
 		if (pLineArry) free(pLineArry);
 		if (pCtlArry) free(pCtlArry);
-		}
-	}; 
+	}
+}; 
 
 // for your convenience:
 void	rspSetBMPColors(RImage* pim,int16_t sStartIndex,int16_t sNum)
-	{
+{
 #ifdef	_DEBUG
 
 	// Figure out later how to tell if the source type was BMP8...
@@ -347,36 +347,33 @@ void	rspSetBMPColors(RImage* pim,int16_t sStartIndex,int16_t sNum)
 #endif
 
 	typedef	struct
-		{
+	{
 		uint8_t	b;
 		uint8_t g;
 		uint8_t r;
 		uint8_t a;
-		}	RGB;
+	} RGB;
 
 	RGB*	pPal = (RGB*)pim->m_pPalette->m_pData;
 
-	rspSetPaletteEntries(sStartIndex,sNum,&pPal[sStartIndex].r,
-		&pPal[sStartIndex].g,&pPal[sStartIndex].b,sizeof(RGB));
+	rspSetPaletteEntries(sStartIndex,sNum,&pPal[sStartIndex].r, &pPal[sStartIndex].g,&pPal[sStartIndex].b,sizeof(RGB));
 
 	rspUpdatePalette();
-	}
+}
 
 // This is the official composite buffer of the OS
 int16_t	rspLockBuffer()
-	{
+{
 
 	if (!gsBufferLocked) // we haven't actually locked it yet!
+	{
+		if (rspLockVideoBuffer((void**)&(RInitBLiT::pimScreenBuffer->m_pData),&(RInitBLiT::pimScreenBuffer->m_lPitch)) != 0)
 		{
-		if (rspLockVideoBuffer((void**)&(RInitBLiT::pimScreenBuffer->m_pData),
-			&(RInitBLiT::pimScreenBuffer->m_lPitch))
-			!=0)
-			{
 			TRACE("rspLockBuffer: Unable to lock the Video Buffer, failed!\n");
 			return -1;
-			}
+		}
 		else
-			{
+		{
 			// Get the up to date dimensions as well!
 			int16_t sVidW,sVidH,sVidD,sMemW,sMemH;
 			rspGetVideoMode(&sVidD,&sVidW,&sVidH,NULL,&sMemW,&sMemH);
@@ -384,38 +381,38 @@ int16_t	rspLockBuffer()
 			RInitBLiT::pimScreenBuffer->m_sWidth = sMemW;	// assume same  for all...
 			RInitBLiT::pimScreenBuffer->m_sHeight = sMemH;	// assume same  for all...
 			RInitBLiT::pimScreenBuffer->m_sDepth = sVidD;	// assume same  for all...
-			}
 		}
+	}
 
 	gsBufferLocked++;
 	return 0;
-	}
+}
 
 // This is the official OS composite buffer
 int16_t	rspUnlockBuffer()
-	{
+{
 	gsBufferLocked--;
 
 #ifdef	_DEBUG
 
 	if (gsBufferLocked < 0)
-		{
+	{
 		TRACE("rspUnLockBuffer: FATAL ERROR!  More screen UNLOCKS than LOCKS!\n");
 		gsScreenLocked = 0;
 		return -1;
-		}
+	}
 
 #endif
 	
 	if (!gsBufferLocked) // need to actually DO the unlock
-		{
+	{
 		rspUnlockVideoBuffer();
 		RInitBLiT::pimScreenBuffer->m_pData = NULL;
-		}
+	}
 
 
 	return 0;
-	}
+}
 
 // This is the hardware video screen
 int16_t	rspLockScreen()

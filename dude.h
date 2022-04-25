@@ -368,354 +368,361 @@
 
 // First shot at a dude, which is a player-controlled character
 class CDude : public CCharacter
+{
+//---------------------------------------------------------------------------
+// Types, enums, etc.
+//---------------------------------------------------------------------------
+public:
+
+	// Macros.
+	enum
 	{
-	//---------------------------------------------------------------------------
-	// Types, enums, etc.
-	//---------------------------------------------------------------------------
-	public:
+		MaxTextures					= 8,
+											
+		DefHitPoints				= 500,
+											
+		DefNumBullets				= 50,
+		DefNumGrenades				= 5,
+		DefNumFireBombs			= 5,
+		DefNumMissiles				= 3,
+		DefNumNapalms				= 3,
+		DefNumShells				= 25,
+		DefNumFuel					= 50,
+		DefNumMines					= 3,
+		DefNumHeatseekers			= 3,
+											
+		DefHasMachineGun			= 1,
+		DefHasLauncher				= 0,
+		DefHasShotgun				= 0,
+		DefHasSprayCannon			= 0,
+		DefHasFlamer				= 0,
+		DefHasNapalmLauncher		= 0,
+		DefHasDeathWadLauncher	= 0,
+		DefHasDoubleBarrel		= 0,
 
-		// Macros.
-		enum
-			{
-			MaxTextures					= 8,
-											
-			DefHitPoints				= 500,
-											
-			DefNumBullets				= 50,
-			DefNumGrenades				= 5,
-			DefNumFireBombs			= 5,
-			DefNumMissiles				= 3,
-			DefNumNapalms				= 3,
-			DefNumShells				= 25,
-			DefNumFuel					= 50,
-			DefNumMines					= 3,
-			DefNumHeatseekers			= 3,
-											
-			DefHasMachineGun			= 1,
-			DefHasLauncher				= 0,
-			DefHasShotgun				= 0,
-			DefHasSprayCannon			= 0,
-			DefHasFlamer				= 0,
-			DefHasNapalmLauncher		= 0,
-			DefHasDeathWadLauncher	= 0,
-			DefHasDoubleBarrel		= 0,
-
-			DefKevlarLayers			= 0,
+		DefKevlarLayers			= 0,
 										
-			DefHasBackpack				= 0
-			};
+		DefHasBackpack				= 0
+	};
 
-		typedef enum
-			{
-			CurrentWeapon = -1,
-			NoWeapon,
-			SemiAutomatic,
-			ShotGun,
-			SprayCannon,
-			Grenade,
-			Rocket,
-			Heatseeker,
-			FireBomb,
-			Napalm,
-			FlameThrower,
-			ProximityMine, 
-			TimedMine, 
-			RemoteMine, 
-			BouncingBettyMine,
-			DeathWad,
-			DoubleBarrel,
+	typedef enum
+	{
+		CurrentWeapon = -1,
+		NoWeapon,
+		SemiAutomatic,
+		ShotGun,
+		SprayCannon,
+		Grenade,
+		Rocket,
+		Heatseeker,
+		FireBomb,
+		Napalm,
+		FlameThrower,
+		ProximityMine, 
+		TimedMine, 
+		RemoteMine, 
+		BouncingBettyMine,
+		DeathWad,
+		DoubleBarrel,
 
-			NumWeaponTypes
-			} WeaponType;
+		NumWeaponTypes
+	} WeaponType;
 
-		typedef enum
-			{
-			MsgIdPickedUpPowerUp,
-			MsgIdDontHaveExecuteWeapon,
-			MsgIdDontHaveWeaponButHaveAmmo,
-			MsgIdDontHaveWeaponOrAmmo,
-			MsgIdDontHaveSuicideWeapon,
+	typedef enum
+	{
+		MsgIdPickedUpPowerUp,
+		MsgIdDontHaveExecuteWeapon,
+		MsgIdDontHaveWeaponButHaveAmmo,
+		MsgIdDontHaveWeaponOrAmmo,
+		MsgIdDontHaveSuicideWeapon,
 
-			NumMsgTypes
-			} MsgId;
+		NumMsgTypes
+	} MsgId;
 
-		typedef struct
-			{
-			char*	pszWeaponName;
-			char*	pszAmmoName;
-			char*	pszStatusFormat;
-			char*	pszWeaponResName;
-			int16_t	sMinAmmoRequired;
-			} WeaponDetails;
+	typedef struct
+	{
+		char*	pszWeaponName;
+		char*	pszAmmoName;
+		char*	pszStatusFormat;
+		char*	pszWeaponResName;
+		int16_t	sMinAmmoRequired;
+	} WeaponDetails;
 
-		// This special version overrides the CAnim3D Get(char*, char*, short).
-		class CDudeAnim3D : public CAnim3D
-			{
-			public:
-
-				ChanTransform*	m_ptransLeft;	// Rigid body transforms for left hand.
-				ChanTransform* m_ptransRight;	// Rigid body transforms for right hand.
-				ChanTransform* m_ptransBack;	// Rigid body transforms for his backpack.
-
-				// Get the various components of this animation from the resource names
-				// specified in the provided array of pointers to strings.
-				virtual								// Overridden here.
-				int16_t Get(							// Returns 0 on success.
-					char*		pszBaseFileName,	// In:  Base string for resource filenames.
-					char*		pszRigidName,		// In:  String to add for rigid transform channel
-														// or NULL for none.
-					char*		pszEventName,		// In:  String to add for event states channel
-														// or NULL for none.
-					int16_t		sLoopFlags);		// In:  Looping flags to apply to all channels
-														// in this anim.
-
-				// Release all resources.
-				virtual						// Overridden here.
-				void Release(void);		// Returns nothing.
-			};
-
-	//---------------------------------------------------------------------------
-	// Variables
-	//---------------------------------------------------------------------------
+	// This special version overrides the CAnim3D Get(char*, char*, short).
+	class CDudeAnim3D : public CAnim3D
+	{
 	public:
 
-		int16_t			m_sDudeNum;							// This dude's number for multiplayer mode
+		ChanTransform*	m_ptransLeft;	// Rigid body transforms for left hand.
+		ChanTransform* m_ptransRight;	// Rigid body transforms for right hand.
+		ChanTransform* m_ptransBack;	// Rigid body transforms for his backpack.
 
-		int16_t			m_sTextureIndex;					// This dude's texture index.  Used as an
-																// index into m_aptextures[].
+		// Get the various components of this animation from the resource names
+		// specified in the provided array of pointers to strings.
+		
+		// Overridden here.
+		// Returns 0 on success.
+		// In:  Base string for resource filenames.
+		// In:  String to add for rigid transform channel or NULL for none.
+		// In:  String to add for event states channel or NULL for none.
+		// In:  Looping flags to apply to all channels in this anim.
+		virtual	int16_t Get(char* pszBaseFileName, char* pszRigidName, char* pszEventName, int16_t sLoopFlags);		
+												
+		// Release all resources.
+		// Overridden here.
+		// Returns nothing.
+		virtual	void Release(void);
+	};
 
-		int16_t			m_sOrigHitPoints;					// Initial hitpoints.
-		bool			m_bTargetingHelpEnabled;		// Show targeting sprite when enabled.
+//---------------------------------------------------------------------------
+// Variables
+//---------------------------------------------------------------------------
+public:
 
-		// INPUT HACK. Normally we can't move in one direction while facing another. Android version
-		// works by reading input while calculating the dude's velocity, but we can't do that with
-		// keyboard input. Thus, these dude-only "twinstick" rotational values.
-		bool			m_bUseRotTS;	// TRUE if we should use m_dRotTS to calculate velocity instead of m_dRot
-		double			m_dRotTS;		// Direction we want to go when twinsticking
+	int16_t	m_sDudeNum;							// This dude's number for multiplayer mode
 
-		// Actual joystick inputs
-		double			m_dJoyMoveVel;
-		double			m_dJoyMoveAngle;
-		bool			m_bJoyFire;
-		double			m_dJoyFireAngle;
-		//For mouse stuff
-		double          m_dRotateToAngle;
-		//Mouse pos for crosshair
-		double          m_dMousePosX;
-		double          m_dMousePosY;
+	int16_t	m_sTextureIndex;					// This dude's texture index.  Used as an index into m_aptextures[].
 
-		//Workaround for mutiplayer (mouse)
-		//		int16_t m_sDeltaRot = 0;
-		int16_t m_sDeltaRot;
-	protected:
+	int16_t			m_sOrigHitPoints;					// Initial hitpoints.
+	bool			m_bTargetingHelpEnabled;		// Show targeting sprite when enabled.
 
-		CDudeAnim3D		m_animStand;					// Standing animation.
-		CDudeAnim3D		m_animRun;						// Running animation.
-		CDudeAnim3D		m_animThrow;					// Throwing animation.
-		CDudeAnim3D		m_animDie;						// Dying animation.
-		CDudeAnim3D		m_animShoot;					// Shooting animation.
-		CDudeAnim3D		m_animRunShoot;				// Running and shooting animation.
-		CDudeAnim3D		m_animDamage;					// Received damage animation.
-		CDudeAnim3D		m_animBurning;					// Dude's on fire.
-		CDudeAnim3D		m_animStrafe;					// Dude strafing with no forward movement.
-		CDudeAnim3D		m_animStrafeShoot;			// Dude strafing and shooting with no forward movement.
-		CDudeAnim3D		m_animSuicide;					// Dude commits suicide.
-		CDudeAnim3D		m_animLaunch;					// Dude launches something with over the shoulder weapon.
-		CDudeAnim3D		m_animBlownUp;					// Dude gets blown up.
-		CDudeAnim3D		m_animGetUp;					// Dude gets up.
-		CDudeAnim3D		m_animDuck;						// Dude ducks.
-		CDudeAnim3D		m_animRise;						// Dude rises from duck.
-		CDudeAnim3D		m_animExecute;					// Dude executes a victim/enemy.
-		CDudeAnim3D		m_animPickPut;					// Dude picks something up or puts something down
+	// INPUT HACK. Normally we can't move in one direction while facing another. Android version
+	// works by reading input while calculating the dude's velocity, but we can't do that with
+	// keyboard input. Thus, these dude-only "twinstick" rotational values.
+	bool			m_bUseRotTS;	// TRUE if we should use m_dRotTS to calculate velocity instead of m_dRot
+	double			m_dRotTS;		// Direction we want to go when twinsticking
+
+	// Actual joystick inputs
+	double			m_dJoyMoveVel;
+	double			m_dJoyMoveAngle;
+	bool			m_bJoyFire;
+	double			m_dJoyFireAngle;
+	//For mouse stuff
+	double          m_dRotateToAngle;
+	//Mouse pos for crosshair
+	double          m_dMousePosX;
+	double          m_dMousePosY;
+
+	//Workaround for mutiplayer (mouse)
+	//		int16_t m_sDeltaRot = 0;
+	int16_t m_sDeltaRot;
+protected:
+
+	CDudeAnim3D		m_animStand;					// Standing animation.
+	CDudeAnim3D		m_animRun;						// Running animation.
+	CDudeAnim3D		m_animThrow;					// Throwing animation.
+	CDudeAnim3D		m_animDie;						// Dying animation.
+	CDudeAnim3D		m_animShoot;					// Shooting animation.
+	CDudeAnim3D		m_animRunShoot;				// Running and shooting animation.
+	CDudeAnim3D		m_animDamage;					// Received damage animation.
+	CDudeAnim3D		m_animBurning;					// Dude's on fire.
+	CDudeAnim3D		m_animStrafe;					// Dude strafing with no forward movement.
+	CDudeAnim3D		m_animStrafeShoot;			// Dude strafing and shooting with no forward movement.
+	CDudeAnim3D		m_animSuicide;					// Dude commits suicide.
+	CDudeAnim3D		m_animLaunch;					// Dude launches something with over the shoulder weapon.
+	CDudeAnim3D		m_animBlownUp;					// Dude gets blown up.
+	CDudeAnim3D		m_animGetUp;					// Dude gets up.
+	CDudeAnim3D		m_animDuck;						// Dude ducks.
+	CDudeAnim3D		m_animRise;						// Dude rises from duck.
+	CDudeAnim3D		m_animExecute;					// Dude executes a victim/enemy.
+	CDudeAnim3D		m_animPickPut;					// Dude picks something up or puts something down
 																// depending upon direction played.
-		CDudeAnim3D		m_animIdle;						// Dude hangs out -- idle animation.
+	CDudeAnim3D		m_animIdle;						// Dude hangs out -- idle animation.
 
-		CAnim3D			m_aanimWeapons[NumWeaponTypes];	// Weapons' anims.
+	CAnim3D			m_aanimWeapons[NumWeaponTypes];	// Weapons' anims.
 
-		CSprite3			m_spriteWeapon;						// Weapons' sprite.
+	CSprite3			m_spriteWeapon;						// Weapons' sprite.
 
-		CAnim3D			m_animBackpack;						// Backpack's anim.
-		CSprite3			m_spriteBackpack;						// Backpack's sprite.
+	CAnim3D			m_animBackpack;						// Backpack's anim.
+	CSprite3			m_spriteBackpack;						// Backpack's sprite.
 
-		ChanTexture*	m_aptextures[MaxTextures];	// Colors for all dude animations.
+	ChanTexture*	m_aptextures[MaxTextures];	// Colors for all dude animations.
 
-		State	m_statePersistent;						// Last persistent state.  For example,
+	State	m_statePersistent;						// Last persistent state.  For example,
 																// StateBurning is persistent.  He may get
 																// shot and switch to damage state, but he
 																// should switch back to burning when done.
 
-		bool	m_bBrainSplatted;							// If true, brain has been splatted.
-		bool	m_bJumpVerticalTrigger;					// If true, vertical acceleration for jump
+	bool	m_bBrainSplatted;							// If true, brain has been splatted.
+	bool	m_bJumpVerticalTrigger;					// If true, vertical acceleration for jump
 																// has been applied.
 
-		bool	m_bGenericEvent1;							// Generic event that can be used by
+	bool	m_bGenericEvent1;							// Generic event that can be used by
 																// any state to note if it has or has not
 																// yet been triggered.
 
 
-		int32_t			m_lNextBulletTime;				// Next time a bullet can be fired.
-		int32_t			m_lLastShotTime;					// Last time the dude was shot.
-		int32_t			m_lLastYellTime;					// Last time the dude yelled in pain
+	int32_t			m_lNextBulletTime;				// Next time a bullet can be fired.
+	int32_t			m_lLastShotTime;					// Last time the dude was shot.
+	int32_t			m_lLastYellTime;					// Last time the dude yelled in pain
 																// from being shot or something.
-		int32_t			m_lNextIdleTime;					// Idle animation timer.
+	int32_t			m_lNextIdleTime;					// Idle animation timer.
 
-		WeaponType	m_weapontypeCur;					// Dude's current weapon type.
-		WeaponType	m_weaponShooting;					// The weapon type the dude is currently
+	WeaponType	m_weapontypeCur;					// Dude's current weapon type.
+	WeaponType	m_weaponShooting;					// The weapon type the dude is currently
 																// shooting (or about to shoot).
 
-		CCrawler		m_crawler;							// The device that allows us to slide
+	CCrawler		m_crawler;							// The device that allows us to slide
 																// along edges and stuff.
 
-		U16			m_u16IdChild;						// ID of generic child item.
+	U16			m_u16IdChild;						// ID of generic child item.
 																// Used by State_PickUp currently.
 
-		CSprite2		m_TargetSprite;					// Targeting sprite to show what he is aiming
+	CSprite2		m_TargetSprite;					// Targeting sprite to show what he is aiming
 																// at.
 
-		U16			m_u16KillerId;						// Instance ID of our killer.
+	U16			m_u16KillerId;						// Instance ID of our killer.
 
-		U8				m_u8LastEvent;						// Last anim event.
+	U8				m_u8LastEvent;						// Last anim event.
 
-		U16			m_idVictim;							// Instance ID of victim to be executed or
+	U16			m_idVictim;							// Instance ID of victim to be executed or
 																// used as human shield.
 
-		bool			m_bDead;								// true, if dead; false otherwise.
+	bool			m_bDead;								// true, if dead; false otherwise.
 
-		double		m_dLastCrawledToPosX;			// Last position successfully crawled to.
-		double		m_dLastCrawledToPosZ;			// Last position successfully crawled to.
+	double		m_dLastCrawledToPosX;			// Last position successfully crawled to.
+	double		m_dLastCrawledToPosZ;			// Last position successfully crawled to.
 
-		bool			m_bInvincible;						// Dude does not loose health when invincible.
+	bool			m_bInvincible;						// Dude does not loose health when invincible.
 
-		// Tracks file counter so we know when to load/save "common" data 
-		static int16_t ms_sFileCount;
+	// Tracks file counter so we know when to load/save "common" data 
+	static int16_t ms_sFileCount;
 
-	//---------------------------------------------------------------------------
-	// Static Variables
-	//---------------------------------------------------------------------------
-	public:
-		// "Constant" values that we want to be able to tune using the editor
-		static double ms_dAccUser;						// Acceleration due to user
-		static double ms_dAccDrag;						// Drag on user velocity.
+//---------------------------------------------------------------------------
+// Static Variables
+//---------------------------------------------------------------------------
+public:
+	// "Constant" values that we want to be able to tune using the editor
+	static double ms_dAccUser;						// Acceleration due to user
+	static double ms_dAccDrag;						// Drag on user velocity.
 
-		static double ms_dMaxVelFore;					// Maximum forward velocity
-		static double ms_dMaxVelBack;					// Maximum backward velocity
+	static double ms_dMaxVelFore;					// Maximum forward velocity
+	static double ms_dMaxVelBack;					// Maximum backward velocity
 
-		static double ms_dMaxVelForeFast;			// Maximum forward velocity
-		static double ms_dMaxVelBackFast;			// Maximum backward velocity
+	static double ms_dMaxVelForeFast;			// Maximum forward velocity
+	static double ms_dMaxVelBackFast;			// Maximum backward velocity
 
-		static double ms_dDegPerSec;					// Degrees of rotation per second
+	static double ms_dDegPerSec;					// Degrees of rotation per second
 		
-		static double ms_dVertVelJump;				// Velocity of jump.
+	static double ms_dVertVelJump;				// Velocity of jump.
 
-		// Weapon details database.
-		static WeaponDetails	ms_awdWeapons[NumWeaponTypes];
+	// Weapon details database.
+	static WeaponDetails	ms_awdWeapons[NumWeaponTypes];
 
-		// Dude's default stockpile.
-		static CStockPile	ms_stockpileDefault;
+	// Dude's default stockpile.
+	static CStockPile	ms_stockpileDefault;
 
-		// Dude's default weapon collision bits ie. what its weapons can hit
-		static U32	ms_u32CollideBitsInclude;	// Bits that determine a collision
-		static U32	ms_u32CollideBitsDontcare;	// Bits that are ignored for collision
-		static U32	ms_u32CollideBitsExclude;	// Bits that invalidate collision
+	// Dude's default weapon collision bits ie. what its weapons can hit
+	static U32	ms_u32CollideBitsInclude;	// Bits that determine a collision
+	static U32	ms_u32CollideBitsDontcare;	// Bits that are ignored for collision
+	static U32	ms_u32CollideBitsExclude;	// Bits that invalidate collision
 
-	//---------------------------------------------------------------------------
-	// Constructor(s) / destructor
-	//---------------------------------------------------------------------------
-	protected:
-		// Constructor
-		CDude(CRealm* pRealm);
+//---------------------------------------------------------------------------
+// Constructor(s) / destructor
+//---------------------------------------------------------------------------
+protected:
+	// Constructor
+	CDude(CRealm* pRealm);
 
-	public:
-		// Destructor
-		~CDude();
+public:
+	// Destructor
+	~CDude();
 
-	//---------------------------------------------------------------------------
-	// Required static functions
-	//---------------------------------------------------------------------------
-	public:
-		// Construct object
-		static int16_t Construct(									// Returns 0 if successfull, non-zero otherwise
-			CRealm* pRealm,										// In:  Pointer to realm this object belongs to
-			CThing** ppNew)										// Out: Pointer to new object
-			{
-			int16_t sResult = 0;
-			*ppNew = new CDude(pRealm);
-			if (*ppNew == 0)
-				{
-				sResult = -1;
-				TRACE("CDude::Construct(): Couldn't construct CDude!\n");
-				}
+//---------------------------------------------------------------------------
+// Required static functions
+//---------------------------------------------------------------------------
+public:
+	// Construct object
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  Pointer to realm this object belongs to
+	// Out: Pointer to new object
+	static int16_t Construct(CRealm* pRealm, CThing** ppNew)							
+	{
+		int16_t sResult = 0;
+		*ppNew = new CDude(pRealm);
+		if (*ppNew == 0)
+		{
+			sResult = -1;
+			TRACE("CDude::Construct(): Couldn't construct CDude!\n");
+		}
 
-			return sResult;
-			}
+		return sResult;
+	}
 
-	//---------------------------------------------------------------------------
-	// Required virtual functions (implimenting them as inlines doesn't pay!)
-	//---------------------------------------------------------------------------
-	public:
-		// Load object (should call base class version!)
-		int16_t Load(													// Returns 0 if successfull, non-zero otherwise
-			RFile* pFile,											// In:  File to load from
-			bool bEditMode,										// In:  True for edit mode, false otherwise
-			int16_t sFileCount,										// In:  File count (unique per file, never 0)
-			uint32_t	ulFileVersion);								// In:  File version being loaded.
+//---------------------------------------------------------------------------
+// Required virtual functions (implimenting them as inlines doesn't pay!)
+//---------------------------------------------------------------------------
+public:
+	// Load object (should call base class version!)
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  File to load from
+	// In:  True for edit mode, false otherwise
+	// In:  File count (unique per file, never 0)
+	// In:  File version being loaded.
+	int16_t Load(RFile* pFile, bool bEditMode, int16_t sFileCount, uint32_t ulFileVersion);	
 
-		// Save object (should call base class version!)
-		int16_t Save(													// Returns 0 if successfull, non-zero otherwise
-			RFile* pFile,											// In:  File to save to
-			int16_t sFileCount);									// In:  File count (unique per file, never 0)
+	// Save object (should call base class version!)
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  File to save to
+	// In:  File count (unique per file, never 0)
+	int16_t Save(RFile* pFile, int16_t sFileCount);
 
-		// Startup object
-		int16_t Startup(void);										// Returns 0 if successfull, non-zero otherwise
+	// Startup object
+	// Returns 0 if successfull, non-zero otherwise
+	int16_t Startup(void);		
 
-		// Shutdown object
-		int16_t Shutdown(void);									// Returns 0 if successfull, non-zero otherwise
+	// Shutdown object
+	// Returns 0 if successfull, non-zero otherwise
+	int16_t Shutdown(void);
 
-		// Suspend object
-		void Suspend(void);
+	// Suspend object
+	void Suspend(void);
 
-		// Resume object
-		void Resume(void);
+	// Resume object
+	void Resume(void);
 
-		// Update object
-		void Update(void);
+	// Update object
+	void Update(void);
 
-		// Render object
-		void Render(void);
+	// Render object
+	void Render(void);
 
-		// Called by editor to init new object at specified position
-		int16_t EditNew(												// Returns 0 if successfull, non-zero otherwise
-			int16_t sX,												// In:  New x coord
-			int16_t sY,												// In:  New y coord
-			int16_t sZ);												// In:  New z coord
+	// Called by editor to init new object at specified position
+	// Returns 0 if successfull, non-zero otherwise
+	// In:  New x coord
+	// In:  New y coord
+	// In:  New z coord
+	int16_t EditNew(int16_t sX,	int16_t sY,	int16_t sZ);
 
-		// Called by editor to modify object
-		int16_t EditModify(void);									// Returns 0 if successfull, non-zero otherwise
+	// Called by editor to modify object
+	// Returns 0 if successfull, non-zero otherwise
+	int16_t EditModify(void);								
 
-	//---------------------------------------------------------------------------
-	// Other functions
-	//---------------------------------------------------------------------------
-	public:
-		// Return the X position
-		double GetX()
-			{return m_dX;};
+//---------------------------------------------------------------------------
+// Other functions
+//---------------------------------------------------------------------------
+public:
+	// Return the X position
+	double GetX()
+		{return m_dX;};
 
-		// Return the Y position
-		double GetY()
-			{return m_dY;};
+	// Return the Y position
+	double GetY()
+		{return m_dY;};
 
-		// Return the Z position
-		double GetZ()
-			{return m_dZ;};
+	// Return the Z position
+	double GetZ()
+		{return m_dZ;};
 
-		// Return the dude's hit points
-		int16_t GetHealth()
-			{return m_stockpile.m_sHitPoints;};
+	// Return the dude's hit points
+	int16_t GetHealth()
+		{return m_stockpile.m_sHitPoints;};
 
 		// Sets a new state based on supplied state enum.  Will set animation ptr
 		// to proper animation for state and reset animation timer.
-		bool SetState(		// Returns true if new state realized, false otherwise.
-			State	state);	// New state.
+		// Returns true if new state realized, false otherwise.
+		// New state.
+		bool SetState(State state);
 
 		// Gets info on specified weapon.
 		void GetWeaponInfo(				// Returns nothing.

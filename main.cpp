@@ -166,11 +166,13 @@ int wideScreenWidth;
 ////////////////////////////////////////////////////////////////////////////////
 // Set up video for the game.
 ////////////////////////////////////////////////////////////////////////////////
-static int16_t SetupVideo(					// Returns 0 on success.
-	int16_t	sUseCurrentDeviceDimensions,	// In:  1 to use current video area.
-	int16_t	sDeviceWidth,						// In:  Desired video hardware width.
-	int16_t	sDeviceHeight)						// In:  Desired video hardware height.
-	{
+
+// Returns 0 on success.
+// In:  1 to use current video area.
+// In:  Desired video hardware width.
+// In:  Desired video hardware height.
+static int16_t SetupVideo(int16_t sUseCurrentDeviceDimensions, int16_t sDeviceWidth, int16_t sDeviceHeight)
+{
 	int16_t	sResult	= 0;
 
 #ifdef MOBILE
@@ -197,16 +199,9 @@ static int16_t SetupVideo(					// Returns 0 on success.
 		rspGetVideoMode(NULL, &sDeviceWidth, &sDeviceHeight);
 
 	// Try setting video mode using device size specified in prefs file
-	sResult = rspSetVideoMode(
-		MAIN_SCREEN_DEPTH,
-		sDeviceWidth,
-		sDeviceHeight,
-		MAIN_WINDOW_WIDTH,
-		MAIN_WINDOW_HEIGHT,
-		MAIN_SCREEN_PAGES,
-		MAIN_SCREEN_SCALING);
+	sResult = rspSetVideoMode(MAIN_SCREEN_DEPTH, sDeviceWidth, sDeviceHeight, MAIN_WINDOW_WIDTH,MAIN_WINDOW_HEIGHT, MAIN_SCREEN_PAGES, MAIN_SCREEN_SCALING);
 	if (sResult != 0)
-		{
+	{
 
 		// Create description of video mode for error messages
 		char acVideoMode[100];
@@ -229,52 +224,31 @@ static int16_t SetupVideo(					// Returns 0 on success.
 		// if it can't find a matching mode, then it isn't available.  However, just because it does
 		// find a match doesn't mean we can set it, because under Win95, changing the color depth
 		// requires a reboot (unless they have DirectX, a fancy video driver, or the QuickRes utility).
-		sResult = rspSuggestVideoMode(
-			MAIN_SCREEN_DEPTH,
-			MAIN_WINDOW_WIDTH,
-			MAIN_WINDOW_HEIGHT,
-			MAIN_SCREEN_PAGES,
-			MAIN_SCREEN_SCALING,
-			&sDeviceWidth,
-			&sDeviceHeight,
-			NULL);
+		sResult = rspSuggestVideoMode(MAIN_SCREEN_DEPTH, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, MAIN_SCREEN_PAGES, MAIN_SCREEN_SCALING, &sDeviceWidth, &sDeviceHeight, NULL);
 		if (sResult == 0)
-			{
+		{
 
 			// Try to set suggested mode
-			sResult = rspSetVideoMode(
-				MAIN_SCREEN_DEPTH,
-				sDeviceWidth,
-				sDeviceHeight,
-				MAIN_WINDOW_WIDTH,
-				MAIN_WINDOW_HEIGHT,
-				MAIN_SCREEN_PAGES,
-				MAIN_SCREEN_SCALING);
+			sResult = rspSetVideoMode(MAIN_SCREEN_DEPTH, sDeviceWidth, sDeviceHeight, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, MAIN_SCREEN_PAGES, MAIN_SCREEN_SCALING);
 			if (sResult != 0)
-				{
+			{
 
 				// If current depth is different from required depth, then that is most likely the
 				// reason for the failure.
 				if (sCurrentDeviceDepth != MAIN_SCREEN_DEPTH)
-					{
-					rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK,
-						g_pszCriticalErrorTitle,
-						g_pszVideoChangeDepthError,
-						acVideoMode);
+				{
+					rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszVideoChangeDepthError, acVideoMode);
 					TRACE("SetupVideo(): Error returned by rspSetVideoMode() -- most likely due to attempted change in depth!\n");
-					}
+				}
 				else
-					{
+				{
 					TRACE("SetupVideo(): Error returned by rspSetVideoMode()!\n");
-					rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK,
-						g_pszCriticalErrorTitle,
-						g_pszVideoModeError,
-						acVideoMode);
-					}
+					rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszVideoModeError, acVideoMode);
 				}
 			}
+		}
 		else
-			{
+		{
 
 			// Since rspSuggestVideoMode() failed, we know that the requested mode is
 			// not available.  Now we just want to figure out the EXACT problem so
@@ -285,32 +259,32 @@ static int16_t SetupVideo(					// Returns 0 on success.
 			rspQueryVideoModeReset();
 			int16_t sDeviceDepth;
 			int16_t sDevicePages;
-			do	{
+			do {
 				sResult = rspQueryVideoMode(
 					&sDeviceDepth,
 					&sDeviceWidth,
 					&sDeviceHeight,
 					&sDevicePages);
-				} while ((sResult == 0) && (sDeviceDepth < MAIN_SCREEN_DEPTH));
+			} while ((sResult == 0) && (sDeviceDepth < MAIN_SCREEN_DEPTH));
 			if ((sResult == 0) && (sDeviceDepth == MAIN_SCREEN_DEPTH))
-				{
+			{
 				// We got the depth, now find a mode with the requested resolution.  If
 				// there isn't one, then resolution at this depth is the problem.
 				while ( (sResult == 0) &&
 						  (sDeviceDepth == MAIN_SCREEN_DEPTH) &&
 						  ((sDeviceWidth < MAIN_WINDOW_WIDTH) || (sDeviceHeight < MAIN_WINDOW_HEIGHT)) )
-					{
+				{
 					sResult = rspQueryVideoMode(
 						&sDeviceDepth,
 						&sDeviceWidth,
 						&sDeviceHeight,
 						&sDevicePages);
-					}
+				}
 				if ( (sResult == 0) &&
 					  (sDeviceDepth == MAIN_SCREEN_DEPTH) &&
 					  (sDeviceWidth >= MAIN_WINDOW_WIDTH) &&
 					  (sDeviceHeight >= MAIN_WINDOW_HEIGHT) )
-					{
+				{
 					// We got the depth and resolution, which only leaves pages or scaling
 					// as possible problems.  RSPiX doesn't support scaling as of 04/16/97
 					// and probably never will, so if we eliminate that with an ASSERT(),
@@ -319,14 +293,10 @@ static int16_t SetupVideo(					// Returns 0 on success.
 					sResult = -1;
 					TRACE("SetupVideo(): No video modes available at %dx%d, %d-bit, with %d pages!\n",
 						MAIN_WINDOW_WIDTH , MAIN_WINDOW_HEIGHT, MAIN_SCREEN_DEPTH, MAIN_SCREEN_PAGES);
-					rspMsgBox(
-						RSP_MB_ICN_STOP | RSP_MB_BUT_OK,
-						g_pszCriticalErrorTitle,
-						g_pszVideoPagesError,
-						acVideoMode);
-					}
+					rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszVideoPagesError, acVideoMode);
+				}
 				else
-					{
+				{
 					sResult = -1;
 					TRACE("SetupVideo(): No %hd-bit video modes go up to %hdx%hd resolution!\n",
 						(int16_t)MAIN_SCREEN_DEPTH, (int16_t)MAIN_WINDOW_WIDTH, (int16_t)MAIN_WINDOW_HEIGHT);
@@ -335,46 +305,41 @@ static int16_t SetupVideo(					// Returns 0 on success.
 						g_pszCriticalErrorTitle,
 						g_pszVideoResolutionError,
 						acVideoMode);
-					}
-				}
-			else
-				{
-				sResult = -1;
-				TRACE("SetupVideo(): No %hd-bit video modes are available!\n",
-					(int16_t)MAIN_SCREEN_DEPTH);
-				rspMsgBox(
-					RSP_MB_ICN_STOP | RSP_MB_BUT_OK,
-					g_pszCriticalErrorTitle,
-					g_pszVideoDepthError,
-					acVideoMode);
 				}
 			}
+			else
+			{
+				sResult = -1;
+				TRACE("SetupVideo(): No %hd-bit video modes are available!\n", (int16_t)MAIN_SCREEN_DEPTH);
+				rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszVideoDepthError, acVideoMode);
+			}
 		}
+	}
 
 	return sResult;
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Allocates a chunk and resizes so that we may be able to have some large
 // blocks of contiguous memory.
 ////////////////////////////////////////////////////////////////////////////////
-static char* CreateChunk(	// Returns the memory ptr that will hold the chunk
-									// in place.  Needs to be freed with free() when done
-									// with the chunk.
-	int32_t lChunkSize)			// In:  Size of chunk to create.
-	{
-	char*	pcOrig		= (char*)malloc(lChunkSize);
+
+// Returns the memory ptr that will hold the chunk in place.  Needs to be freed with free() when done with the chunk.
+// In:  Size of chunk to create.
+static char* CreateChunk(int32_t lChunkSize)
+{
+	char* pcOrig = (char*)malloc(lChunkSize);
 	char* pcReAlloc	= (char*)realloc(pcOrig, 1024);
 	ASSERT(pcOrig == pcReAlloc);
 	if (pcReAlloc)
-		{
+	{
 		return pcReAlloc;
-		}
-	else
-		{
-		return pcOrig;
-		}
 	}
+	else
+	{
+		return pcOrig;
+	}
+}
 
 
 static void assert_types_are_sane(void)
@@ -434,7 +399,7 @@ int main(int argc, char **argv)
 	RPrefs prefs;
 	TRACE("%s\n",g_pszPrefFileName);
 	if (prefs.Open(g_pszPrefFileName, "rt") == 0)
-		{
+	{
 		// Get video preferences
 		int16_t sDeviceWidth;
 		int16_t sDeviceHeight;
@@ -458,19 +423,19 @@ int main(int argc, char **argv)
 
 		// Make sure no errors occurred
 		if (prefs.IsError() == 0)
-			{
+		{
 
 			//---------------------------------------------------------------------------
 			// Init blue layer
 			//---------------------------------------------------------------------------
 			if (rspInitBlue() == 0)
-				{
+			{
 
-// Turn on profile (if enabled via macro)
-rspProfileOn();
+				// Turn on profile (if enabled via macro)
+				rspProfileOn();
 
-// Set profile report file name
-rspSetProfileOutput("profile.out");	
+				// Set profile report file name
+				rspSetProfileOutput("profile.out");	
 
 				//------------------------------------------------------------------------
 				// Set system stuff
@@ -491,13 +456,14 @@ rspSetProfileOutput("profile.out");
 				// Setup video
 				//------------------------------------------------------------------------
 
-				sResult	= SetupVideo(				// Returns 0 on success.
-					sUseCurrentDeviceDimensions,	// In:  1 to use current video area.
-					sDeviceWidth,						// In:  Desired video hardware width.
-					sDeviceHeight);					// In:  Desired video hardware height.
+				// Returns 0 on success.	
+				// In:  1 to use current video area.
+				// In:  Desired video hardware width.
+				// In:  Desired video hardware height.
+				sResult	= SetupVideo(sUseCurrentDeviceDimensions, sDeviceWidth,	sDeviceHeight);				
 
 				if (sResult == 0)
-					{
+				{
 					// Set Win32 static colors and lock them.
 					rspSetWin32StaticColors(1);
 					
@@ -507,7 +473,7 @@ rspSetProfileOutput("profile.out");
 
 					// If the INI or default mode fails b/c it is incompatible with the
 					// hardware, we will try vanilla settings.
-					bool	bSwitchedToVanillaSettings	= false;
+					bool bSwitchedToVanillaSettings	= false;
 					// A common reason why the audio mode can't be set is that another
 					// process started a sound that hasn't finished playing by the time
 					// this app starts.  Therefore, it often pays to keep trying for a
@@ -518,7 +484,7 @@ rspSetProfileOutput("profile.out");
 					bool bRetry = true;
 
 					while (bRetry)
-						{
+					{
 						// Keep trying until it works or time runs out, whichever comes first
 						int32_t	lTime = rspGetMilliseconds();
 						bool	bDone	= false;
@@ -534,7 +500,7 @@ rspSetProfileOutput("profile.out");
 								sMixBitsPerSample);
 
 							switch (sResult)
-								{
+							{
 								case 0:
 									// Alrighty.
 									bDone	= true;
@@ -542,14 +508,14 @@ rspSetProfileOutput("profile.out");
 								case BLU_ERR_DEVICE_IN_USE:
 									// Try again until timer expires.
 									if ((rspGetMilliseconds() - lTime) < AUDIO_RETRY_TIME)
-										{
+									{
 										// Continue.
-										}
+									}
 									else
-										{
+									{
 										// Done.
 										bDone	= true;
-										}
+									}
 									break;
 								case BLU_ERR_NO_DEVICE:
 									// Not much we can do about this.  Note that we'll still
@@ -562,17 +528,17 @@ rspSetProfileOutput("profile.out");
 									// user can choose what to do.
 									bDone	= true;
 									break;
-								}
+							}
 
-							} while (bDone == false);
+						} while (bDone == false);
 
 						// If it worked, clear the retry flag
 						if (sResult == 0)
-							{
+						{
 							bRetry = false;
-							}
+						}
 						else
-							{
+						{
 							TRACE("main(): Audio didn't work, using msgbox to find out what to do...\n");
 							char buf[100];
 							sprintf(buf, "%.3f kHz, %hd Bit, %s",
@@ -585,7 +551,7 @@ rspSetProfileOutput("profile.out");
 							uint16_t usFlags; 
 							// Try to find a better one, though, based on the return value.
 							switch (sResult)
-								{
+							{
 								case BLU_ERR_DEVICE_IN_USE:
 									pszMsg	= g_pszAudioModeInUseError_s;
 									usFlags	= RSP_MB_ICN_QUERY | RSP_MB_BUT_ABORTRETRYIGNORE;
@@ -597,7 +563,7 @@ rspSetProfileOutput("profile.out");
 								case BLU_ERR_NOT_SUPPORTED:
 									// If we haven't already tried vanilla settings . . .
 									if (bSwitchedToVanillaSettings == false)
-										{
+									{
 										pszMsg	= g_pszAudioModeNotSupportedError_s;
 										usFlags	= RSP_MB_ICN_QUERY | RSP_MB_BUT_ABORTRETRYIGNORE;
 										// Fall back on our most Vanilla mode.
@@ -610,26 +576,22 @@ rspSetProfileOutput("profile.out");
 										
 										// Remember.
 										bSwitchedToVanillaSettings	= true;
-										}
+									}
 									else
-										{
+									{
 										pszMsg	= g_pszAudioVanillaModeNotSupportedError_s;
 										usFlags	= RSP_MB_ICN_QUERY | RSP_MB_BUT_YESNO;
-										}
+									}
 									break;
 								default:
 									pszMsg	= g_pszAudioModeGeneralError_s;
 									usFlags	= RSP_MB_ICN_QUERY | RSP_MB_BUT_ABORTRETRYIGNORE;
 									break;
-								}
+							}
 
-							int16_t sButton = rspMsgBox(
-								usFlags,
-								g_pszCriticalErrorTitle,
-								pszMsg,
-								buf);
+							int16_t sButton = rspMsgBox(usFlags, g_pszCriticalErrorTitle, pszMsg, buf);
 							switch (sButton)
-								{
+							{
 								case RSP_MB_RET_NO:
 								case RSP_MB_RET_ABORT:
 									// To abort, just clear the retry flag.  
@@ -646,12 +608,12 @@ rspSetProfileOutput("profile.out");
 									sResult = 0;
 									bRetry = false;
 									break;
-								}
 							}
 						}
+					}
 
 					if (sResult == 0)
-						{
+					{
 
 						//------------------------------------------------------------
 						// Run the game
@@ -668,41 +630,41 @@ rspSetProfileOutput("profile.out");
 						
 						// Kill audio
 						RMix::KillMode();
-						}
+					}
 
 					// Kill video
 					rspKillVideoMode();
-					}
+				}
 
-// Turn off profile (if enabled via macro)
-rspProfileOff();
+				// Turn off profile (if enabled via macro)
+				rspProfileOff();
 
 				// Kill blue layer
 				rspKillBlue();
-				}
+			}
 			else
-				{
+			{
 				// Can't init blue
 				TRACE("main(): Error returned by rspInitBlue()!\n");
 				rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszBadBlueInit);
-				}
 			}
+		}
 		else
-			{
+		{
 			// Error reading preference file
 			TRACE("main(): Error reading prefs file!\n");
 			rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszPrefReadError);
-			}
 		}
+	}
 	else
-		{
+	{
 		// Can't open preference file
 		TRACE("main(): Couldn't open prefs file: %s !\n", g_pszPrefFileName);
 		rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszCriticalErrorTitle, g_pszPrefOpenError);
-		}
+	}
 
     return 0;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

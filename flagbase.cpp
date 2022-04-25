@@ -118,11 +118,13 @@ static RP3d ms_apt3dAttribCheck[] =
 ////////////////////////////////////////////////////////////////////////////////
 // Load object (should call base class version!)
 ////////////////////////////////////////////////////////////////////////////////
-int16_t CFlagbase::Load(				// Returns 0 if successfull, non-zero otherwise
-	RFile* pFile,						// In:  File to load from
-	bool bEditMode,					// In:  True for edit mode, false otherwise
-	int16_t sFileCount,					// In:  File count (unique per file, never 0)
-	uint32_t	ulFileVersion)				// In:  Version of file format to load.
+
+// Returns 0 if successfull, non-zero otherwise
+// In:  File to load from
+// In:  True for edit mode, false otherwise
+// In:  File count (unique per file, never 0)
+// In:  Version of file format to load.
+int16_t CFlagbase::Load(RFile* pFile, bool bEditMode, int16_t sFileCount, uint32_t ulFileVersion)
 {
 	int16_t sResult = 0;
 	// Call the base load function to get ID, position, etc.
@@ -224,9 +226,11 @@ int16_t CFlagbase::Load(				// Returns 0 if successfull, non-zero otherwise
 ////////////////////////////////////////////////////////////////////////////////
 // Save object (should call base class version!)
 ////////////////////////////////////////////////////////////////////////////////
-int16_t CFlagbase::Save(										// Returns 0 if successfull, non-zero otherwise
-	RFile* pFile,											// In:  File to save to
-	int16_t sFileCount)										// In:  File count (unique per file, never 0)
+
+// Returns 0 if successfull, non-zero otherwise
+// In:  File to save to
+// In:  File count (unique per file, never 0)
+int16_t CFlagbase::Save(RFile* pFile, int16_t sFileCount)	
 {
 	// Swap the hotspot we want to save in.
 
@@ -295,7 +299,9 @@ int16_t CFlagbase::Init(void)
 ////////////////////////////////////////////////////////////////////////////////
 // Startup object
 ////////////////////////////////////////////////////////////////////////////////
-int16_t CFlagbase::Startup(void)								// Returns 0 if successfull, non-zero otherwise
+
+// Returns 0 if successfull, non-zero otherwise
+int16_t CFlagbase::Startup(void)
 {
 	int16_t sResult = 0;
 
@@ -312,7 +318,9 @@ int16_t CFlagbase::Startup(void)								// Returns 0 if successfull, non-zero ot
 ////////////////////////////////////////////////////////////////////////////////
 // Shutdown object
 ////////////////////////////////////////////////////////////////////////////////
-int16_t CFlagbase::Shutdown(void)							// Returns 0 if successfull, non-zero otherwise
+
+// Returns 0 if successfull, non-zero otherwise
+int16_t CFlagbase::Shutdown(void)
 {
 	int16_t sResult = 0;
 
@@ -408,10 +416,11 @@ void CFlagbase::Update(void)
 				case CFlagbase::State_Dead:
 					CHood*	phood	= m_pRealm->m_phood;
 					// Render current dead frame into background to stay.
-					m_pRealm->m_scene.DeadRender3D(
-						phood->m_pimBackground,		// Destination image.
-						&m_sprite,						// Tree of 3D sprites to render.
-						phood);							// Dst clip rect.
+					
+					// Destination image.
+					// Tree of 3D sprites to render.
+					// Dst clip rect.
+					m_pRealm->m_scene.DeadRender3D(phood->m_pimBackground, &m_sprite, phood);				
 
 					delete this;
 					return;
@@ -441,10 +450,12 @@ void CFlagbase::Update(void)
 ////////////////////////////////////////////////////////////////////////////////
 // Called by editor to init new object at specified position
 ////////////////////////////////////////////////////////////////////////////////
-int16_t CFlagbase::EditNew(									// Returns 0 if successfull, non-zero otherwise
-	int16_t sX,												// In:  New x coord
-	int16_t sY,												// In:  New y coord
-	int16_t sZ)												// In:  New z coord
+
+// Returns 0 if successfull, non-zero otherwise
+// In:  New x coord
+// In:  New y coord
+// In:  New z coord
+int16_t CFlagbase::EditNew(int16_t sX, int16_t sY, int16_t sZ)
 {
 	int16_t sResult = 0;
 
@@ -481,39 +492,36 @@ int16_t CFlagbase::EditMove(int16_t sX, int16_t sY, int16_t sZ)
 // Give Edit a rectangle around this object
 ////////////////////////////////////////////////////////////////////////////////
 void CFlagbase::EditRect(RRect* pRect)
-	{
+{
 	// Call base class.
 	CThing3d::EditRect(pRect);
 
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Called by editor to get the hotspot of an object in 2D.
 // (virtual (Overridden here)).
 ////////////////////////////////////////////////////////////////////////////////
-void CFlagbase::EditHotSpot(			// Returns nothiing.
-	int16_t*	psX,						// Out: X coord of 2D hotspot relative to
-											// EditRect() pos.
-	int16_t*	psY)						// Out: Y coord of 2D hotspot relative to
-											// EditRect() pos.
-	{
+
+// Returns nothiing.
+// Out: X coord of 2D hotspot relative to
+// EditRect() pos.
+// Out: Y coord of 2D hotspot relative to
+// EditRect() pos.
+void CFlagbase::EditHotSpot(int16_t* psX, int16_t* psY)	
+{
 	// Get rectangle.
 	RRect	rc;
 	EditRect(&rc);
 	// Get 2D hotspot.
 	int16_t	sX;
 	int16_t	sY;
-	Map3Dto2D(
-		m_dX,
-		m_dY,
-		m_dZ,
-		&sX,
-		&sY);
+	Map3Dto2D(m_dX, m_dY, m_dZ, &sX, &sY);
 
 	// Get relation.
-	*psX	= sX - rc.sX;
-	*psY	= sY - rc.sY;
-	}
+	*psX = sX - rc.sX;
+	*psY = sY - rc.sY;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Called by editor to modify object
