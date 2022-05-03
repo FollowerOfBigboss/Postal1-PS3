@@ -22,63 +22,52 @@ else ifeq ($(ODROID),1)
   CLIENTEXE := $(BINDIR)/postal1-arm
 else ifeq ($(linux_x86),1)
   target := linux_x86
+  macosx := false
+  CPUARCH := x86
+  CC := gcc
   CFLAGS += -m32
+  CXX := g++
+  LINKER := g++ -m32
   CLIENTEXE := $(BINDIR)/postal1-x86
 else ifeq ($(macosx_x86),1)
   target := macosx_x86
   CLIENTEXE := $(BINDIR)/postal1-x86
-else ifeq ($(PSL1GHT),1)
-  target := PSL1GHT
-  CLIENTEXE := $(BINDIR)/postal-PS3
-  CFLAGS += -D__PSL1GHT__
-else ifeq ($(SCE),1)
-  target := SCE
-  CLIENTEXE := $(BINDIR)/postal-PS3
-  CFLAGS += -D__CELLOS_LV2__
-else
-  target := linux_x86_64
-  CLIENTEXE := $(BINDIR)/postal1-x86_64
-endif
-
-# ----------------------------------------------------- ... bleh.
-
-$(info Selected Target: $(target))
-
-ifeq ($(strip $(target)), SCE)
-  macosx := false
-  CPUARCH := CELL
-  CC := ppu-lv2-gcc
-  CXX := ppu-lv2-g++
-  LINKER := ppu-lv2-g++
-endif
-ifeq ($(strip $(target)), PSL1GHT)
-  macosx := false
-  CPUARCH := CELL
-  CC := ppu-gcc
-  CXX := ppu-g++
-  LINKER := ppu-g++
-endif
-ifeq ($(strip $(target)),linux_x86)
-  macosx := false
-  CPUARCH := x86
-  CC := gcc
-  CXX := g++
-  LINKER := g++ -m32
-endif
-ifeq ($(strip $(target)),linux_x86_64)
-  macosx := false
-  CPUARCH := x86_64
-  CC ?= gcc
-  CXX ?= g++
-  LINKER ?= g++
-endif
-ifeq ($(strip $(target)),macosx_x86)
   macosx := true
   CPUARCH := x86
   CC := gcc
   CXX := g++
   LINKER := g++
+else ifeq ($(PSL1GHT),1)
+  target := PSL1GHT
+  macosx := false
+  CPUARCH := CELL
+  CC := ppu-gcc
+  CXX := ppu-g++
+  LINKER := ppu-g++
+  CLIENTEXE := $(BINDIR)/postal-PS3
+  CFLAGS += -D__PSL1GHT__
+else ifeq ($(SCE),1)
+  target := SCE
+  macosx := false
+  CPUARCH := CELL
+  CC := ppu-lv2-gcc
+  CXX := ppu-lv2-g++
+  LINKER := ppu-lv2-g++
+  CLIENTEXE := $(BINDIR)/postal-PS3
+  CFLAGS += -D__CELLOS_LV2__
+else
+  target := linux_x86_64
+  macosx := false
+  CPUARCH := x86_64
+  CC ?= gcc
+  CXX ?= g++
+  LINKER ?= g++
+  CLIENTEXE := $(BINDIR)/postal1-x86_64
 endif
+
+$(info Selected Target: $(target))
+
+# ----------------------------------------------------- ... bleh.
 
 CLEANUP := $(wildcard *.exe) $(wildcard *.obj) \
           $(wildcard $(BINDIR)/*.exe) $(wildcard $(BINDIR)/*.obj) \
@@ -336,35 +325,30 @@ ifeq ($(strip $(macosx)),true)
   LDFLAGS += -arch i386 -mmacosx-version-min=10.6
   LDFLAGS += -framework CoreFoundation -framework Cocoa
   LIBS += SDL2/libs/macosx/libSDL2-2.0.0.dylib
-else
-	ifeq ($(CPUARCH),arm)
-    	LIBS += -lSDL2
-	else
-		ifeq ($(CPUARCH),x86_64)
-			LIBS += -lSDL2
-		else ifeq ($(CPUARCH), CELL)
-			LIBS += 
-		else
-			LIBS += SDL2/libs/linux-x86/libSDL2-2.0.so.0
-			LDFLAGS += -Wl,-rpath,\$$ORIGIN
-		endif
-	endif
 endif
-
-ifeq ($(strip $(SCE)), 1)
+ifeq ($(CPUARCH),arm)
+	LIBS += -lSDL2
+endif
+ifeq ($(CPUARCH),x86_64)
+	LIBS += -lSDL2
 endif
 ifeq ($(strip $(PSL1GHT)), 1)
 	LDFLAGS += -L$(PS3DEV)/portlibs/ppu/lib -L$(PS3DEV)/ppu/lib
-	LIBS += -lSDL2 -lio -laudio -lrsx -lgcm_sys -lsysutil -lrt -llv2 
+	LIBS += -lSDL2 -lio -laudio -lrsx -lgcm_sys -lsysutil -lrt -llv2
+endif
+ifeq ($(strip $(SCE)), 1)
+endif
+ifeq ($(strip $(linux_x86)), 1)
+	LIBS += SDL2/libs/linux-x86/libSDL2-2.0.so.0
+	LDFLAGS += -Wl,-rpath,\$$ORIGIN
 endif
 
 CFLAGS += -DALLOW_TWINSTICK
 
-.PHONY: all bindir
+.PHONY: all bindir ps3pkg
 
 
 all: debugoff $(CLIENTEXE)
-
 
 debug: debugon $(CLIENTEXE)
 
@@ -389,13 +373,12 @@ $(BINDIR)/%.a: $(SRCDIR)/%.a
 	ranlib $@
 
 
-# $(CLIENTEXE): $(BINDIR) $(OBJS) $(LIBS)
 $(CLIENTEXE): $(BINDIR) $(OBJS)
 	$(LINKER) -o $(CLIENTEXE) $(OBJS) $(LDFLAGS) $(LIBS)
 ifeq ($(strip $(target)), PSL1GHT)
 	  mv $(CLIENTEXE) $(CLIENTEXE).elf
 	  sprxlinker $(CLIENTEXE).elf
-	  make_self $(CLIENTEXE).elf $(CLIENTEXE).self
+	  make_self_npdrm $(CLIENTEXE).elf ps3pkg/USRDIR/EBOOT.BIN POSTALPS3
 endif
 $(BINDIR) :
 	$(MAKE) bindir
@@ -480,4 +463,10 @@ clean:
 	rm -f saktool
 	rm -f RSPiX_wrap.c RSPiX_wrap.cxx RSPiX_wrap.o _RSPiX.so RSPiX.py
 
+
+ps3pkg:
+	sfo.py --title "Postal 1 for PS3" --appid "POSTALPS3" -f $(PS3DEV)/bin/sfo.xml ps3pkg/PARAM.SFO
+	pkg.py --contentid UP0001-POSTALPS3-0000000000000000 ps3pkg/ Postal1Ps3.pkg
+	cp Postal1Ps3.pkg Postal1Ps3.gnpdrm.pkg
+	package_finalize Postal1Ps3.gnpdrm.pkg
 # end of Makefile ...

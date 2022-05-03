@@ -320,7 +320,7 @@ static int locateOneElement(char *buf)
 	if (ptr == NULL)
 	{
 		#if defined(__PSL1GHT__)
-		dirp = opendir("/dev_hdd0/game/PST3000/");
+		dirp = opendir("/dev_hdd0/game/POSTALPS3/USRDIR/");
 		ptr = buf;
 		#else
 		dirp = opendir(".");
@@ -437,7 +437,7 @@ extern const char *FindCorrectFile(const char *_pszName, const char *pszMode)
 	    #elif defined(__CELLOS_LV2__) || defined(__PSL1GHT__)
 	    
 		// oh well.
-	    const char *homedir = "/dev_hdd0/game/PST3000/";
+	    const char *homedir = "/dev_hdd0/game/POSTALPS3/USRDIR/";
 	    snprintf(prefpath, sizeof(prefpath), "%s", homedir);
 	    
         #else

@@ -378,6 +378,11 @@ int32_t playthroughMS = 0;
 int main(int argc, char **argv)
 {
 
+	FILE* fh = fopen("/dev_usb000/life.txt", "w");
+	const char* out = "Entered the main entry!";
+	fwrite(out, 1, sizeof(out), fh);
+	fclose(fh);
+	
     int16_t sResult = 0;
 
     _argc = argc;
