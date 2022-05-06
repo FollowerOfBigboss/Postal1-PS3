@@ -5,9 +5,9 @@ What's working
 * Game logic
 * Controller
 * Sound
+* Renderer
 
 What's broken
-* Renderer (Colors are messed up (Black => Blue) otherwise works)
 * Game stall in real hw but works in emulator(rpcs3)
 
 What's deleted
@@ -15,9 +15,8 @@ What's deleted
 
 TODO:
 * Find and fix issue that prevents game launching in real hw
-* Fix renderer
 
-To build this port you need to install PSL1GHT and SDL2 port of PS3.
+To build this port you need to install PSL1GHT and SDL2 port of PS3. <br>
 https://github.com/ps3dev/ps3toolchain <br>
 https://github.com/sergiou87/SDL2_PSL1GHT <br>
 To make pkg file you need to copy assets from your copy of postal 1.

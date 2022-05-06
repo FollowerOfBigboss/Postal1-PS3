@@ -832,15 +832,16 @@ extern void rspPresentFrame(void)
     for (int y = 0; y < FramebufferHeight; y++)
     {
         for (int x = 0; x < FramebufferWidth; x++, src++, dst++) {
+#if !defined(__PSL1GHT__) && !defined(__CELLOS_LV2__)
             *dst = apeApp[*src].argb;
-//            *dst = apeApp[*src].argb >> 4;
-
+#else
 			ArgbColor color;
 			color.a = apeApp[*src].b;
 			color.r = apeApp[*src].g;
 			color.g = apeApp[*src].r;
 			color.b = apeApp[*src].a;
             *dst = color.argb;
+#endif
 		}
     }
 
