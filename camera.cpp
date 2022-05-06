@@ -165,12 +165,12 @@ void CCamera::SetFilm(
 // Snap a picture with the lens cover on (i.e. - set film's view area to black)
 ////////////////////////////////////////////////////////////////////////////////
 void CCamera::SnapWithLensCoverOn(void)
-	{
+{
 	ASSERT(m_pimFilm != NULL);
 
 	// Draw black rectangle (automatically clips to image size)
 	rspRect(RSP_BLACK_INDEX, m_pimFilm, m_sFilmViewX, m_sFilmViewY, m_sViewW, m_sViewH);
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

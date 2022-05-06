@@ -1506,16 +1506,17 @@ extern void DoMenuInput(		// Returns nothing.
 // conjunction with DoMenuInput() to run the menu.
 //
 //////////////////////////////////////////////////////////////////////////////
-extern void DoMenuOutput(	// Returns nothing.
-	RImage*	pimDst)			// In:  Destination image for menu BLiTs.
-	{
+// Returns nothing.
+// In:  Destination image for menu BLiTs.
+extern void DoMenuOutput(RImage* pimDst)		
+{
 	// If there is a current menu . . .
 	if (ms_pmenu != NULL)
-		{
+	{
 		// Draw msgbox.
 		ms_msgbox.Draw(pimDst);
-		}
 	}
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //

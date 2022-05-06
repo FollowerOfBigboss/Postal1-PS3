@@ -136,8 +136,8 @@ pntBuf.Clear(); // Clear the print buffer early
 // This is the user header for all 2D sprite operations.
 
 // If you already have a short version, then you can use it, too!
-class	RRect
-	{
+class RRect
+{
 public:
 	int16_t sX;
 	int16_t sY;
@@ -154,7 +154,7 @@ public:
 		{ sX = sXi,sY = sYi,sW = sWi,sH = sHi; }
 	~RRect(){};
 
-	}; // used for clipping!
+}; // used for clipping!
 
 // templated forms of common functions:
 // Name your screen references...
@@ -323,16 +323,16 @@ extern	int16_t rspRectToMono(uint32_t ulColor,RImage* pimDst,int16_t sX,int16_t 
 //****************************************************************************************
 
 typedef	struct tagFont
-	{
+{
 	int16_t	sCellHeight;
 	int16_t	sUnproportionalWidth;
 	RImage*	pLetters[256];	// ptr to letters or NULL
 	tagFont* pNext;
-	}	FontNode;
+} FontNode;
 
 // put in header...
-class	RFontOld
-	{
+class RFontOld
+{
 public:
 	char*	m_pszFontName;
 	int16_t	m_sMaxCellHeight;	// maximum original size
@@ -351,7 +351,7 @@ public:
 	int16_t	Save(RFile* pFile);
 	int16_t	Load(char* pszPath,char* pszName); // only 5 chars standard...
 	int16_t	Load(char* pszName); // only 5 chars standard...
-	};
+};
 
 // This IS currently 8=bit color hard wired!
 
@@ -471,35 +471,35 @@ public: // for development ONLY
 */
 
 typedef class CStrafe
-	{
+{
 public:
 
 	CStrafe()
-		{
+	{
 		sHotX = sHotY = NULL;
 		psLinkX = psLinkY = NULL;
 		pImage = NULL;
-		}
+	}
 
 	~CStrafe()
-		{
+	{
 		if (pImage) delete pImage;
 		if (psLinkX) free(psLinkX);
 		if (psLinkY) free(psLinkY);
-		}
+	}
 	
 	RImage* pImage;
 	int16_t	sHotX; // subtract from coord
 	int16_t sHotY;
 	int16_t *psLinkX; // a var length array
 	int16_t *psLinkY; // a var length array
-	} *PStrafe;
+} *PStrafe;
 // ARCHAIC Backwards support for BLT_STRAFE:
 
 // User will use a Strafe to hold the data!
 //
 typedef	struct
-	{
+{
 	RImage*	pfspr; // must be altered!
 	int16_t sHotX;
 	int16_t sHotY;
@@ -507,15 +507,15 @@ typedef	struct
 	int16_t *psLinkX;
 	int16_t *psLinkY;
 
-	}	StrafeFrame; // archaic
+} StrafeFrame; // archaic
 
 typedef struct 
-	{
+{
 	int16_t sNumFrames;
 	int16_t sNumLinks;
 	CStrafe *pFrame;
 
-	} Strafe; // archaic!
+} Strafe; // archaic!
 
 /*
 extern	Strafe*	BLT_RotStrafe(RImage* pimSrc,short sHotX,short sHotY,short sNumInc,

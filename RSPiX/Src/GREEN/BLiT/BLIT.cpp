@@ -935,13 +935,12 @@ int16_t	rspBlit(RImage* pimSrc,RImage* pimDst,int16_t sSrcX,int16_t sSrcY,int16_
 // pre-validated rect copy: (Pitch will be sign based!)
 //
 template <class WORDSIZE>
-inline void _ClearRect(WORDSIZE color,WORDSIZE* pDst,int32_t lDstPitch,
-						int16_t sHeight,int16_t	sByteWidth)
-	{
-	union	{
+inline void _ClearRect(WORDSIZE color, WORDSIZE* pDst, int32_t lDstPitch, int16_t sHeight, int16_t sByteWidth)
+{
+	union {
 		WORDSIZE *w;
 		uint8_t	*b;
-		} pDstLine;
+	} pDstLine;
 
 	int16_t i,sWordWidth = sByteWidth;
 	const static int16_t SizeToShift[] = {0,0,1,0,2,0,0,0,3,0,0,0,0,0,0,0,4};
@@ -950,25 +949,25 @@ inline void _ClearRect(WORDSIZE color,WORDSIZE* pDst,int32_t lDstPitch,
 	pDstLine.w = pDst;
 
 	while (sHeight--)
-		{
+	{
 		pDst = pDstLine.w;
 
 		i = sWordWidth;
 		while (i--) *(pDst++) = color;
 
 		pDstLine.b += lDstPitch;
-		}
 	}
+}
 
 // Must make TC possible!  
 //
 int16_t rspRect(U32 color,RImage* pimDst,int16_t sX,int16_t sY,int16_t sW,int16_t sH,RRect* prClip)
-	{
+{
 	// A cheap hook for mono:
 	if (pimDst->m_type == RImage::BMP1) // monochrome hook
-		{
+	{
 		return rspRectToMono(color,pimDst,sX,sY,sW,sH);
-		}
+	}
 
 	// 1) preliminary parameter validation:
 #ifdef _DEBUG
@@ -1005,7 +1004,7 @@ int16_t rspRect(U32 color,RImage* pimDst,int16_t sX,int16_t sY,int16_t sW,int16_
 
 	// 2) Destination Clipping:
 	if (prClip)
-		{
+	{
 		// clip against user values
 		sClip = prClip->sX - sX; // positive = clipped
 		if (sClip > 0) { sW -= sClip; sX = prClip->sX; }
@@ -1017,9 +1016,9 @@ int16_t rspRect(U32 color,RImage* pimDst,int16_t sX,int16_t sY,int16_t sW,int16_
 		if (sClip > 0) { sH -= sClip; }
 
 		if ( (sW <= 0) || (sH <= 0) ) return -1; // clipped out!
-		}
+	}
 	else	
-		{
+	{
 		// clip against full destination buffer
 		if (sX < 0) { sW += sX; sX = 0; }
 		if (sY < 0) { sH += sY; sY = 0; }
@@ -1029,7 +1028,7 @@ int16_t rspRect(U32 color,RImage* pimDst,int16_t sX,int16_t sY,int16_t sW,int16_
 		if (sClip > 0) sH -= sClip; // positive = clipped
 
 		if ((sW <= 0) || (sH <= 0)) return -1; // fully clipped
-		}
+	}
 
 	//**************  INSERT BUFFER HOOKS HERE!  ************************
 
@@ -1139,25 +1138,25 @@ int16_t rspRect(U32 color,RImage* pimDst,int16_t sX,int16_t sY,int16_t sW,int16_
 
 	// Do the draw rect as fast as possible!
 	if ( (sAlign & 3) == 0)	
-		{
+	{
 		// 32-bit copy
 		uint32_t ulColor = color;
 		ulColor += (color << 8); // 16-bit
 		ulColor += (ulColor << 16); // 32-bit
 
 		_ClearRect(ulColor,(U32*)pDst,pimDst->m_lPitch,sH,sByteW); 
-		}
+	}
 	else if ( (sAlign & 1) == 0)
-		{
+	{
 		// 16-bit copy
 		uint16_t usColor = (uint16_t)(color + (color << 8)); // 16-bit;
 		_ClearRect(usColor,(U16*)pDst,pimDst->m_lPitch,sH,sByteW); 
-		}
+	}
 	else
-		{
+	{
 		// 8-bit copy
 		_ClearRect((U8)color,(U8*)pDst,pimDst->m_lPitch,sH,sByteW); 
-		}
+	}
 
 
 	//********************
@@ -1443,33 +1442,33 @@ int16_t	rspPad(RImage* pimSrc,int16_t sX,int16_t sY, // where to move the old im
 // & sets this rect to {0,0,0,0}
 //
 int16_t RRect::ClipTo(RRect* prClipTo)
-		{
-		int16_t sClipL,sClipT,sClipR,sClipB;
-		sClipL = prClipTo->sX - sX;
-		sClipT = prClipTo->sY - sY;
-		sClipR = sX + sW - prClipTo->sX - prClipTo->sW;
-		sClipB = sY + sH - prClipTo->sY - prClipTo->sH;
+{
+	int16_t sClipL,sClipT,sClipR,sClipB;
+	sClipL = prClipTo->sX - sX;
+	sClipT = prClipTo->sY - sY;
+	sClipR = sX + sW - prClipTo->sX - prClipTo->sW;
+	sClipB = sY + sH - prClipTo->sY - prClipTo->sH;
 
-		if (sClipL > 0)
-			{
-			sX += sClipL;
-			sW -= sClipL;
-			}
+	if (sClipL > 0)
+	{
+		sX += sClipL;
+		sW -= sClipL;
+	}
 
-		if (sClipT > 0)
-			{
-			sY += sClipT;
-			sH -= sClipT;
-			}
+	if (sClipT > 0)
+	{
+		sY += sClipT;
+		sH -= sClipT;
+	}
 
-		if (sClipR > 0) sW -= sClipR;
-		if (sClipB > 0) sH -= sClipB;
+	if (sClipR > 0) sW -= sClipR;
+	if (sClipB > 0) sH -= sClipB;
 
-		if ( (sW < 0) || (sH < 0) )
-			{
-			sX = sY = sW = sH = 0;
-			return -1;
-			}
+	if ( (sW < 0) || (sH < 0) )
+	{
+		sX = sY = sW = sH = 0;
+		return -1;
+	}
 
-		return 0;
-		}
+	return 0;
+}

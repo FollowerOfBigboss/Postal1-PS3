@@ -46,10 +46,10 @@ static Uint8 *PalettedTexturePointer = NULL;
 
 typedef struct		// Stores information on usable video modes.
 {
-	int16_t				sWidth;
-	int16_t				sHeight;
-	int16_t				sColorDepth;
-	int16_t				sPages;
+	int16_t sWidth;
+	int16_t sHeight;
+	int16_t sColorDepth;
+	int16_t sPages;
 } VIDEO_MODE, *PVIDEO_MODE;
 
 static RSList<VIDEO_MODE, int16_t>	slvmModes;	// List of available video modes.
@@ -782,9 +782,9 @@ extern int16_t rspSetVideoMode(	// Returns 0 if successfull, non-zero otherwise
 //
 //////////////////////////////////////////////////////////////////////////////
 extern void rspKillVideoMode(void)
-	{
+{
     /* no-op ... SDL_Quit() will catch this. */
-	}
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -797,9 +797,9 @@ extern void rspKillVideoMode(void)
 //
 //////////////////////////////////////////////////////////////////////////////
 extern void rspKillVideoBuffer(void)
-	{
+{
     /* no-op ... SDL_Quit() will catch this. */
-	}
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -831,9 +831,18 @@ extern void rspPresentFrame(void)
     Uint32 *dst = TexturePointer;
     for (int y = 0; y < FramebufferHeight; y++)
     {
-        for (int x = 0; x < FramebufferWidth; x++, src++, dst++)
+        for (int x = 0; x < FramebufferWidth; x++, src++, dst++) {
             *dst = apeApp[*src].argb;
-        }
+//            *dst = apeApp[*src].argb >> 4;
+
+			ArgbColor color;
+			color.a = apeApp[*src].b;
+			color.r = apeApp[*src].g;
+			color.g = apeApp[*src].r;
+			color.b = apeApp[*src].a;
+            *dst = color.argb;
+		}
+    }
 
     SDL_UpdateTexture(sdlTexture, NULL, TexturePointer, FramebufferWidth * 4);
     SDL_RenderClear(sdlRenderer);
@@ -964,8 +973,8 @@ extern int16_t rspLockVideoBuffer(	// Returns 0 if system buffer could be locked
 //
 ///////////////////////////////////////////////////////////////////////////////
 extern void rspUnlockVideoBuffer(void)	// Returns nothing.
-	{
-	}
+{
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1115,8 +1124,8 @@ extern void rspGetPaletteEntries(
 //
 ///////////////////////////////////////////////////////////////////////////////
 extern void rspUpdatePalette(void)
-	{
-    }
+{
+}
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Set entries in the color map used to tweak values set via 
@@ -1258,11 +1267,12 @@ extern void rspSetForegroundCallback(	// Returns nothing.
         /* no-op. */
 	}
 
-extern int16_t rspIsBackground(void)			// Returns TRUE if in background, FALSE otherwise
-    {
-        extern bool GSDLAppIsActive;
-        return (int16_t) (!GSDLAppIsActive);
-    }
+// Returns TRUE if in background, FALSE otherwise
+extern int16_t rspIsBackground(void)
+{
+	extern bool GSDLAppIsActive;
+	return (int16_t) (!GSDLAppIsActive);
+}
 //////////////////////////////////////////////////////////////////////////////
 // EOF
 //////////////////////////////////////////////////////////////////////////////

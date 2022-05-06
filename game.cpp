@@ -1423,7 +1423,7 @@ static int16_t GameCore(void)		// Returns 0 on success.
 	RInputEvent ie;
 	memset(&ie, '\0', sizeof (ie));  // fix valgrind complaining... --ryan.
 	while (sResult == 0)
-		{
+	{
 		// Clear the end of game flag each time just to be safe, it only needs
 		// to be set within the last iteration
 		g_bLastLevelDemo = false;
@@ -1447,28 +1447,28 @@ static int16_t GameCore(void)		// Returns 0 on success.
 
 		// If menu isn't active, get it going
 		if (!bMenuActive)
-			{
+		{
 			// If paltran requested . . .
 			if (bPalTran)
 				PalTranOn();
 
 			sResult = StartMenu(pmenuStart ? pmenuStart : &menuMain, &g_resmgrShell, g_pimScreenBuf);
 			if (sResult == 0)
-				{
+			{
 				bMenuActive = true;
 				// Restore defaults.
 				pmenuStart	= NULL;
 				bPalTran		= true;
 				bTitleImage	= true;
 				bTitleMusak	= true;
-				}
+			}
 			else
-				{
+			{
 				TRACE("GameLoop(): Error returned by StartMenu()!\n");
 				rspMsgBox(RSP_MB_ICN_STOP | RSP_MB_BUT_OK, g_pszAppName, "Cannot initialize menu system, most likely due to a memory or drive error.\n");
 				break;
-				}
 			}
+		}
 
 		// Let menu system do its thing
 		DoMenuInput(&ie, g_InputSettings.m_sUseJoy);
@@ -1496,7 +1496,7 @@ static int16_t GameCore(void)		// Returns 0 on success.
 
 		// Any action to handle?
 		if (m_action != ACTION_NOTHING)
-			{
+		{
 			// Handle the action
 			switch(m_action)
 				{
@@ -2240,46 +2240,46 @@ static int16_t GameCore(void)		// Returns 0 on success.
 
 			// If this action lead to another action . . .
 			if (actionNext != ACTION_NOTHING)
-				{
+			{
 				// Set current action to the next action
 				m_action = actionNext;
-				}
+			}
 			else
-				{
+			{
 				// Reset action
 				m_action = ACTION_NOTHING;
-				}
+			}
 
 			// If menu was taken away, restore the screen behind it
 			if (!bMenuActive)
-				{
+			{
 				// If title requested . . .
 				if (bTitleImage)
-					{
+				{
 					// Only use musak, if specified.
 					StartTitle(0, bTitleMusak, &ms_siMusak);
 					EndTitle();
-					}
 				}
+			}
 
 			// Reset demo timer
 			ResetDemoTimer();
-			}
 		}
+	}
 
 	// Set the registry value before exiting
 	GameSetRegistry();
 
 	// If the menu is active, end it
 	if (bMenuActive)
-		{
+	{
 		StopMenu();
 		PalTranOff();
 		bMenuActive = false;
-		}
+	}
 
 	return sResult;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2288,13 +2288,13 @@ static int16_t GameCore(void)		// Returns 0 on success.
 //
 ////////////////////////////////////////////////////////////////////////////////
 static void ResetDemoTimer(void)
-	{
+{
 	// Reset base time
 	m_lDemoBaseTime = rspGetMilliseconds();
 	
 	// Change timeout to use persistant timeout
 	m_lDemoTimeOut = g_GameSettings.m_lPersistentDemoTimeOut;
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3054,16 +3054,15 @@ extern void Game_JoinMultiPlayerGame(
 // Callback for the "Host MultiPlayer Game" menu
 //
 ////////////////////////////////////////////////////////////////////////////////
-extern void Game_HostMultiPlayerGame(
-	int16_t sMenuItem)
-	{
+extern void Game_HostMultiPlayerGame(int16_t sMenuItem)
+{
 	switch (sMenuItem)
-		{
+	{
 		// "HOST"
 		case 0:
 			m_action = ACTION_PLAY_HOST;
 			break;
-		}
+	}
 
 	// The main game loop resets the demo timer whenever it notices any user input.
 	// However, when the user is in a dialog or message box, the OS handles all the
@@ -3072,16 +3071,15 @@ extern void Game_HostMultiPlayerGame(
 	// expire.  We don't want that to happen, so we manually reset the demo timer
 	// here in recognition of the fact that some kind of user input obviously occurred.
 	ResetDemoTimer();
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Callback for the "Start Demo Game" menu
 //
 ////////////////////////////////////////////////////////////////////////////////
-extern void Game_StartDemoGame(
-	int16_t sMenuItem)
-	{
+extern void Game_StartDemoGame(int16_t sMenuItem)
+{
 	char*	pszDemoFile	= NULL;
 	char	szLevelDir[RSP_MAX_PATH]	= "";
 	char  szTitle[256] = "";
@@ -3143,7 +3141,7 @@ extern void Game_StartDemoGame(
 	// expire.  We don't want that to happen, so we manually reset the demo timer
 	// here in recognition of the fact that some kind of user input obviously occurred.
 	ResetDemoTimer();
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3152,7 +3150,7 @@ extern void Game_StartDemoGame(
 //
 ////////////////////////////////////////////////////////////////////////////////
 extern void Game_Buy(void)
-	{
+{
 	rspMsgBox(RSP_MB_ICN_INFO | RSP_MB_BUT_OK, APP_NAME, g_pszBuy);
 
 	// The main game loop resets the demo timer whenever it notices any user input.
@@ -3162,7 +3160,7 @@ extern void Game_Buy(void)
 	// expire.  We don't want that to happen, so we manually reset the demo timer
 	// here in recognition of the fact that some kind of user input obviously occurred.
 	ResetDemoTimer();
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -3170,7 +3168,7 @@ extern void Game_Buy(void)
 //
 ////////////////////////////////////////////////////////////////////////////////
 extern void Game_StartEditor(void)
-	{
+{
 	#if defined(EDITOR_DISABLED)
 		rspMsgBox(RSP_MB_ICN_INFO | RSP_MB_BUT_OK, APP_NAME, g_pszEditorDisabled);
 	#else
@@ -3184,21 +3182,20 @@ extern void Game_StartEditor(void)
 	// expire.  We don't want that to happen, so we manually reset the demo timer
 	// here in recognition of the fact that some kind of user input obviously occurred.
 	ResetDemoTimer();
-	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Callback for the "Controls" menu.
 //
 ////////////////////////////////////////////////////////////////////////////////
-extern void Game_ControlsMenu(
-	int16_t sMenuItem)
-	{
+extern void Game_ControlsMenu(int16_t sMenuItem)
+{
 	// Only do this if we're not currently in an action . . .
 	if (m_action == ACTION_NOTHING)
-		{
+	{
 		switch (sMenuItem)
-			{
+		{
 			// Edit keyboard settings.
 			case 0:
 				m_action = ACTION_EDIT_INPUT_SETTINGS;
@@ -3215,7 +3212,7 @@ extern void Game_ControlsMenu(
 				m_action	= ACTION_EDIT_INPUT_SETTINGS;
 #endif	// defined(ALLOW_JOYSTICK)
 				break;
-			}
+		}
 
 		// The main game loop resets the demo timer whenever it notices any user input.
 		// However, when the user is in a dialog or message box, the OS handles all the
@@ -3224,19 +3221,20 @@ extern void Game_ControlsMenu(
 		// expire.  We don't want that to happen, so we manually reset the demo timer
 		// here in recognition of the fact that some kind of user input obviously occurred.
 		ResetDemoTimer();
-		}
 	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Callback for "Audio Options" menu.
 //
 ////////////////////////////////////////////////////////////////////////////////
-extern void Game_AudioOptionsChoice(	// Returns nothing.
-	int16_t sMenuItem)							// In:  Chosen item.
-	{
+// Returns nothing.
+// In:  Chosen item.
+extern void Game_AudioOptionsChoice(int16_t sMenuItem)				
+{
 	switch (sMenuItem)
-		{
+	{
 		case 1:
 			m_action = ACTION_POSTAL_ORGAN;
 			break;
@@ -3252,8 +3250,8 @@ extern void Game_AudioOptionsChoice(	// Returns nothing.
 			g_resmgrSamples.CloseSak();
 			OpenSaks();
 			break;
-		}
 	}
+}
 
 
 
@@ -4250,14 +4248,14 @@ extern void PalTranOn(
 //
 ////////////////////////////////////////////////////////////////////////////////
 extern void PalTranOff(void)
-	{
+{
 	// Do until done
 	while (DoPostMenuTrans() == false)
 		UpdateSystem();
 
 	// Let paltran finish/clean up.
 	EndMenuTrans(true);
-	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

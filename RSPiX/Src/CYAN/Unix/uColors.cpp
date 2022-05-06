@@ -70,28 +70,28 @@ static uint8_t m_aucWin32B2[10] = { 240, 164, 128,   0,   0,   0, 255, 255, 255,
 // and those used by newer Mac apps that use the "3D" GUI look.
 //
 ///////////////////////////////////////////////////////////////////////////////
-void rspSetWin32StaticColors(
-	int16_t sLock /*= 0*/)										// In:  1 means lock colors, 0 means don't
-	{
+// In:  1 means lock colors, 0 means don't
+void rspSetWin32StaticColors(int16_t sLock /*= 0*/)
+{
 	// Make sure display module is alive before we call it
 	if (1) //( (SDL_WasInit(SDL_INIT_VIDEO)) && (SDL_GetVideoSurface() != NULL) )
-		{
+	{
 		// Set the colors (note that colors 0 and 255 can't really be changed!)
 		rspSetPaletteEntries(  0, 10, m_aucWin32R1, m_aucWin32G1, m_aucWin32B1, 1);
 		rspSetPaletteEntries(246, 10, m_aucWin32R2, m_aucWin32G2, m_aucWin32B2, 1);
 
 		// Check if we need to lock the colors
 		if (sLock)
-			{
+		{
 			rspLockPaletteEntries(  0, 10);
 			rspLockPaletteEntries(246, 10);
-			}
-		}
-	else
-		{
-		TRACE("rspSetWin32StaticColors(): rspInitBlue() must be called before using this function!\n");
 		}
 	}
+	else
+	{
+		TRACE("rspSetWin32StaticColors(): rspInitBlue() must be called before using this function!\n");
+	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
