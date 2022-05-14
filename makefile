@@ -287,6 +287,7 @@ endif
 ifeq ($(strip $(PSL1GHT)), 1)
   CFLAGS += -D_DEBUG
   CFLAGS += -DRESMGR_VERBOSE
+  CFLAGS += -DRSP_DEBUG_OUT_FILE
   CFLAGS += -I$(PS3DEV)/ppu/include
   CFLAGS += -I$(PS3DEV)/portlibs/ppu/include/SDL2
 endif
@@ -378,7 +379,9 @@ $(CLIENTEXE): $(BINDIR) $(OBJS)
 ifeq ($(strip $(target)), PSL1GHT)
 	  mv $(CLIENTEXE) $(CLIENTEXE).elf
 	  sprxlinker $(CLIENTEXE).elf
-	  make_self_npdrm $(CLIENTEXE).elf ps3pkg/USRDIR/EBOOT.BIN POSTALPS3
+	  cp $(CLIENTEXE).elf ps3pkg/USRDIR/EBOOT.BIN
+#	  make_self $(CLIENTEXE).elf ps3pkg/USRDIR/EBOOT.BIN
+#	  make_self_npdrm $(CLIENTEXE).elf ps3pkg/USRDIR/EBOOT.BIN POSTALPS3
 endif
 $(BINDIR) :
 	$(MAKE) bindir

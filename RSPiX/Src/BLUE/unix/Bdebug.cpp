@@ -82,6 +82,9 @@
 #define MAX_ASSERT_STR	1024
 
 #if defined(RSP_DEBUG_OUT_FILE)
+	#if defined(__PSL1GHT__)
+		#define RSP_TRACE_LOG_NAME "/dev_hdd0/TRACE.txt"
+	#endif
 	#if !defined(RSP_TRACE_LOG_NAME)
 		#define RSP_TRACE_LOG_NAME	"TRACE.txt"
 	#endif	// RSP_TRACE_LOG_NAME

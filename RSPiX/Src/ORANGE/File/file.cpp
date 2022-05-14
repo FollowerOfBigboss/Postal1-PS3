@@ -182,7 +182,7 @@ typedef HRESULT (WINAPI *fnSHGetFolderPathW)(HWND hwnd, int nFolder, HANDLE hTok
 #include "CYAN/cyan.h"
 #endif
 
-
+#define PS3GAMEDIRECTORY "/dev_hdd0/game/POSTALPS3/USRDIR/"
 
 #include "Blue.h"
 
@@ -320,7 +320,7 @@ static int locateOneElement(char *buf)
 	if (ptr == NULL)
 	{
 		#if defined(__PSL1GHT__)
-		dirp = opendir("/dev_hdd0/game/POSTALPS3/USRDIR/");
+		dirp = opendir(PS3GAMEDIRECTORY);
 		ptr = buf;
 		#else
 		dirp = opendir(".");
@@ -437,7 +437,7 @@ extern const char *FindCorrectFile(const char *_pszName, const char *pszMode)
 	    #elif defined(__CELLOS_LV2__) || defined(__PSL1GHT__)
 	    
 		// oh well.
-	    const char *homedir = "/dev_hdd0/game/POSTALPS3/USRDIR/";
+	    const char *homedir = PS3GAMEDIRECTORY;
 	    snprintf(prefpath, sizeof(prefpath), "%s", homedir);
 	    
         #else

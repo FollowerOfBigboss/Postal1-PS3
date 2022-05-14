@@ -377,10 +377,6 @@ int32_t playthroughMS = 0;
 
 int main(int argc, char **argv)
 {
-
-	FILE* fh = fopen("/dev_usb000/life.txt", "w");
-	fprintf(fh, "In main loop\n");
-	
     int16_t sResult = 0;
 
     _argc = argc;
@@ -401,12 +397,9 @@ int main(int argc, char **argv)
 	// user does something stupid.
 	RPrefs prefs;
 	TRACE("%s\n",g_pszPrefFileName);
-	fprintf(fh, "prefs.Open() \n");
-
 
 	if (prefs.Open(g_pszPrefFileName, "rt") == 0)
 	{
-		fprintf(fh, "in prefs.Open() \n");
 		// Get video preferences
 		int16_t sDeviceWidth;
 		int16_t sDeviceHeight;
